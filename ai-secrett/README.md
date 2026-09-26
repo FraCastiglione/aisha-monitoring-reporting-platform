@@ -13,3 +13,5 @@ The site does not upload reports. Partners must download and submit the PDF and 
 ## Hosting
 
 This folder is a dedicated path in the existing GitHub Pages repository. The AISHA homepage remains at `/`, while this preview is served at `/ai-secrett/`. No build step is required.
+
+The dashboard embeds its three JSON data files in `assets/dashboard.js` so it can display without additional browser requests. After editing any dashboard JSON file, run `python3 scripts/embed-dashboard-data.py` from this folder and update the `dashboard.js` version query in `index.html` before publishing.
