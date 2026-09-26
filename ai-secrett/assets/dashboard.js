@@ -344,9 +344,39 @@
     const panel=view.tab==='gantt'?ganttSection():view.tab==='workpackages'?workPackagesSection():view.tab==='reporting'?reportingSection():view.tab==='risks'?risksSection():view.tab==='kpis'?kpisSection():overview();
     host.replaceChildren(tabs,panel);
   }
-  Promise.all([
-    fetch('assets/dashboard-catalogue.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error('Agreement catalogue unavailable');return response.json();}),
-    fetch('dashboard-data.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error('Dashboard snapshot unavailable');return response.json();}),
-    fetch('assets/dashboard-detail.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error('Agreement detail unavailable');return response.json();})
-  ]).then(([source,data,detailData])=>{if(data.schema_version!=='2.0'||data.project!=='AI-SECRETT'||!Array.isArray(source.deliverables)||!Array.isArray(source.milestones)||!Array.isArray(source.risks)||!Array.isArray(source.kpis)||!detailData.deliverables||!detailData.milestones||!agreement?.workPackages)throw new Error('Dashboard data is incomplete');catalogue=source;snapshot=data;agreementDetail=detailData;const current=model.projectMonth(config,data.snapshot_month);if(current){view.through=current;view.dueThrough=current<=6?6:current<=12?12:current<=18?18:current<=36?36:48;view.ganttMonth=Math.min(48,current+1);view.ganttYear=Number(month(view.ganttMonth).slice(0,4));}view.draftDay=data.planning?.internal_draft_day||5;render();}).catch(error=>{host.replaceChildren(el('p','dash-error',`Dashboard could not load: ${error.message}.`));});
+  async function fetchJson(path, label) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const response = await fetch(path);
+        if (!response.ok) throw new Error(`${label} unavailable (${response.status})`);
+        return await response.json();
+      } catch (error) {
+        if (attempt === 1) throw error;
+        await new Promise(resolve => setTimeout(resolve, 400));
+      }
+    }
+  }
+  async function loadDashboard() {
+    host.replaceChildren(el('p', 'dash-loading', 'Loading dashboard…'));
+    try {
+      const [source, data, detailData] = await Promise.all([
+        fetchJson('assets/dashboard-catalogue.json?v=20260926c', 'Agreement catalogue'),
+        fetchJson('dashboard-data.json?v=20260926c', 'Dashboard snapshot'),
+        fetchJson('assets/dashboard-detail.json?v=20260926c', 'Agreement detail')
+      ]);
+      if (data.schema_version !== '2.0' || data.project !== 'AI-SECRETT' || !Array.isArray(source.deliverables) || !Array.isArray(source.milestones) || !Array.isArray(source.risks) || !Array.isArray(source.kpis) || !detailData.deliverables || !detailData.milestones || !agreement?.workPackages) throw new Error('Dashboard data is incomplete');
+      catalogue = source; snapshot = data; agreementDetail = detailData;
+      const current = model.projectMonth(config, data.snapshot_month);
+      if (current) { view.through = current; view.dueThrough = current <= 6 ? 6 : current <= 12 ? 12 : current <= 18 ? 18 : current <= 36 ? 36 : 48; view.ganttMonth = Math.min(48, current + 1); view.ganttYear = Number(month(view.ganttMonth).slice(0, 4)); }
+      view.draftDay = data.planning?.internal_draft_day || 5;
+      render();
+    } catch (error) {
+      const notice = el('div', 'dash-error');
+      notice.append(el('p', '', `Dashboard could not load: ${error.message}.`));
+      const retry = el('button', 'dash-retry', 'Retry dashboard');
+      retry.type = 'button'; retry.addEventListener('click', loadDashboard);
+      notice.append(retry); host.replaceChildren(notice);
+    }
+  }
+  loadDashboard();
 })();

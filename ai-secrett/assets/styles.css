@@ -407,6 +407,10 @@ fieldset.field legend { margin-bottom: 8px; color: var(--ink); font-size: 13px; 
 .dash-kpi-breakdown p { margin:5px 0; font-size:11px; }
 .dash-kpi-method { color:var(--muted); }
 .dash-error { padding:20px; color:#8a293c; background:#fff0f2; border-radius:10px; }
+.dash-error p { margin:0 0 12px; }
+.dash-retry { padding:9px 15px; border:0; border-radius:8px; color:#fff; background:var(--dash-primary,var(--blue)); font:inherit; font-size:13px; font-weight:750; cursor:pointer; }
+.dash-retry:hover { background:var(--dash-deep,var(--blue-deep)); }
+.dash-loading { padding:20px; color:var(--dash-deep,var(--blue-deep)); }
 
 /* Dashboard reading experience */
 #dashboard { --blue:#5b24ed; --blue-deep:#321187; --teal:#8050ef; --teal-deep:#5523b5; --dash-primary:#5b24ed; --dash-deep:#321187; --dash-mid:#8050ef; --dash-soft:#f3efff; --dash-line:#ddd2f7; padding-top:48px; }
