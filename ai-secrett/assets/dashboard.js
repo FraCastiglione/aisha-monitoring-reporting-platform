@@ -71,7 +71,7 @@
     for (const item of upcoming) { const row = el('div', 'dash-next-row'); const copy = el('div'); copy.append(el('small', '', `${monthCode(item.due)} · ${monthName(item.due)} · ${item.type} · ${item.wp}`), el('strong', '', `${item.id} · ${item.title}`)); row.append(copy, pill(item.state === 'submitted' ? 'Submitted early' : item.state === 'achieved' ? 'Achieved early' : item.type.endsWith('begins') ? 'Scheduled start' : 'Status not recorded', item.state ? 'positive' : item.type.endsWith('begins') ? 'neutral' : 'watch')); nextGrid.append(row); }
     if(!upcoming.length) nextGrid.append(empty('No deliverables or milestones are due in this six-month window.'));
     next.append(nextGrid); section.append(next);
-    section.append(workPackageMap(current), el('p', 'dash-context-note', 'Submitted means sent, not accepted. Milestone achievements are coordinator-reported. Partner reporting remains unconfirmed until report records are added.'));
+    section.append(workPackageMap(current), el('p', 'dash-context-note', 'Submitted means sent, not accepted. Milestone achievements reflect the project status update supplied on 26 September 2026. Partner reporting remains unconfirmed until report records are added.'));
     section.append(el('p', 'dashboard-meta', sourceNote())); return section;
   }
   function overviewDetailPanel(kind,current) {
