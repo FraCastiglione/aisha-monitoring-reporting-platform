@@ -1,0 +1,781 @@
+{
+  "source": "AI-SECRETT Grant Agreement 101226207, Data Sheet and Annex 1, PDF pp. 83–94; Part B, PDF pp. 109–110",
+  "deliverables": [
+    {
+      "id": "D1.2",
+      "title": "AI-STEAM network initial concept and governance",
+      "wp": "WP1",
+      "lead": "CEICE",
+      "due": 6,
+      "visibility": "Public"
+    },
+    {
+      "id": "D1.3",
+      "title": "Needs Analysis",
+      "wp": "WP1",
+      "lead": "UVEG",
+      "due": 6,
+      "visibility": "Public"
+    },
+    {
+      "id": "D2.1",
+      "title": "Content Delivery Platform fully functional prototype",
+      "wp": "WP2",
+      "lead": "UVEG",
+      "due": 12,
+      "visibility": "Public"
+    },
+    {
+      "id": "D2.2",
+      "title": "AI-STEAM network fully functional",
+      "wp": "WP2",
+      "lead": "CEICE",
+      "due": 12,
+      "visibility": "Public"
+    },
+    {
+      "id": "D2.3",
+      "title": "Corporate image and templates",
+      "wp": "WP2",
+      "lead": "UMU",
+      "due": 12,
+      "visibility": "Public"
+    },
+    {
+      "id": "D3.1",
+      "title": "AI-SECRETT Syllabus and Programme I",
+      "wp": "WP3",
+      "lead": "UVEG",
+      "due": 18,
+      "visibility": "Public"
+    },
+    {
+      "id": "D3.2",
+      "title": "AI-SECRETT Certification Scheme",
+      "wp": "WP3",
+      "lead": "TUV.IT",
+      "due": 18,
+      "visibility": "Public"
+    },
+    {
+      "id": "D4.1",
+      "title": "Updated Programme’s platform I",
+      "wp": "WP4",
+      "lead": "UVEG",
+      "due": 30,
+      "visibility": "Public"
+    },
+    {
+      "id": "D4.2",
+      "title": "AI-STEAM network revised",
+      "wp": "WP4",
+      "lead": "CEICE",
+      "due": 30,
+      "visibility": "Public"
+    },
+    {
+      "id": "D5.1",
+      "title": "AI-SECRETT revised Certification Scheme",
+      "wp": "WP5",
+      "lead": "TUV.IT",
+      "due": 33,
+      "visibility": "Public"
+    },
+    {
+      "id": "D5.2",
+      "title": "Content Delivery Platform revised",
+      "wp": "WP5",
+      "lead": "UVEG",
+      "due": 33,
+      "visibility": "Public"
+    },
+    {
+      "id": "D6.1",
+      "title": "Updated Programme’s platform II",
+      "wp": "WP6",
+      "lead": "UVEG",
+      "due": 45,
+      "visibility": "Public"
+    },
+    {
+      "id": "D6.2",
+      "title": "AI-STEAM network further revised",
+      "wp": "WP6",
+      "lead": "CEICE",
+      "due": 45,
+      "visibility": "Public"
+    },
+    {
+      "id": "D7.1",
+      "title": "Dissemination and Exploitation Plan",
+      "wp": "WP7",
+      "lead": "UMU",
+      "due": 6,
+      "visibility": "Public"
+    },
+    {
+      "id": "D8.1",
+      "title": "Quality Handbook",
+      "wp": "WP8",
+      "lead": "UVEG",
+      "due": 2,
+      "visibility": "Sensitive"
+    },
+    {
+      "id": "D8.2",
+      "title": "Data Management Plan",
+      "wp": "WP8",
+      "lead": "FIDIT",
+      "due": 6,
+      "visibility": "Public"
+    },
+    {
+      "id": "D8.3",
+      "title": "Gender Equality Plan",
+      "wp": "WP8",
+      "lead": "HSW",
+      "due": 6,
+      "visibility": "Public"
+    },
+    {
+      "id": "D9.1",
+      "title": "Dissemination and Exploitation Plan Update",
+      "wp": "WP9",
+      "lead": "UMU",
+      "due": 24,
+      "visibility": "Public"
+    },
+    {
+      "id": "D10.1",
+      "title": "Data Management Plan Update",
+      "wp": "WP10",
+      "lead": "FIDIT",
+      "due": 24,
+      "visibility": "Public"
+    },
+    {
+      "id": "D11.1",
+      "title": "Partner Exploitation Plans",
+      "wp": "WP11",
+      "lead": "LC",
+      "due": 48,
+      "visibility": "Sensitive"
+    },
+    {
+      "id": "D11.2",
+      "title": "AI-SECRETT Sustainability Strategy",
+      "wp": "WP11",
+      "lead": "UVEG",
+      "due": 48,
+      "visibility": "Sensitive"
+    },
+    {
+      "id": "D12.1",
+      "title": "Data Management Plan Final",
+      "wp": "WP12",
+      "lead": "FIDIT",
+      "due": 48,
+      "visibility": "Public"
+    }
+  ],
+  "milestones": [
+    {
+      "id": "MS1",
+      "title": "Legal configuration of the joint programme",
+      "wp": "WP1",
+      "lead": "UVEG",
+      "due": 6
+    },
+    {
+      "id": "MS2",
+      "title": "Co-creation activities",
+      "wp": "WP2",
+      "lead": "CINK",
+      "due": 12
+    },
+    {
+      "id": "MS3",
+      "title": "Content delivery platform",
+      "wp": "WP2",
+      "lead": "UVEG",
+      "due": 12
+    },
+    {
+      "id": "MS4",
+      "title": "Certification framework",
+      "wp": "WP2",
+      "lead": "TUV.IT",
+      "due": 12
+    },
+    {
+      "id": "MS5",
+      "title": "Call award I",
+      "wp": "WP3",
+      "lead": "UVEG",
+      "due": 18
+    },
+    {
+      "id": "MS6",
+      "title": "Promotional activities",
+      "wp": "WP3",
+      "lead": "UMU",
+      "due": 18
+    },
+    {
+      "id": "MS7",
+      "title": "Programme’s End I",
+      "wp": "WP4",
+      "lead": "UVEG",
+      "due": 30
+    },
+    {
+      "id": "MS8",
+      "title": "Dissemination activities I",
+      "wp": "WP4",
+      "lead": "UMU",
+      "due": 30
+    },
+    {
+      "id": "MS9",
+      "title": "Legal reconfiguration of the joint programme",
+      "wp": "WP5",
+      "lead": "UVEG",
+      "due": 33
+    },
+    {
+      "id": "MS10",
+      "title": "Call award II",
+      "wp": "WP5",
+      "lead": "UVEG",
+      "due": 33
+    },
+    {
+      "id": "MS11",
+      "title": "Programme’s End II",
+      "wp": "WP6",
+      "lead": "UVEG",
+      "due": 45
+    },
+    {
+      "id": "MS12",
+      "title": "Dissemination activities II",
+      "wp": "WP6",
+      "lead": "UMU",
+      "due": 45
+    },
+    {
+      "id": "MS13",
+      "title": "Content Delivery Platform final release",
+      "wp": "WP11",
+      "lead": "UVEG",
+      "due": 48
+    },
+    {
+      "id": "MS14",
+      "title": "AI-STEAM network final release",
+      "wp": "WP11",
+      "lead": "CEICE",
+      "due": 48
+    },
+    {
+      "id": "MS15",
+      "title": "Kick-off meeting",
+      "wp": "WP8",
+      "lead": "UVEG",
+      "due": 1
+    },
+    {
+      "id": "MS16",
+      "title": "Final project conference",
+      "wp": "WP12",
+      "lead": "LC",
+      "due": 48
+    },
+    {
+      "id": "MS17",
+      "title": "FSTP draft call text and timeline",
+      "wp": "WP1",
+      "lead": "UVEG",
+      "due": 6
+    }
+  ],
+  "risks": [
+    {
+      "id": 1,
+      "title": "Consortium complexity",
+      "likelihood": "High",
+      "impact": "High",
+      "wps": [
+        "WP8",
+        "WP10",
+        "WP12"
+      ],
+      "mitigation": "Use structured governance and strong project management."
+    },
+    {
+      "id": 2,
+      "title": "Partner delivery delays",
+      "likelihood": "Medium",
+      "impact": "High",
+      "wps": [
+        "WP1",
+        "WP2",
+        "WP3",
+        "WP4",
+        "WP5",
+        "WP6",
+        "WP7",
+        "WP8",
+        "WP9",
+        "WP10",
+        "WP11",
+        "WP12"
+      ],
+      "mitigation": "Reallocate work and analyse capacity constraints."
+    },
+    {
+      "id": 3,
+      "title": "Partner conflicts",
+      "likelihood": "Low",
+      "impact": "High",
+      "wps": [
+        "WP8",
+        "WP10",
+        "WP12"
+      ],
+      "mitigation": "Use governance and consortium agreement procedures to resolve conflicts."
+    },
+    {
+      "id": 4,
+      "title": "Key partner withdrawal",
+      "likelihood": "Low",
+      "impact": "High",
+      "wps": [
+        "WP1",
+        "WP2",
+        "WP3",
+        "WP4",
+        "WP5",
+        "WP6",
+        "WP7",
+        "WP8",
+        "WP9",
+        "WP10",
+        "WP11",
+        "WP12"
+      ],
+      "mitigation": "Seek a transparent replacement where needed."
+    },
+    {
+      "id": 5,
+      "title": "Other partner withdrawal",
+      "likelihood": "Low",
+      "impact": "Medium",
+      "wps": [
+        "WP1",
+        "WP2",
+        "WP3",
+        "WP4",
+        "WP5",
+        "WP6",
+        "WP7",
+        "WP8",
+        "WP9",
+        "WP10",
+        "WP11",
+        "WP12"
+      ],
+      "mitigation": "Redistribute or replace the affected contribution."
+    },
+    {
+      "id": 6,
+      "title": "Output quality shortfall",
+      "likelihood": "Low",
+      "impact": "Medium",
+      "wps": [
+        "WP1",
+        "WP2",
+        "WP3",
+        "WP4",
+        "WP5",
+        "WP6",
+        "WP7",
+        "WP8",
+        "WP9",
+        "WP10",
+        "WP11",
+        "WP12"
+      ],
+      "mitigation": "Use quality procedures, peer review and early testing."
+    },
+    {
+      "id": 7,
+      "title": "Insufficient open-call interest",
+      "likelihood": "Low",
+      "impact": "Low",
+      "wps": [
+        "WP3",
+        "WP5"
+      ],
+      "mitigation": "Advertise broadly and simplify online applications."
+    },
+    {
+      "id": 8,
+      "title": "Complex shared open-call budget",
+      "likelihood": "Medium",
+      "impact": "Low",
+      "wps": [
+        "WP3",
+        "WP5"
+      ],
+      "mitigation": "Set out management terms in the consortium agreement."
+    },
+    {
+      "id": 9,
+      "title": "Programme does not meet user needs",
+      "likelihood": "Low",
+      "impact": "Medium",
+      "wps": [
+        "WP4",
+        "WP6"
+      ],
+      "mitigation": "Co-design and validate activities with local stakeholders."
+    },
+    {
+      "id": 10,
+      "title": "Platform or network features miss deployment needs",
+      "likelihood": "Low",
+      "impact": "Medium",
+      "wps": [
+        "WP1"
+      ],
+      "mitigation": "Ground requirements in existing research and prototypes."
+    }
+  ],
+  "kpis": [
+    {
+      "id": "K0",
+      "name": "Early-Stage Needs Analysis",
+      "target": "1 report (10,000–15,000 words)",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 109
+    },
+    {
+      "id": "K1",
+      "name": "Curriculum Completion",
+      "target": "2 full editions",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 109
+    },
+    {
+      "id": "K2",
+      "name": "Programme focus areas",
+      "target": "4 key capacity areas",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 109
+    },
+    {
+      "id": "K3",
+      "name": "Industry relevance",
+      "target": "7 vertical industries",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 109
+    },
+    {
+      "id": "K4",
+      "name": "Student enrolment",
+      "target": "300",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 109
+    },
+    {
+      "id": "K5",
+      "name": "Self-training participation",
+      "target": "900 (at least 150 in stand-alone modules)",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 109
+    },
+    {
+      "id": "K6",
+      "name": "Graduation rate",
+      "target": "80%",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 109
+    },
+    {
+      "id": "K7",
+      "name": "Self-training completion rate",
+      "target": "80%",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 109
+    },
+    {
+      "id": "K8",
+      "name": "Student and participant satisfaction",
+      "target": "70%",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 109
+    },
+    {
+      "id": "K9",
+      "name": "Curriculum development",
+      "target": "30% of modules changed",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 109
+    },
+    {
+      "id": "K10",
+      "name": "Enrolment growth between editions",
+      "target": "20%",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 109
+    },
+    {
+      "id": "K11",
+      "name": "Skills acquisition",
+      "target": "80% improve initial scores",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 109
+    },
+    {
+      "id": "K12",
+      "name": "Faculty expertise",
+      "target": "25% junior lecturers",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 109
+    },
+    {
+      "id": "K13",
+      "name": "Programme impact surveys",
+      "target": "600 respondents",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 109
+    },
+    {
+      "id": "K14",
+      "name": "Interdisciplinary curricula",
+      "target": "30% of participants",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 109
+    },
+    {
+      "id": "K15",
+      "name": "Enrolment diversity",
+      "target": "At least 50% women; 25 countries; 30% disadvantaged groups/minorities",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K16",
+      "name": "Continuous improvement",
+      "target": "30% of module changes from participant requirements",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K17",
+      "name": "Real-world application",
+      "target": "50% bring a case study",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K18",
+      "name": "Cross-sector internships",
+      "target": "30% accept one",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K19",
+      "name": "Blended learning",
+      "target": "80% participation",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K20",
+      "name": "Quadruple Helix partnerships",
+      "target": "30",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K21",
+      "name": "Joint curriculum development",
+      "target": "10 academic partners",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K22",
+      "name": "Faculty and instructor exchanges",
+      "target": "500",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K23",
+      "name": "Programme promotion and outreach",
+      "target": "60 public events",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K24",
+      "name": "Programme sustainability",
+      "target": "100% external revenue increase",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K25",
+      "name": "Integrated course delivery",
+      "target": "50% multi-institution modules",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K26",
+      "name": "Talent attraction",
+      "target": "80% score at 95th percentile",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K27",
+      "name": "Mentorship and support",
+      "target": "60% participation",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K28",
+      "name": "Academic recognition",
+      "target": "20 elective courses",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K29",
+      "name": "Guest lectures and workshops",
+      "target": "40 facilitators",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K30",
+      "name": "Industrial curriculum co-development",
+      "target": "10 industrial partners",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K31",
+      "name": "Networking events",
+      "target": "25% of public events",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K32",
+      "name": "Cross-sectoral partnerships",
+      "target": "10",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K33",
+      "name": "Best-practice sharing",
+      "target": "30 resources",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K34",
+      "name": "Case studies and real-world projects",
+      "target": "80% of resources",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    },
+    {
+      "id": "K35",
+      "name": "Listening capacity",
+      "target": "500 discussion threads",
+      "unit": "",
+      "group": "Project targets",
+      "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110
+    }
+  ]
+}
