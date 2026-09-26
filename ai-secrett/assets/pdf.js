@@ -118,8 +118,8 @@
       pair("Tasks included", report.tasks.length);
       for (const item of report.tasks) {
         section(`${item.id} — ${item.title}`);
-        pair("Work Package and partner role", `${item.work_package} · ${item.partner_role === "Task lead (COO)" ? "Task leader" : "Task participant"}`);
-        pair("Task leader", item.task_lead);
+        pair("Work Package and partner role", `${item.work_package} · ${item.partner_role === "Task lead (COO)" ? "Task leader" : item.partner_role === "Task responsibility to confirm" ? "Responsibility to confirm" : "Task participant"}`);
+        pair("Task leader", item.task_lead || "Not specified in the Agreement");
         pair("Task coverage in this report", `${item.coverage.start} to ${item.coverage.end}`);
         pair("Task months covered", item.coverage.months.join(", "));
         pair("Work reported", item.work_status === "no_work" ? "No work carried out" : item.work_status === "draft" ? "Draft contribution" : "Contribution completed");
@@ -151,7 +151,7 @@
           pair("Coordinator support needed", wp.answers.support);
           for (const task of wp.task_updates) {
             section(`${task.id} — Leader assessment`);
-            pair("Task leader", task.task_lead);
+            pair("Task leader", task.task_lead || "Not specified in the Agreement");
             pair("Status", ({on_track:"On track",at_risk:"At risk",delayed:"Delayed",completed:"Completed",unavailable:"Update unavailable"})[task.status] || "No assessment");
             pair("Progress or evidence", task.progress);
             pair("Blocker or dependency", task.blocker);

@@ -120,7 +120,7 @@
   function completion(task) { return snapshot.task_progress?.[task.id]?.state==='completed'; }
   function workPackagesSection() {
     const current=model.projectMonth(config,snapshot.snapshot_month),section=el('section','dash-section dash-wp-directory');
-    section.append(header('Work Packages','Explore all ten Work Packages, their Agreement objectives and Task descriptions. Reporting evidence and verified Task completion are shown separately.'));
+    section.append(header('Work Packages',`Explore all ${config.workPackages.length} Work Packages, their Agreement objectives and Task descriptions. Reporting evidence and verified Task completion are shown separately.`));
     const grid=el('div','dash-wp-directory-grid');
     for(const wp of config.workPackages){
       const tasks=config.tasks.filter(task=>task.wp===wp.id),assessed=tasks.filter(task=>snapshot.task_progress?.[task.id]),completed=tasks.filter(completion),reported=tasks.filter(task=>reportRows().some(row=>row.kind==='task'&&row.id===task.id));

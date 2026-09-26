@@ -1,6 +1,7 @@
 {
   "source": "AI-SECRETT Grant Agreement 101226207, Annex 1, Deliverables PDF pp. 85–90 and Milestones PDF pp. 91–92",
   "deliverables": {
+    "D1.1": "Architecture, components, features and interfaces",
     "D1.2": "All key features and functions drafted",
     "D1.3": "An evidence-based assessment of digital and AI related skill shortages and training demands in the targeted sectors of AI- SECRETT, drawing on multiple sources, including targeted surveys, structured interviews with industry stakeholders, existing datasets from organisations such as Eurostat, CEDEFOP, national digital strategy reports in the participating countries, as well as insights from job market intelligence platforms like LinkedIn or EURES. Corresponding to the new KPI numbered K0 in Part B.",
     "D2.1": "All key features and functions created",

@@ -2,6 +2,14 @@
   "source": "AI-SECRETT Grant Agreement 101226207, Data Sheet and Annex 1, PDF pp. 83–94; Part B, PDF pp. 109–110",
   "deliverables": [
     {
+      "id": "D1.1",
+      "title": "Content Delivery Platform rapid prototype and testing plan",
+      "wp": "WP1",
+      "lead": "UVEG",
+      "due": 6,
+      "visibility": "Sensitive"
+    },
+    {
       "id": "D1.2",
       "title": "AI-STEAM network initial concept and governance",
       "wp": "WP1",

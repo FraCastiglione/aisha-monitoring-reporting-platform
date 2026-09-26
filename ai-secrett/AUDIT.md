@@ -9,7 +9,7 @@ Source checked: signed AI-SECRETT Grant Agreement 101226207 supplied by the user
 | Tasks Reporting | Month timeline, Task editor, Work Package leader updates | Same workflow; 66 Tasks and 12 Work Packages from Annex 1, PDF pp. 65–79 |
 | Communication Reporting | Separate form and two-week check-in | Same preview form; cadence explicitly marked as a coordinator decision to confirm |
 | Drafts and export | Browser draft, JSON/PDF import and export, revisions, validation | Same workflow with separate AI-SECRETT report identity and browser storage |
-| Project Dashboard | Work Packages, Gantt, commitments, risks, KPIs, reporting coverage | AI-SECRETT catalogue: 22 deliverables, 17 milestones, 10 planning risks, 36 KPI entries; no unprovided actuals |
+| Project Dashboard | Work Packages, Gantt, commitments, risks, KPIs, reporting coverage | AI-SECRETT catalogue: 23 deliverables, 17 milestones, 10 planning risks, 36 KPI entries; no unprovided actuals |
 | Project timing | Agreement-based 48-month schedule | 1 Oct 2025–30 Sep 2029; RP1 M1–M18, RP2 M19–M36, RP3 M37–M48, per Data Sheet PDF pp. 9–11 |
 
 ## Material content limit
