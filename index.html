@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2b3990">
+    <meta name="description" content="Prepare AISHA partner reports and view approved project monitoring information.">
+    <title>AISHA Monitoring and Reporting Platform</title>
+    <link rel="stylesheet" href="assets/styles.css?v=20260926a">
+    <script src="assets/config.js?v=20260926a" defer></script>
+    <script src="assets/agreement-content.js" defer></script>
+    <script src="assets/project-model.js?v=20260926a" defer></script>
+    <script src="assets/pdf-lib.min.js" defer></script>
+    <script src="assets/fontkit.umd.min.js" defer></script>
+    <script src="assets/pdf.js?v=20260926a" defer></script>
+    <script src="assets/app.js?v=20260926a" defer></script>
+    <script src="assets/reporting.js?v=20260926a" defer></script>
+    <script src="assets/dashboard.js?v=20260926a" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <header class="site-header">
+      <div class="header-inner container">
+        <a class="brand" href="#reporting" aria-label="AISHA Reporting home">
+          <img src="assets/aisha-logo.png" alt="AISHA European AI Skills Academy" width="677" height="191">
+          <span class="brand-divider" aria-hidden="true"></span>
+          <span class="brand-label">Monitoring and Reporting Platform</span>
+        </a>
+        <nav class="site-nav" aria-label="Main navigation">
+          <a href="#reporting" data-view-link="reporting">Reporting Generator</a>
+          <a href="#dashboard" data-view-link="dashboard">Project Dashboard</a>
+          <a href="#instructions" data-view-link="instructions">How to Report</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <section id="reporting" class="view" aria-labelledby="reporting-title">
+        <div class="hero-wrap">
+          <div class="container hero">
+            <div class="hero-copy">
+              <p class="eyebrow"><span class="eyebrow-line"></span> AISHA PARTNER REPORTING</p>
+              <h1 id="reporting-title">Clear reporting.<br><span>Shared progress.</span></h1>
+              <p class="hero-description">Prepare a consistent report of your organisation’s contribution to the European AI Skills Academy.</p>
+              <a class="button button-primary hero-action" href="#contributor-title">Start a report <span aria-hidden="true">→</span></a>
+              <div class="privacy-note"><span class="privacy-icon" aria-hidden="true">✓</span><span>Your entries stay in this browser during this preview. No report is uploaded from this website.</span></div>
+            </div>
+            <div class="hero-aside" aria-label="Reporting journey">
+              <div class="journey-top"><span class="journey-symbol" aria-hidden="true">✳</span><span>YOUR REPORTING JOURNEY</span></div>
+              <ol class="journey-list">
+                <li><span class="journey-number">01</span><div><strong>Identify yourself</strong><small>Tell us which partner you represent.</small></div></li>
+                <li><span class="journey-number">02</span><div><strong>Choose a report</strong><small>Select Tasks or Communication.</small></div></li>
+                <li><span class="journey-number">03</span><div><strong>Generate report files</strong><small>Review and download one PDF and JSON pair.</small></div></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <div class="container content-grid">
+          <section class="form-card" aria-labelledby="contributor-title">
+            <div class="step-heading"><span class="step-pill">STEP 01</span><span class="step-rule"></span><span class="step-count">1 of 2</span></div>
+            <h2 id="contributor-title">Contributor details</h2>
+            <p class="section-intro">These details will appear in your report files. Use your organisation’s name rather than an individual team name.</p>
+            <div class="preview-notice" id="config-notice" role="status"></div>
+            <form id="contributor-form" novalidate>
+              <div class="field">
+                <span class="field-label">Partner organisation <span aria-hidden="true">*</span></span>
+                <div class="partner-kind-choice" role="group" aria-label="Partner category">
+                  <label><input type="radio" name="partner-kind" value="beneficiary" checked> Full partner (beneficiary)</label>
+                  <label><input type="radio" name="partner-kind" value="associated_partner"> Associated partner</label>
+                </div>
+                <div id="beneficiary-select-wrap"><label for="partner">Full partner</label><select id="partner" name="partner" required aria-describedby="partner-help"><option value="">Select your organisation</option></select></div>
+                <div id="associated-select-wrap" hidden><label for="associated-partner">Associated partner</label><select id="associated-partner" name="associated-partner" aria-describedby="partner-help"><option value="">Select your organisation</option></select></div>
+                <p class="field-help" id="partner-help">Choose the organisation whose activities you are reporting. Associated partners have a separate list.</p>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="contributor-name">Name and surname <span aria-hidden="true">*</span></label>
+                  <input id="contributor-name" name="name" type="text" autocomplete="name" maxlength="160" required placeholder="e.g. Alex Morgan">
+                </div>
+                <div class="field">
+                  <label for="contributor-role">Role in the organisation <span aria-hidden="true">*</span></label>
+                  <input id="contributor-role" name="role" type="text" autocomplete="organization-title" maxlength="160" required placeholder="e.g. Project manager">
+                </div>
+              </div>
+              <div class="field">
+                <label for="contributor-email">Email address <span aria-hidden="true">*</span></label>
+                <input id="contributor-email" name="email" type="email" autocomplete="email" maxlength="254" required placeholder="name@organisation.eu">
+              </div>
+              <p id="form-message" class="form-message" role="alert" hidden></p>
+              <div class="form-footer"><span>* Required field</span><button class="button button-primary" type="submit">Continue to reporting <span aria-hidden="true">→</span></button></div>
+            </form>
+          </section>
+          <aside class="guidance-card" aria-labelledby="guidance-title">
+            <span class="guidance-icon" aria-hidden="true">i</span>
+            <h2 id="guidance-title">Report for your organisation</h2>
+            <p>Describe the activities and contributions of your organisation to each Task. Please do not report on behalf of the whole Task team or individual staff members.</p>
+            <div class="guidance-divider"></div>
+            <p class="guidance-small">No account is needed. Complete a report, review your answers, then download the PDF and JSON files for manual submission.</p>
+          </aside>
+        </div>
+
+        <section id="report-choice" class="container choice-section" aria-labelledby="choice-title" hidden>
+          <div class="step-heading"><span class="step-pill">STEP 02</span><span class="step-rule"></span><span class="step-count">2 of 2</span></div>
+          <p class="overline" id="contributor-summary"></p>
+          <h2 id="choice-title" tabindex="-1">What would you like to report?</h2>
+          <p class="section-intro">Choose the type of contribution you are preparing. You can save a browser draft or download a draft file as you work.</p>
+          <div class="choice-grid">
+            <article class="choice-card"><span class="choice-mark" aria-hidden="true">01 / TASKS</span><h3>Tasks Reporting</h3><p>Choose a reporting date range, then prepare one partner report covering the assigned Tasks you select.</p><button class="choice-button" type="button" data-report-type="task" aria-pressed="false">Choose Tasks Reporting <span aria-hidden="true">→</span></button></article>
+            <article class="choice-card"><span class="choice-mark" aria-hidden="true">02 / OUTREACH</span><h3>Communication &amp; Dissemination</h3><p>Share events, media outreach, publications, social activity, reach and support needs for a two-week period.</p><button class="choice-button" type="button" data-report-type="communication" aria-pressed="false">Choose Communication <span aria-hidden="true">→</span></button></article>
+          </div>
+          <p id="report-status" class="selection-message" role="status" hidden></p>
+          <button id="edit-details" class="text-button" type="button">← Edit contributor details</button>
+        </section>
+
+        <section id="report-workspace" class="container report-workspace" aria-labelledby="workspace-title" hidden>
+          <div class="workspace-heading"><div><p class="overline">PREPARE YOUR REPORT</p><h2 id="workspace-title" tabindex="-1">Reporting form</h2></div><button id="back-to-choice" class="text-button" type="button">← Change report type</button></div>
+          <p class="preview-notice">This is a working preview. The Grant Agreement governs Work Packages, Tasks, assignments and activity windows. You choose the dates and Tasks covered by this partner report; the Agreement does not prescribe this monitoring round.</p>
+
+          <div id="task-picker" class="form-card" hidden>
+            <h3>Build your partner report</h3>
+            <p>Drag across months to add them to your report. Drag again to add another period, even after a gap. Click a month to remove or restore it. Only highlighted months are covered.</p>
+            <input id="report-start" type="hidden"><input id="report-end" type="hidden">
+            <div class="timeline-header"><strong>Project timeline</strong><span>Drag to add · click to toggle · May 2026 = M01</span></div><div id="project-timeline" class="project-timeline" aria-label="Project months"></div>
+            <p id="task-month-summary" class="selection-message" role="status">Choose project months to see your assigned Tasks.</p><section id="overview-import" class="overview-import"><div><strong>Continue from an AISHA report</strong><p>Import a complete report, an editable draft file, or a PDF created by this preview. Choose which Task and Work Package entries to bring in before anything changes.</p></div><label class="button button-secondary file-label" for="import-report-file">Import report</label><input id="import-report-file" type="file" accept=".json,.pdf,application/json,application/pdf" hidden><p id="overview-import-message" class="form-message" role="alert" hidden></p></section>
+            <div id="task-list" class="task-list"></div>
+            <section id="wp-leader-section" class="wp-leader-section" hidden><div class="section-heading"><div><p class="overline">FOR WORK PACKAGE LEADERS</p><h3>Work Package leadership updates</h3></div><p>Report on coordination of the whole Work Package, separately from your organisation’s Task contributions.</p></div><div id="wp-leader-list"></div></section>
+          </div>
+
+          <form id="task-form" class="form-card report-form" novalidate hidden>
+            <div class="editor-top-actions"><button id="task-top-back" class="text-button editor-top-back" type="button">← Back to overview</button></div>
+            <p id="task-work-package" class="task-meta"></p>
+            <div class="task-title-row"><h3 id="task-form-title">Task report</h3><span id="task-role" class="role-badge"></span></div>
+            <details class="task-description"><summary>Read full Task description</summary><div id="task-description-text" class="agreement-text"></div><small id="task-source"></small></details>
+            <div id="task-outcome" class="outcome-banner" hidden></div>
+            <div class="task-import-card"><div><strong>Have a report for this Task?</strong><p>Import an individual Task PDF for the same selected months. Other Tasks and Work Package updates will stay as they are.</p></div><button id="task-import-top" class="button button-secondary" type="button">Import Task PDF</button></div>
+            <div class="notice-card organisation-reminder"><strong>Report your organisation’s contribution</strong><p>Describe your organisation’s activities for this Task during the selected dates. You may leave a section blank when it does not apply.</p></div>
+            <div class="coverage-card"><strong>Dates covered for this Task</strong><p id="task-coverage"></p><div class="field-row"><div class="field"><label for="task-cover-start">From</label><input id="task-cover-start" name="coverage_start" type="date"></div><div class="field"><label for="task-cover-end">Through</label><input id="task-cover-end" name="coverage_end" type="date"></div></div><small>Narrow these dates if some of this Task’s work was already reported. Months excluded on the project timeline stay excluded here.</small></div>
+            <div class="field"><label for="task-activities">Activities carried out</label><textarea id="task-activities" name="activities_carried_out" rows="5"></textarea></div>
+            <div class="field"><label for="task-results">Results achieved</label><textarea id="task-results" name="results_achieved" rows="5"></textarea></div>
+            <div class="field"><label for="task-difficulties">Difficulties encountered</label><textarea id="task-difficulties" name="difficulties_encountered" rows="4"></textarea></div>
+            <div class="field-row">
+              <div class="field" id="task-cost-field"><label for="task-cost">Raw costs incurred (EUR)</label><input id="task-cost" name="raw_costs" type="number" min="0" step="0.01" inputmode="decimal"><p class="field-help">Optional internal monitoring figure; this is not a grant payment claim.</p></div>
+              <div class="field" id="task-cost-note-field"><label for="task-cost-note">Cost note</label><input id="task-cost-note" name="raw_costs_note" type="text" maxlength="500" placeholder="Optional context"></div>
+              <p id="associated-cost-note" class="field-help" hidden>Associated partners cannot charge costs to the action under the Grant Agreement. This report records activities without a cost field.</p>
+            </div>
+            <div class="field"><label for="task-upcoming">Upcoming activities</label><textarea id="task-upcoming" name="upcoming_activities" rows="4"></textarea></div>
+            <div class="field"><label for="task-comments">Additional comments or feedback</label><textarea id="task-comments" name="additional_comments" rows="4"></textarea></div>
+            <fieldset class="field"><legend>Are there any significant issues?</legend><div class="radio-row compact-radios"><label><input type="radio" name="significant_issue" value="yes"> Yes</label><label><input type="radio" name="significant_issue" value="no"> No</label></div></fieldset>
+            <div id="task-issue-details" class="conditional" hidden>
+              <div class="field"><label for="task-severity">Severity</label><select id="task-severity" name="severity"><option value="">Select severity</option><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select></div>
+              <fieldset class="field"><legend>Is coordinator action required?</legend><div class="radio-row compact-radios"><label><input type="radio" name="coordinator_action_required" value="yes"> Yes</label><label><input type="radio" name="coordinator_action_required" value="no"> No</label></div></fieldset>
+              <div id="task-support-wrap" class="field" hidden><label for="task-support">Action or support required from the coordinator</label><textarea id="task-support" name="coordinator_support_request" rows="4"></textarea></div>
+            </div>
+            <p id="task-editor-message" class="form-message" role="alert" hidden></p><div class="task-save-tools"><div><strong>Keep a copy</strong><p>Save the whole report draft or this individual Task PDF while you work.</p></div><div class="task-save-buttons"><button id="task-download-draft" class="button button-secondary" type="button">Download current draft</button><button id="individual-task-pdf" class="button button-secondary" type="button">Download this Task PDF</button></div></div><div class="task-editor-actions"><p>Returning to the overview keeps entered changes as a draft. A new Task with no entries remains unselected.</p><div class="task-editor-buttons"><button id="back-from-task" class="button button-secondary" type="button">← Back to overview</button><button id="no-work-task" class="button button-secondary" type="button">Declare no work carried out</button><button id="done-task" class="button button-primary" type="button">Mark Task report complete</button></div></div>
+          </form>
+
+          <form id="wp-leader-form" class="form-card report-form" novalidate hidden><div class="editor-top-actions"><button id="wp-top-back" class="text-button editor-top-back" type="button">← Back to overview</button><button id="wp-download-draft" class="text-button" type="button">Download current draft</button></div><p class="overline">WORK PACKAGE LEADERSHIP UPDATE</p><h3 id="wp-form-title"></h3><p id="wp-form-period" class="task-meta"></p><details class="wp-objectives"><summary>Read full Work Package objectives</summary><div id="wp-form-objectives" class="agreement-text"></div></details><p class="leadership-note">This is your assessment as Work Package leader. It does not certify another partner’s submission or work.</p><div class="field"><label for="wp-progress">Overall progress and achievements</label><textarea id="wp-progress" rows="4"></textarea></div><div class="field"><label for="wp-coordination">Coordination and integration work</label><textarea id="wp-coordination" rows="4"></textarea></div><div class="field"><label for="wp-difficulties">Difficulties and dependencies</label><textarea id="wp-difficulties" rows="4"></textarea></div><div class="field"><label for="wp-next">Next priorities</label><textarea id="wp-next" rows="4"></textarea></div><div class="field"><label for="wp-support">Coordinator decisions or support needed</label><textarea id="wp-support" rows="3"></textarea></div><h4>Tasks in this Work Package</h4><p class="field-help">Give a status only where you have information. Task descriptions and stated outcomes are copied from the Grant Agreement.</p><div id="wp-task-updates"></div><p id="wp-editor-message" class="form-message" role="alert" hidden></p><div class="task-editor-actions"><p>Your Work Package update will appear in the same full partner report as your Task contributions.</p><div class="task-editor-buttons"><button id="wp-back" class="button button-secondary" type="button">← Back to overview</button><button id="wp-no-work" class="button button-secondary" type="button">Declare no Work Package work</button><button id="wp-done" class="button button-primary" type="button">Done with Work Package</button></div></div></form>
+
+          <form id="communication-form" class="form-card report-form" novalidate hidden>
+            <p class="overline">COMMUNICATION &amp; DISSEMINATION</p><h3>Two-week check-in</h3>
+            <p>The coordination team's current reporting workflow requests a check-in every two weeks. This is a monitoring practice, not a deadline stated in the Grant Agreement. There is no expectation to report a high number of activities; the form records what happened and what is planned.</p>
+            <div class="field-row"><div class="field"><label for="comm-start">Period start *</label><input id="comm-start" name="period_start" type="date" required></div><div class="field"><label for="comm-end">Period end *</label><input id="comm-end" name="period_end" type="date" required><p class="field-help">Use a 14-day period, including both dates.</p></div></div>
+            <fieldset class="field"><legend>Did you organise one or more events? *</legend><div class="radio-row"><label><input type="radio" name="events_organised" value="yes"> Yes</label><label><input type="radio" name="events_organised" value="no"> No</label></div></fieldset>
+            <div id="comm-events-wrap" class="conditional" hidden><div id="comm-events-list"></div><button id="add-event" class="button button-secondary" type="button">+ Add another event</button></div>
+            <fieldset class="field"><legend>Did you carry out media outreach? *</legend><div class="radio-row"><label><input type="radio" name="media_outreach" value="yes"> Yes</label><label><input type="radio" name="media_outreach" value="no"> No</label></div></fieldset>
+            <div id="comm-media-wrap" class="conditional" hidden><div class="field-row"><div class="field"><label for="comm-journalists">Journalists contacted *</label><input id="comm-journalists" name="journalists_contacted" type="number" min="0" step="1" inputmode="numeric"></div><div class="field"><label for="comm-outlets">Media outlets contacted *</label><input id="comm-outlets" name="media_outlets_contacted" type="number" min="0" step="1" inputmode="numeric"></div></div><div class="field"><label for="comm-media-details">Relevant details</label><textarea id="comm-media-details" name="media_details" rows="3"></textarea></div></div>
+            <fieldset class="field"><legend>Did you publish a website article? *</legend><div class="radio-row"><label><input type="radio" name="website_articles_published" value="yes"> Yes</label><label><input type="radio" name="website_articles_published" value="no"> No</label></div></fieldset>
+            <div id="comm-articles-wrap" class="conditional" hidden><div class="field"><label for="comm-articles">Article links *</label><textarea id="comm-articles" name="website_article_urls" rows="3" placeholder="One https:// link per line"></textarea></div><div class="field"><label for="comm-article-details">Relevant information</label><textarea id="comm-article-details" name="website_article_details" rows="3"></textarea></div></div>
+            <div class="field"><label for="comm-social-count">How many social media posts did you publish? *</label><input id="comm-social-count" name="social_posts_count" type="number" min="0" step="1" inputmode="numeric"></div>
+            <div class="field"><label for="comm-social-links">Social post links</label><textarea id="comm-social-links" name="social_post_urls" rows="3" placeholder="One https:// link per line"></textarea></div>
+            <div class="field"><label for="comm-social-details">Social media details</label><textarea id="comm-social-details" name="social_details" rows="3"></textarea></div>
+            <fieldset class="field"><legend>Did you send an email or newsletter? *</legend><div class="radio-row"><label><input type="radio" name="email_or_newsletter_sent" value="yes"> Yes</label><label><input type="radio" name="email_or_newsletter_sent" value="no"> No</label></div></fieldset>
+            <div id="comm-email-wrap" class="conditional" hidden><div class="field"><label for="comm-recipients">Estimated recipients *</label><input id="comm-recipients" name="estimated_recipients" type="number" min="0" step="1" inputmode="numeric"></div><div class="field"><label for="comm-email-details">Relevant information</label><textarea id="comm-email-details" name="email_details" rows="3"></textarea></div></div>
+            <div class="field"><label for="comm-other">Other activities completed or materials to share</label><textarea id="comm-other" name="other_activities_or_materials" rows="4"></textarea></div>
+            <div class="field-row"><div class="field"><label for="comm-reach">Total estimated people reached *</label><input id="comm-reach" name="estimated_people_reached" type="number" min="0" step="1" inputmode="numeric"><label class="check-label"><input id="comm-reach-unknown" type="checkbox"> Unknown</label></div><div class="field"><label for="comm-enrolments">Pre-registrations or enrolments attributable to your activities *</label><input id="comm-enrolments" name="preregistrations_or_enrolments" type="number" min="0" step="1" inputmode="numeric"><label class="check-label"><input id="comm-enrolments-unknown" type="checkbox"> Unknown</label></div></div>
+            <fieldset class="field"><legend>Do you need support from the coordination team? *</legend><div class="radio-row"><label><input type="radio" name="coordinator_support_required" value="yes"> Yes</label><label><input type="radio" name="coordinator_support_required" value="no"> No</label></div></fieldset>
+            <div id="comm-support-wrap" class="field conditional" hidden><label for="comm-support">Support required *</label><textarea id="comm-support" name="coordinator_support_request" rows="4"></textarea></div>
+          </form>
+
+          <template id="event-template"><div class="event-entry"><div class="event-entry-top"><strong>Event</strong><button type="button" class="text-button remove-event">Remove</button></div><div class="field"><label>Event description *</label><textarea class="event-description" rows="3"></textarea></div><div class="field"><label>Participants *</label><input class="event-participants" type="number" min="0" step="1" inputmode="numeric"></div></div></template>
+
+          <div id="draft-actions" class="draft-actions" hidden><div class="draft-intro"><strong>Save your progress</strong><p>Keep a backup whenever you pause. An editable draft lets you continue later; the PDF is a readable copy.</p></div><div class="draft-buttons"><div class="draft-choice"><button id="download-draft" class="button button-primary" type="button">Download editable draft</button><small>Save a file you can reopen here or on another device.</small></div><div class="draft-choice" id="draft-pdf-choice"><button id="download-draft-pdf" class="button button-secondary" type="button">Download draft PDF</button><small>Keep a readable copy of everything entered so far.</small></div><div class="draft-choice"><button id="save-draft" class="button button-secondary" type="button">Save in this browser</button><small>Keep one current draft on this device.</small></div><div class="draft-choice"><button id="load-browser-draft" class="button button-secondary" type="button">Restore browser draft</button><small>Reopen the saved browser copy, replacing what is on screen.</small></div><div class="draft-choice"><label class="button button-secondary file-label" for="load-draft-file">Open draft file</label><input id="load-draft-file" type="file" accept=".json,application/json" hidden><small>Reopen an editable draft you downloaded earlier.</small></div><div class="draft-choice"><button id="delete-browser-draft" class="button button-secondary" type="button">Delete browser draft</button><small>Remove the saved browser copy only.</small></div></div><p id="draft-message" class="action-message" role="status"></p></div>
+          <div id="report-form-actions" class="form-actions" hidden><div class="review-readiness"><div id="selected-task-summary" class="status-grid" role="status"></div><small>Review is the next step. Your report will be generated only after you review and confirm it.</small></div><div id="revision-controls" class="revision-card" hidden><div class="field"><label for="report-revision">Report revision *</label><input id="report-revision" type="number" min="1" max="99" step="1" value="1"><p class="field-help">Use 1 for your first version. For an updated or corrected report, enter the next revision number.</p></div></div><p id="report-form-error" class="form-message" role="alert" hidden></p><button id="review-report" class="button button-primary" type="button">Review full report before submission <span aria-hidden="true">→</span></button></div>
+        </section>
+
+        <dialog id="individual-pdf-dialog" aria-labelledby="individual-pdf-title"><div class="individual-pdf-content"><p class="overline">INDIVIDUAL TASK REPORT</p><h2 id="individual-pdf-title">Download this Task PDF</h2><p id="individual-pdf-description"></p><p id="individual-pdf-error" class="form-message" role="alert" hidden></p><div class="review-actions"><button id="close-individual-pdf" class="button button-secondary" type="button">Close</button><a id="download-individual-pdf" class="button button-primary" download aria-disabled="true">Preparing PDF…</a></div></div></dialog>
+        <dialog id="task-import-dialog" aria-labelledby="task-import-title"><div class="individual-pdf-content"><p class="overline">IMPORT ONE TASK</p><h2 id="task-import-title">Import this Task PDF</h2><p id="task-import-explanation"></p><p id="task-import-error" class="form-message" role="alert" hidden></p><div class="review-actions"><button id="close-task-import" class="button button-secondary" type="button">Cancel</button><label class="button button-primary file-label" for="task-import-file">Choose Task PDF</label><input id="task-import-file" type="file" accept=".pdf,application/pdf" hidden></div></div></dialog>
+        <dialog id="whole-import-dialog" aria-labelledby="whole-import-title"><div class="individual-pdf-content"><p class="overline">IMPORT REPORT ENTRIES</p><h2 id="whole-import-title">Choose what to import</h2><p id="whole-import-explanation"></p><div id="whole-import-entries" class="import-entry-list"></div><p id="whole-import-error" class="form-message" role="alert" hidden></p><div class="review-actions"><button id="cancel-whole-import" class="button button-secondary" type="button">Cancel</button><button id="confirm-whole-import" class="button button-primary" type="button">Import selected entries</button></div></div></dialog>
+
+        <section id="review-section" class="container report-workspace" aria-labelledby="review-title" hidden><div class="form-card"><p class="overline">REVIEW BEFORE GENERATING</p><h2 id="review-title" tabindex="-1">Check your report</h2><div id="review-content"></div><div class="review-revision field"><label for="review-revision">Report revision</label><input id="review-revision" type="number" min="1" max="99" step="1"><p class="field-help">Change this number here if you are generating an updated or corrected version.</p></div><label class="check-label confirmation"><input id="confirm-ready" type="checkbox"> I have reviewed this report and am ready to generate the files.</label><p id="generation-error" class="form-message" role="alert" hidden></p><div class="review-actions"><button id="back-to-form" class="button button-secondary" type="button">← Edit answers</button><button id="generate-submission" class="button button-primary" type="button" disabled>Generate report files</button></div></div></section>
+
+        <section id="submission-section" class="container report-workspace" aria-labelledby="submission-title" hidden><div class="form-card"><p class="overline">FILES READY</p><h2 id="submission-title" tabindex="-1">Your report files are ready</h2><p id="submission-summary"></p><div class="download-buttons"><a id="download-pdf" class="button button-primary" download>Download PDF</a><a id="download-json" class="button button-secondary" download>Download JSON</a></div><ol class="next-steps"><li>Keep a copy of both files.</li><li>Share the PDF and JSON through the reporting channel designated by the AISHA coordination team.</li><li>Confirm receipt through that channel. Generating files here does not send them.</li></ol><button id="back-after-generation" class="text-button" type="button">← Return to report</button></div></section>
+      </section>
+
+      <section id="dashboard" class="view container secondary-view" aria-labelledby="dashboard-title" hidden>
+        <p class="eyebrow"><span class="eyebrow-line"></span> AISHA PROJECT DASHBOARD</p>
+        <h1 id="dashboard-title">Project dashboard</h1>
+        <p class="secondary-lead">Commitments, partner reporting, risks and indicators in one place.</p>
+        <div id="dashboard-content"><p class="dashboard-meta">Loading the Grant Agreement dashboard…</p></div>
+      </section>
+
+      <section id="instructions" class="view container secondary-view" aria-labelledby="instructions-title" hidden>
+        <p class="eyebrow"><span class="eyebrow-line"></span> PARTNER GUIDE</p>
+        <h1 id="instructions-title">How to report</h1>
+        <p class="secondary-lead">The AISHA website helps you prepare files. The coordination team will specify where each monitoring round’s report should be sent.</p>
+        <ol class="instruction-grid">
+          <li><span>01</span><h2>Prepare your report</h2><p>Choose your organisation and report type, then answer for your organisation’s contribution during the relevant period.</p></li>
+          <li><span>02</span><h2>Review and download</h2><p>Check your details and answers, then retain both the readable PDF and the structured JSON file.</p></li>
+          <li><span>03</span><h2>Share the report files</h2><p>Send both files through the channel specified by the AISHA coordination team and confirm receipt there. This preview does not send them.</p></li>
+        </ol>
+        <div class="notice-card"><strong>About this preview</strong><p>The beneficiary, associated partner, Work Package and Task catalogue comes from the Grant Agreement. Reporting periods and the two-week communication check-in are coordinator workflow choices; the coordination team should confirm each monitoring round before official use.</p></div>
+      </section>
+    </main>
+
+    <footer class="site-footer"><div class="container footer-inner"><span>© 2026 AISHA · European AI Skills Academy · All rights reserved.</span></div></footer>
+  </body>
+</html>

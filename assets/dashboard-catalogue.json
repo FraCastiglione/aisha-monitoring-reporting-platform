@@ -1,0 +1,961 @@
+{
+  "source": "Signed AISHA Grant Agreement 101299070: Data Sheet and Annex 1, deliverables, milestones and critical risks; Part B objectives and dissemination KPI tables (PDF pp. 113–115, 137–138)",
+  "deliverables": [
+    {
+      "id": "D1.1",
+      "title": "Governance charter and board ToR",
+      "wp": "WP1",
+      "lead": "IF.E",
+      "due": 3,
+      "visibility": "Sensitive"
+    },
+    {
+      "id": "D1.2",
+      "title": "Scholarship/returnship scheme pack",
+      "wp": "WP1",
+      "lead": "EDSA",
+      "due": 6,
+      "visibility": "Public"
+    },
+    {
+      "id": "D2.1",
+      "title": "Pan-EU SOTA Analysis & Benchmarking Rubric (v1)",
+      "wp": "WP2",
+      "lead": "UNIBO",
+      "due": 12,
+      "visibility": "Public"
+    },
+    {
+      "id": "D2.2",
+      "title": "GenAI Master’s and VET Curriculum Pack",
+      "wp": "WP2",
+      "lead": "POLIMI",
+      "due": 24,
+      "visibility": "Public"
+    },
+    {
+      "id": "D3.1",
+      "title": "Ecosystem Intelligence Baseline & Funding Atlas + Interactive Dashboard",
+      "wp": "WP3",
+      "lead": "EDSA",
+      "due": 12,
+      "visibility": "Public"
+    },
+    {
+      "id": "D3.2",
+      "title": "Strategic Foresight & Cross-Academy Overlay Pack",
+      "wp": "WP3",
+      "lead": "Poli.D",
+      "due": 18,
+      "visibility": "Public"
+    },
+    {
+      "id": "D4.1",
+      "title": "Training-of-Trainers 1 Package",
+      "wp": "WP4",
+      "lead": "UPM",
+      "due": 12,
+      "visibility": "Public"
+    },
+    {
+      "id": "D4.2",
+      "title": "Pilot Courses 1 Report & Materials",
+      "wp": "WP4",
+      "lead": "VALGRAI",
+      "due": 18,
+      "visibility": "Public"
+    },
+    {
+      "id": "D4.3",
+      "title": "Sector Labs 1 Toolkit & Evaluation Brief",
+      "wp": "WP4",
+      "lead": "TDT",
+      "due": 18,
+      "visibility": "Public"
+    },
+    {
+      "id": "D5.1",
+      "title": "Vocational and On-the-Job Training Implementation Report",
+      "wp": "WP5",
+      "lead": "FARI",
+      "due": 30,
+      "visibility": "Public"
+    },
+    {
+      "id": "D5.2",
+      "title": "Apprenticeship Pilot Outcomes & Employer Satisfaction Brief",
+      "wp": "WP5",
+      "lead": "VALGRAI",
+      "due": 36,
+      "visibility": "Public"
+    },
+    {
+      "id": "D6.1",
+      "title": "Training-of-Trainers 3 Report and Updated Toolkit",
+      "wp": "WP6",
+      "lead": "FARI",
+      "due": 48,
+      "visibility": "Public"
+    },
+    {
+      "id": "D6.2",
+      "title": "Pilot Courses 3 Implementation Report",
+      "wp": "WP6",
+      "lead": "TUD",
+      "due": 48,
+      "visibility": "Public"
+    },
+    {
+      "id": "D6.3",
+      "title": "Sector Labs 3 Outcomes and Best Practices Brief",
+      "wp": "WP6",
+      "lead": "SCAI",
+      "due": 48,
+      "visibility": "Public"
+    },
+    {
+      "id": "D7.1",
+      "title": "Funding and Diversification Strategy",
+      "wp": "WP7",
+      "lead": "INESC.ID",
+      "due": 48,
+      "visibility": "Sensitive"
+    },
+    {
+      "id": "D7.2",
+      "title": "Accreditation Framework Blueprint",
+      "wp": "WP7",
+      "lead": "COG",
+      "due": 24,
+      "visibility": "Sensitive"
+    },
+    {
+      "id": "D8.1",
+      "title": "Evaluation Framework and Data Dictionary",
+      "wp": "WP8",
+      "lead": "UKON",
+      "due": 18,
+      "visibility": "Public"
+    },
+    {
+      "id": "D8.2",
+      "title": "Final evaluation framework",
+      "wp": "WP8",
+      "lead": "CBS",
+      "due": 48,
+      "visibility": "Public"
+    },
+    {
+      "id": "D9.1",
+      "title": "Communication and Dissemination Plan v1",
+      "wp": "WP9",
+      "lead": "IF.E",
+      "due": 6,
+      "visibility": "Public"
+    },
+    {
+      "id": "D9.2",
+      "title": "Communication and Dissemination Plan v2",
+      "wp": "WP9",
+      "lead": "IF.E",
+      "due": 24,
+      "visibility": "Public"
+    },
+    {
+      "id": "D10.1",
+      "title": "Project Management Plan",
+      "wp": "WP10",
+      "lead": "IF.E",
+      "due": 2,
+      "visibility": "Sensitive"
+    },
+    {
+      "id": "D10.2",
+      "title": "Final KPI list",
+      "wp": "WP10",
+      "lead": "XR8",
+      "due": 48,
+      "visibility": "Sensitive"
+    }
+  ],
+  "milestones": [
+    {
+      "id": "MS1",
+      "title": "Governance structure operational",
+      "wp": "WP1",
+      "lead": "IF.E",
+      "due": 3
+    },
+    {
+      "id": "MS2",
+      "title": "First FSTP call launched",
+      "wp": "WP1",
+      "lead": "EDSA",
+      "due": 12
+    },
+    {
+      "id": "MS3",
+      "title": "Foundational Framework (CCQF v1) and Core Curricula Drafted",
+      "wp": "WP2",
+      "lead": "UNIBO",
+      "due": 12
+    },
+    {
+      "id": "MS4",
+      "title": "Revised draft Framework (CCQF v2) and RPL Guide Completed",
+      "wp": "WP2",
+      "lead": "FARI",
+      "due": 24
+    },
+    {
+      "id": "MS5",
+      "title": "Ecosystem Baseline and Skills Gap Mapping Completed",
+      "wp": "WP3",
+      "lead": "LSA",
+      "due": 12
+    },
+    {
+      "id": "MS6",
+      "title": "Strategic Foresight Pack and Cross-Academy Overlay Operational",
+      "wp": "WP3",
+      "lead": "ALLAI",
+      "due": 18
+    },
+    {
+      "id": "MS7",
+      "title": "First ToT completed and first cohort of trainers certified",
+      "wp": "WP4",
+      "lead": "UPM",
+      "due": 12
+    },
+    {
+      "id": "MS8",
+      "title": "Pilot Courses and Sector Labs Operational with Evaluation Framework Deployed",
+      "wp": "WP4",
+      "lead": "UPM",
+      "due": 18
+    },
+    {
+      "id": "MS9",
+      "title": "EU-Wide Roll-out of Training of Trainers and Vocational Schemes",
+      "wp": "WP5",
+      "lead": "UWK",
+      "due": 24
+    },
+    {
+      "id": "MS10",
+      "title": "Apprenticeship Pilot Operational with Placement Agreements Signed",
+      "wp": "WP5",
+      "lead": "IAL.T",
+      "due": 30
+    },
+    {
+      "id": "MS11",
+      "title": "Final Training Packages Validated and Ready for Dissemination",
+      "wp": "WP6",
+      "lead": "UWK",
+      "due": 42
+    },
+    {
+      "id": "MS12",
+      "title": "Complete Portfolio of Reusable Assets Published on GenAI@EU Skills Hub",
+      "wp": "WP6",
+      "lead": "IF.E",
+      "due": 45
+    },
+    {
+      "id": "MS13",
+      "title": "Pilot Accreditation Seals awarded",
+      "wp": "WP7",
+      "lead": "INESC.ID",
+      "due": 36
+    },
+    {
+      "id": "MS14",
+      "title": "EU Accreditation Roadmap adopted",
+      "wp": "WP7",
+      "lead": "COG",
+      "due": 42
+    },
+    {
+      "id": "MS15",
+      "title": "Theory of change defined and evaluation methodology finalised",
+      "wp": "WP8",
+      "lead": "UKON",
+      "due": 6
+    },
+    {
+      "id": "MS16",
+      "title": "Mid-Term Evaluation Completed and Framework Adopted",
+      "wp": "WP8",
+      "lead": "EFRI",
+      "due": 36
+    },
+    {
+      "id": "MS17",
+      "title": "Project Identity and Communication Channels Established",
+      "wp": "WP9",
+      "lead": "TRS",
+      "due": 3
+    },
+    {
+      "id": "MS18",
+      "title": "Primary Public Gateway (DSJP Landing Page) is Live",
+      "wp": "WP9",
+      "lead": "TRS",
+      "due": 6
+    },
+    {
+      "id": "MS19",
+      "title": "PMO fully operational",
+      "wp": "WP10",
+      "lead": "IF.E",
+      "due": 1
+    },
+    {
+      "id": "MS20",
+      "title": "Project’s KOM",
+      "wp": "WP10",
+      "lead": "IF.E",
+      "due": 1
+    },
+    {
+      "id": "MS21",
+      "title": "FSTP draft call text/s and timeline/s for publication/s on the Funding and Tenders Portal",
+      "wp": "WP1",
+      "lead": "EDSA",
+      "due": 4
+    },
+    {
+      "id": "MS22",
+      "title": "First partial release of D2.2",
+      "wp": "WP2",
+      "lead": "UWK",
+      "due": 12
+    },
+    {
+      "id": "MS23",
+      "title": "Second partial release of D2.2",
+      "wp": "WP2",
+      "lead": "UWK",
+      "due": 18
+    }
+  ],
+  "risks": [
+    {
+      "id": 1,
+      "title": "Consortium partner withdrawal or major delay",
+      "wps": [
+        "WP10",
+        "WP1"
+      ],
+      "impact": "Medium",
+      "likelihood": "Low",
+      "mitigation": "Reserve partners, co-leads and early milestone gates."
+    },
+    {
+      "id": 2,
+      "title": "Insufficient learner, apprentice or trainer recruitment",
+      "wps": [
+        "WP5",
+        "WP9",
+        "WP4"
+      ],
+      "impact": "High",
+      "likelihood": "Low",
+      "mitigation": "Early outreach, rolling recruitment and partner placement commitments."
+    },
+    {
+      "id": 3,
+      "title": "Gender and inclusion targets not met",
+      "wps": [
+        "WP1",
+        "WP9",
+        "WP4"
+      ],
+      "impact": "High",
+      "likelihood": "Medium",
+      "mitigation": "Scholarship and returnship support, targeted outreach and quarterly demographic monitoring."
+    },
+    {
+      "id": 4,
+      "title": "Delayed access to AI Factories or HPC resources",
+      "wps": [
+        "WP7",
+        "WP3",
+        "WP6"
+      ],
+      "impact": "Medium",
+      "likelihood": "Medium",
+      "mitigation": "Early access agreements, hybrid sandboxes and contingency capacity."
+    },
+    {
+      "id": 5,
+      "title": "Legal, data protection or IP issues with Sector Lab data",
+      "wps": [
+        "WP8",
+        "WP6",
+        "WP4"
+      ],
+      "impact": "Medium",
+      "likelihood": "Low",
+      "mitigation": "Pre-approved data agreements, minimisation and early dataset review."
+    },
+    {
+      "id": 6,
+      "title": "Rapid regulatory change creates compliance uncertainty",
+      "wps": [
+        "WP7",
+        "WP8",
+        "WP1"
+      ],
+      "impact": "High",
+      "likelihood": "Medium",
+      "mitigation": "Policy watch, legal review and modular course updates."
+    },
+    {
+      "id": 7,
+      "title": "Low employer engagement for placements",
+      "wps": [
+        "WP7",
+        "WP3",
+        "WP4"
+      ],
+      "impact": "High",
+      "likelihood": "Low",
+      "mitigation": "Early placement agreements and a distributed employer model."
+    },
+    {
+      "id": 8,
+      "title": "Inconsistent quality across countries",
+      "wps": [
+        "WP2",
+        "WP7",
+        "WP6"
+      ],
+      "impact": "Medium",
+      "likelihood": "Low",
+      "mitigation": "Common CCQF templates, trainer certification and peer review."
+    },
+    {
+      "id": 9,
+      "title": "Technology delivery or sandbox failure",
+      "wps": [
+        "WP10",
+        "WP6",
+        "WP4"
+      ],
+      "impact": "High",
+      "likelihood": "Low",
+      "mitigation": "Reproducible environments, CI tests, staging and rollback plans."
+    },
+    {
+      "id": 10,
+      "title": "Data collection and KPI measurement gaps",
+      "wps": [
+        "WP10",
+        "WP8"
+      ],
+      "impact": "Medium",
+      "likelihood": "Medium",
+      "mitigation": "Anonymised IDs, follow-up reminders and weekly data-quality checks."
+    },
+    {
+      "id": 11,
+      "title": "Budget shortfall or co-funding gap",
+      "wps": [
+        "WP10",
+        "WP7",
+        "WP1"
+      ],
+      "impact": "High",
+      "likelihood": "Low",
+      "mitigation": "Diversified funding, staged expenditure and rapid forecasts."
+    },
+    {
+      "id": 12,
+      "title": "Reputation or ethical incident",
+      "wps": [
+        "WP8",
+        "WP6",
+        "WP9",
+        "WP4"
+      ],
+      "impact": "Medium",
+      "likelihood": "Low",
+      "mitigation": "Ethics training, supervised use and an incident response plan."
+    },
+    {
+      "id": 13,
+      "title": "Loss of key staff",
+      "wps": [
+        "WP10",
+        "WP1"
+      ],
+      "impact": "Medium",
+      "likelihood": "Low",
+      "mitigation": "Deputy roles, succession plans and documented handovers."
+    },
+    {
+      "id": 14,
+      "title": "Political or cross-border barrier",
+      "wps": [
+        "WP7",
+        "WP1"
+      ],
+      "impact": "High",
+      "likelihood": "Medium",
+      "mitigation": "Early authority engagement and flexible recognition or remote routes."
+    },
+    {
+      "id": 15,
+      "title": "Messaging fails to resonate with target audiences",
+      "wps": [
+        "WP9"
+      ],
+      "impact": "High",
+      "likelihood": "Low",
+      "mitigation": "Expert validation followed by audience-focused communications review."
+    },
+    {
+      "id": 16,
+      "title": "Uneven engagement across channels",
+      "wps": [
+        "WP9"
+      ],
+      "impact": "Medium",
+      "likelihood": "Medium",
+      "mitigation": "Tailor content by channel and monitor analytics continuously."
+    },
+    {
+      "id": 17,
+      "title": "Technology change outpaces programme updates",
+      "wps": [
+        "WP5",
+        "WP6",
+        "WP4"
+      ],
+      "impact": "High",
+      "likelihood": "Low",
+      "mitigation": "Monitor advances and update curricula during delivery and packaging."
+    }
+  ],
+  "kpis": [
+    {
+      "id": "dsjp_landing",
+      "name": "DSJP landing page live and indexed",
+      "group": "Reach",
+      "target": "By M12 in the KPI table; MS18 is due M06",
+      "unit": "status",
+      "breakdown": "Project-level verification; formal milestone date takes precedence for MS18",
+      "source_note": "The dissemination table says M12, while the formal MS18 milestone is due M06. Track the formal milestone separately."
+    },
+    {
+      "id": "unique_visitors",
+      "name": "Website unique visitors",
+      "group": "Reach",
+      "target": "150,000 by M48",
+      "unit": "visitors",
+      "breakdown": "Project-level analytics; attribution by partner campaign when available"
+    },
+    {
+      "id": "social_followers",
+      "name": "Combined social followers",
+      "group": "Reach",
+      "target": "25,000 by M48",
+      "unit": "followers",
+      "breakdown": "Channel or partner account"
+    },
+    {
+      "id": "communication_activities",
+      "name": "Communications and awareness activities",
+      "group": "Reach",
+      "target": "At least 180",
+      "unit": "activities",
+      "breakdown": "Hosting partner"
+    },
+    {
+      "id": "dissemination_participants",
+      "name": "Participants reached through dissemination",
+      "group": "Reach",
+      "target": "≥20,000 activity attendances (objectives table, p. 114); ≥60,000 aggregate reach (dissemination table, p. 137)",
+      "unit": "attendances",
+      "breakdown": "Hosting partner; repeat attendees may be counted",
+      "source_note": "The objectives table counts attendees across activities; the dissemination table includes events and online activities. The coordinator should define whether these are separate series before entering a single actual."
+    },
+    {
+      "id": "media_mentions",
+      "name": "Media mentions",
+      "group": "Reach",
+      "target": "At least 150, including 10 national features",
+      "unit": "mentions",
+      "breakdown": "Contributing partner; deduplicate shared coverage"
+    },
+    {
+      "id": "long_videos",
+      "name": "Podcasts and long videos",
+      "group": "Reach",
+      "target": "6 pieces; 5,000 views and 100 engagements each",
+      "unit": "pieces",
+      "breakdown": "Producing partner and content item"
+    },
+    {
+      "id": "campaign_conversion",
+      "name": "Website to application conversion",
+      "group": "Reach",
+      "target": "3% of relevant campaign visitors",
+      "unit": "%",
+      "breakdown": "Campaign; numerator and denominator required"
+    },
+    {
+      "id": "formal_collaborations",
+      "name": "Formal employer or public-sector collaborations",
+      "group": "Partnerships",
+      "target": "At least 120",
+      "unit": "agreements",
+      "breakdown": "Responsible partner; deduplicate joint agreements"
+    },
+    {
+      "id": "apprentice_places",
+      "name": "Apprenticeship places reserved for unemployed people",
+      "group": "Inclusion",
+      "target": "15% of places; at least 45 seats each cycle",
+      "unit": "%",
+      "breakdown": "Delivery partner; reserved places and total places required"
+    },
+    {
+      "id": "apprentices_completed",
+      "name": "Apprentices completing programme",
+      "group": "Learning",
+      "target": "At least 300",
+      "unit": "people",
+      "breakdown": "Delivery partner; deduplicate people"
+    },
+    {
+      "id": "women_supported",
+      "name": "Women supported through scholarship and returnship schemes",
+      "group": "Inclusion",
+      "target": "≥80 women in aggregate (p. 114); ≥80 women/year (p. 113); ≥40 per scheme/year (p. 137)",
+      "unit": "people",
+      "breakdown": "Scheme and partner; deduplicate people",
+      "source_note": "The signed Agreement gives different time bases. Do not treat these figures as interchangeable."
+    },
+    {
+      "id": "learners",
+      "name": "Participants in HE, VET and on-the-job training",
+      "group": "Learning",
+      "target": "At least 2,500",
+      "unit": "people",
+      "breakdown": "Partner and learning modality; deduplicate people"
+    },
+    {
+      "id": "he_completion",
+      "name": "HE completion rate",
+      "group": "Learning",
+      "target": "At least 75%",
+      "unit": "%",
+      "breakdown": "HE partner; completions and enrolments required"
+    },
+    {
+      "id": "vet_completion",
+      "name": "VET completion rate",
+      "group": "Learning",
+      "target": "At least 80%",
+      "unit": "%",
+      "breakdown": "VET partner; completions and enrolments required"
+    },
+    {
+      "id": "onjob_completion",
+      "name": "On-the-job completion rate",
+      "group": "Learning",
+      "target": "At least 85%",
+      "unit": "%",
+      "breakdown": "Delivery partner; completions and enrolments required"
+    },
+    {
+      "id": "trainers_certified",
+      "name": "Trainers certified",
+      "group": "Learning",
+      "target": "200",
+      "unit": "people",
+      "breakdown": "Certifying partner; deduplicate people"
+    },
+    {
+      "id": "microcredentials",
+      "name": "Packaged and piloted microcredentials",
+      "group": "Learning",
+      "target": "At least 20",
+      "unit": "microcredentials",
+      "breakdown": "Responsible partner; deduplicate credentials"
+    },
+    {
+      "id": "sector_case_studies",
+      "name": "Published sector pilot case studies",
+      "group": "Learning",
+      "target": "At least 12",
+      "unit": "case studies",
+      "breakdown": "Lead partner and sector"
+    },
+    {
+      "id": "policy_briefs",
+      "name": "Semi-annual policy briefs shared",
+      "group": "Policy",
+      "target": "8",
+      "unit": "briefs",
+      "breakdown": "Lead partner; deduplicate jointly authored briefs"
+    },
+    {
+      "id": "evaluation_reports_shared",
+      "name": "Major evaluation reports shared with policy DGs",
+      "group": "Policy",
+      "target": "3",
+      "unit": "reports",
+      "breakdown": "Lead partner; deduplicate shared reports"
+    },
+    {
+      "id": "dsjp_referrals",
+      "name": "DSJP referrals to AISHA resources",
+      "group": "Reach",
+      "target": "At least 10,000",
+      "unit": "visits",
+      "breakdown": "Project analytics; partner campaign if attributable"
+    },
+    {
+      "id": "resource_accesses",
+      "name": "Open-resource downloads or accesses",
+      "group": "Reach",
+      "target": "At least 10,000",
+      "unit": "accesses",
+      "breakdown": "Resource owner and partner"
+    },
+    {
+      "id": "employment_improved",
+      "name": "Participants reporting improved employment within six months",
+      "group": "Outcomes",
+      "target": "At least 800",
+      "unit": "people",
+      "breakdown": "Training partner and cohort; mature follow-up only"
+    },
+    {
+      "id": "session_duration",
+      "name": "Average website session duration",
+      "group": "Reach",
+      "target": "At least 2.5 minutes",
+      "unit": "minutes",
+      "breakdown": "Project analytics; campaign when attributable"
+    },
+    {
+      "id": "webinar_retention",
+      "name": "Webinar attendance retention",
+      "group": "Reach",
+      "target": "At least 50%",
+      "unit": "%",
+      "breakdown": "Hosting partner; attendee numerator and denominator required"
+    },
+    {
+      "id": "member_states",
+      "name": "Member States represented among participants",
+      "group": "Inclusion",
+      "target": "At least 24",
+      "unit": "states",
+      "breakdown": "Project-wide distinct countries; partner country lists should be unioned"
+    },
+    {
+      "id": "eu_visibility",
+      "name": "Public materials with EU funding visibility",
+      "group": "Compliance",
+      "target": "100%",
+      "unit": "%",
+      "breakdown": "Producing partner; compliant materials and total materials required"
+    },
+    {
+      "id": "sota_geography",
+      "name": "SOTA and skills-gap survey coverage",
+      "group": "Design",
+      "target": "27+ Member States by M12",
+      "unit": "states",
+      "breakdown": "WP2/WP3 evidence; distinct Member States",
+      "source_page": 113
+    },
+    {
+      "id": "ccqf_validation",
+      "name": "CCQF stakeholder validation",
+      "group": "Design",
+      "target": "≥30 stakeholders by M12",
+      "unit": "stakeholders",
+      "breakdown": "Validation log by stakeholder type; deduplicate people",
+      "source_page": 113
+    },
+    {
+      "id": "he_curricula",
+      "name": "Higher education curricula launched",
+      "group": "Learning",
+      "target": "3 distinct curricula: 2-year Master, Bachelor pathway and 1-year joint/short Master",
+      "unit": "curricula",
+      "breakdown": "Curriculum and institution; count validated launched curricula",
+      "source_page": 113
+    },
+    {
+      "id": "he_women_by_route",
+      "name": "Women attending HE curricula",
+      "group": "Inclusion",
+      "target": "≥42 Bachelor; ≥28 two-year Master; ≥14 one-year Master",
+      "unit": "women",
+      "breakdown": "Separate course-route counts; deduplicate within each route",
+      "source_page": 113
+    },
+    {
+      "id": "he_enrolments_per_cycle",
+      "name": "HE enrolments per cycle",
+      "group": "Learning",
+      "target": "≥80 two-year Master; ≥120 Bachelor pathway; ≥40 one-year Master",
+      "unit": "students",
+      "breakdown": "Institution and programme cycle; avoid summing repeated cycles",
+      "source_page": 113
+    },
+    {
+      "id": "vet_schemes",
+      "name": "Vocational schemes implemented",
+      "group": "Learning",
+      "target": "3 schemes, including a two-year scheme and packaged three-year options",
+      "unit": "schemes",
+      "breakdown": "VET provider and scheme; count pilot cohorts completed",
+      "source_page": 114
+    },
+    {
+      "id": "vet_institute_enrolments",
+      "name": "VET enrolments per institute and cycle",
+      "group": "Learning",
+      "target": "≥100 in a two-year scheme (≥35 women); ≥200 in a three-year scheme (≥70 women)",
+      "unit": "students",
+      "breakdown": "Institute, scheme duration and cycle",
+      "source_page": 114
+    },
+    {
+      "id": "onjob_packages",
+      "name": "On-the-job training packages",
+      "group": "Learning",
+      "target": "8 distinct profile-specific packages developed and delivered",
+      "unit": "packages",
+      "breakdown": "Profile or profession; require development and delivery evidence",
+      "source_page": 114
+    },
+    {
+      "id": "scheme_count",
+      "name": "Scholarship and returnship schemes",
+      "group": "Inclusion",
+      "target": "2 implemented schemes: scholarship and returnship",
+      "unit": "schemes",
+      "breakdown": "Scheme records and award evidence",
+      "source_page": 114
+    },
+    {
+      "id": "scheme_funding",
+      "name": "Funding committed to each inclusion scheme",
+      "group": "Inclusion",
+      "target": "EUR 500,000 committed to each scheme",
+      "unit": "EUR",
+      "breakdown": "Separate commitments for scholarship and returnship",
+      "source_page": 114
+    },
+    {
+      "id": "employment_placement_share",
+      "name": "Apprentice employment or internship placement",
+      "group": "Outcomes",
+      "target": "≥70% within 6 months of completion",
+      "unit": "%",
+      "breakdown": "Apprentice cohort; completed and placed counts with six-month maturity",
+      "source_page": 114
+    },
+    {
+      "id": "apprentice_women",
+      "name": "Women completing apprenticeships",
+      "group": "Inclusion",
+      "target": "≥105 women among 300 completers (≥35%)",
+      "unit": "people",
+      "breakdown": "Completion certificate and gender; deduplicate people",
+      "source_page": 114
+    },
+    {
+      "id": "placement_hosts",
+      "name": "Organisations supplying placements, data or apprenticeship hosting",
+      "group": "Partnerships",
+      "target": "≥60 organisations",
+      "unit": "organisations",
+      "breakdown": "Distinct host organisations; deduplicate joint relationships",
+      "source_page": 115
+    },
+    {
+      "id": "eu_initiative_links",
+      "name": "Activated links with EU-supported initiatives",
+      "group": "Partnerships",
+      "target": "≥30 initiatives",
+      "unit": "initiatives",
+      "breakdown": "Record substantive joint activity, beyond first contact",
+      "source_page": 115
+    },
+    {
+      "id": "onjob_professionals",
+      "name": "Professionals completing on-the-job training",
+      "group": "Learning",
+      "target": "≥500 professionals, including ≥175 women",
+      "unit": "people",
+      "breakdown": "Employer type, delivery partner and gender; deduplicate people",
+      "source_page": 115
+    },
+    {
+      "id": "communication_channels",
+      "name": "External communication channels involved",
+      "group": "Reach",
+      "target": "≥20 channels",
+      "unit": "channels",
+      "breakdown": "Channel register; count distinct active channels",
+      "source_page": 115
+    },
+    {
+      "id": "academic_publications",
+      "name": "Academic conference or journal papers",
+      "group": "Policy",
+      "target": "≥16 papers",
+      "unit": "papers",
+      "breakdown": "Publication record; deduplicate coauthored outputs",
+      "source_page": 115
+    },
+    {
+      "id": "practitioner_publications",
+      "name": "Practitioner or technical publications",
+      "group": "Policy",
+      "target": "≥16 short abstracts or publications",
+      "unit": "publications",
+      "breakdown": "Publication record; deduplicate coauthored outputs",
+      "source_page": 115
+    },
+    {
+      "id": "institutional_adoption",
+      "name": "HE/VET institutions adopting reusable modules",
+      "group": "Learning",
+      "target": "≥50 partner HE/VET institutions by M42",
+      "unit": "institutions",
+      "breakdown": "Institution and adopted module; count distinct institutions",
+      "source_page": 113
+    },
+    {
+      "id": "non_eu_funding",
+      "name": "Non-EU funding commitments",
+      "group": "Partnerships",
+      "target": "≥2 commitments by M45",
+      "unit": "commitments",
+      "breakdown": "Signed funding commitment evidence",
+      "source_page": 113
+    },
+    {
+      "id": "female_participation_growth",
+      "name": "Growth in female participation against baseline",
+      "group": "Inclusion",
+      "target": "+30% against baseline across Years 1–4",
+      "unit": "%",
+      "breakdown": "Define baseline and comparable annual participation rate",
+      "source_page": 113
+    }
+  ]
+}
