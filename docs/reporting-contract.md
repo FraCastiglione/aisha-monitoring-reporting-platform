@@ -1,10 +1,10 @@
-# AISHA reporting contract — Task report version 2.3
+# AISHA reporting contract — Task report version 2.4
 
 The signed Grant Agreement supplies formal Work Packages, Task wording, assignments and activity windows. Attachment 6 supplies additional voluntary associated-partner Task commitments, as confirmed by the coordinator on 30 September 2026. Partners choose the selected months, included Tasks and their own answers. Selected months may contain gaps. Future project months remain available.
 
 ## Complete partner report
 
-A complete Task report has `schema_version: "2.3"`, `project: "AISHA"`, `document_kind: "submission"`, `report_type: "tasks"`, `report_key`, `revision`, `partner`, `contributor`, `reporting_period`, `tasks`, `work_package_leadership`, `additional_contributions`, `kpi_contributions`, and `generated_at`. It needs at least one completed Task, explicit no-work Task declaration, Work Package leader update, additional contribution, or direct KPI contribution. The review screen precedes generation; the site does not transmit the report.
+A complete Task report has `schema_version: "2.4"`, `project: "AISHA"`, `document_kind: "submission"`, `report_type: "tasks"`, `report_key`, `revision`, `partner`, `contributor`, `reporting_period`, `tasks`, `work_package_leadership`, `additional_contributions`, `kpi_contributions`, and `generated_at`. It needs at least one completed Task, explicit no-work Task declaration, Work Package leader update, additional contribution, or direct KPI contribution. The review screen precedes generation; the site does not transmit the report.
 
 `reporting_period` records inclusive ISO start/end dates, project month codes and an ordered `selected_months` list, such as `["2026-05", "2026-06", "2026-09"]`. Interior months omitted from that list are not covered. The report key is `{partner}:TASKS:{start}:{end}`. PDF and JSON filenames are `AISHA_{PARTNER}_TASKS_{START}_{END}_v{REVISION}` with the relevant extension. If selected months change but the outer dates stay the same, a corrected report keeps the key and increments its revision.
 
@@ -12,7 +12,7 @@ Each Task entry identifies its Agreement metadata, partner role, `work_status` (
 
 Each `work_package_leadership` entry identifies a Work Package that the partner leads in the Agreement, its selected active months, `work_status`, optional overall narrative, and optional `task_updates`. The Task assessments may cover all Tasks in that Work Package, including Tasks assigned to other partners. They describe the leader's assessment and do not certify another partner's submission. A Work Package may be explicitly declared to have no work; that declaration clears its narrative and Task assessments. A partner can report solely on Work Package leadership in a period.
 
-`additional_contributions` records voluntary work outside the partner's listed Task or Work Package leadership assignments, with a Task or Work Package ID, selected active months, activities/results, optional evidence reference, and `assignment_basis: "voluntary_unlisted"`. These entries do not revise the Grant Agreement assignment matrix.
+`additional_contributions` records voluntary work outside the partner's listed Task or Work Package leadership assignments, with a Task or Work Package ID, selected active months, a draft/completed state, activities, results, difficulties, upcoming work, optional evidence reference, and `assignment_basis: "voluntary_unlisted"`. A partner completes each entry through its own report editor. These entries do not revise the Grant Agreement assignment matrix. Versions 2.0–2.3 remain importable; older short entries are treated as completed, with their single narrative in activities.
 
 `kpi_contributions` records direct indicator values by catalogue ID. Counts use non-negative whole numbers; percentages use 0–100 and include a calculation basis; EUR and minutes allow decimals; status indicators use an explicit status. Each entry requires an evidence reference and the partner's confirmation that the proof is already in Nextcloud or will be added after download. These are claims for coordinator review, not published dashboard actuals. The communication report includes the same KPI contribution array in schema version 1.2.
 

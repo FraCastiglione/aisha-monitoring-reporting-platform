@@ -382,9 +382,9 @@
     const panel=view.tab==='gantt'?ganttSection():view.tab==='workpackages'?workPackagesSection():view.tab==='reporting'?reportingSection():view.tab==='messages'?messageBoard():view.tab==='risks'?risksSection():view.tab==='kpis'?kpisSection():overview();
     host.replaceChildren(tabs,panel);
   }
-  Promise.all([
-    fetch('assets/dashboard-catalogue.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error('Agreement catalogue unavailable');return response.json();}),
-    fetch('dashboard-data.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error('Dashboard snapshot unavailable');return response.json();}),
-    fetch('assets/dashboard-detail.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error('Agreement detail unavailable');return response.json();})
-  ]).then(([source,data,detailData])=>{if(data.schema_version!=='2.0'||data.project!=='AISHA'||!Array.isArray(source.deliverables)||!Array.isArray(source.milestones)||!Array.isArray(source.risks)||!Array.isArray(source.kpis)||!detailData.deliverables||!detailData.milestones||!agreement?.workPackages)throw new Error('Dashboard data is incomplete');catalogue=source;snapshot=data;agreementDetail=detailData;const current=model.projectMonth(config,data.snapshot_month);if(current){view.through=current;view.dueThrough=current<=6?6:current<=12?12:current<=18?18:current<=36?36:48;view.ganttMonth=Math.min(48,current+1);view.ganttYear=Number(month(view.ganttMonth).slice(0,4));}view.draftDay=1;render();}).catch(error=>{host.replaceChildren(el('p','dash-error',`Dashboard could not load: ${error.message}.`));});
+  try {
+    const source=window.AISHA_EMBEDDED_DATA?.catalogue,data=window.AISHA_EMBEDDED_DATA?.snapshot,detailData=window.AISHA_EMBEDDED_DATA?.detail;
+    if(data?.schema_version!=='2.0'||data.project!=='AISHA'||!Array.isArray(source?.deliverables)||!Array.isArray(source?.milestones)||!Array.isArray(source?.risks)||!Array.isArray(source?.kpis)||!detailData?.deliverables||!detailData?.milestones||!agreement?.workPackages)throw new Error('Dashboard data is incomplete');
+    catalogue=source;snapshot=data;agreementDetail=detailData;const current=model.projectMonth(config,data.snapshot_month);if(current){view.through=current;view.dueThrough=current<=6?6:current<=12?12:current<=18?18:current<=36?36:48;view.ganttMonth=Math.min(48,current+1);view.ganttYear=Number(month(view.ganttMonth).slice(0,4));}view.draftDay=1;render();
+  } catch(error){host.replaceChildren(el('p','dash-error',`Dashboard could not load: ${error.message}.`));}
 })();

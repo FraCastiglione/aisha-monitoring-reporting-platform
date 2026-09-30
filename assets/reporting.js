@@ -6,7 +6,7 @@
   const $ = id => document.getElementById(id);
   const taskForm = $('task-form');
   const commForm = $('communication-form');
-  const state = { partner: null, contributor: null, reportType: null, selected: new Map(), wpUpdates: new Map(), extras: [], kpis: new Map(), kpisByType:{tasks:new Map(),communication:new Map()}, extraDraftMonths: new Set(), selectedMonths: new Set(), lastPeriod: null, editing: null, wpEditing: null, editWasNew: false, revision: 1, reviewed: null, urls: [], taskPdfUrl: null };
+  const state = { partner: null, contributor: null, reportType: null, selected: new Map(), wpUpdates: new Map(), extras: [], kpis: new Map(), kpisByType:{tasks:new Map(),communication:new Map()}, extraDraftMonths: new Set(), selectedMonths: new Set(), lastPeriod: null, editing: null, wpEditing: null, extraEditing: null, editWasNew: false, revision: 1, reviewed: null, urls: [], taskPdfUrl: null };
   let kpiCatalogue=[];
   let kpiReady=Promise.resolve();
   const value = id => $(id).value.trim();
@@ -26,6 +26,7 @@
   function setTaskEditor(visible) {
     taskForm.hidden = !visible;
     $('wp-leader-form').hidden = true;
+    $('extra-editor').hidden = true;
     $('task-picker').hidden = visible;
     $('draft-actions').hidden = visible;
     $('revision-controls').hidden = visible;
@@ -35,9 +36,14 @@
     $('workspace-title').textContent = visible ? 'Your Task contribution' : 'Build your partner report';
   }
   function setWpEditor(visible) {
-    $('wp-leader-form').hidden = !visible; taskForm.hidden = true;
+    $('wp-leader-form').hidden = !visible; taskForm.hidden = true; $('extra-editor').hidden = true;
     $('task-picker').hidden = visible; $('draft-actions').hidden = visible; $('revision-controls').hidden = visible; $('report-form-actions').hidden = visible; $('back-to-choice').hidden = visible; $('kpi-reporting').hidden = visible;
     $('workspace-title').textContent = visible ? 'Work Package leadership update' : 'Build your partner report';
+  }
+  function setExtraEditor(visible) {
+    $('extra-editor').hidden=!visible;taskForm.hidden=true;$('wp-leader-form').hidden=true;
+    $('task-picker').hidden=visible;$('draft-actions').hidden=visible;$('revision-controls').hidden=visible;$('report-form-actions').hidden=visible;$('back-to-choice').hidden=visible;$('kpi-reporting').hidden=visible;
+    $('workspace-title').textContent=visible?'Additional contribution':'Build your partner report';
   }
   const sortedMonths = () => [...state.selectedMonths].sort();
   function period() { return model.rangePeriod(config, value('report-start'), value('report-end'), sortedMonths()); }
@@ -171,12 +177,13 @@
     const wpCounts = {draft:0,completed:0,no_work:0}; for (const entry of state.wpUpdates.values()) wpCounts[entry.status || 'draft']++;
     const availableWpUpdates=config.workPackages.filter(wp=>wp.lead===state.partner.code&&activeWpMonths(wp,p).length).length;
     const summary=$('selected-task-summary');summary.replaceChildren();
-    for(const [title,items,total,selected] of [['Tasks',counts,eligible.length,[...state.selected.keys()].filter(id=>eligibleIds.has(id)).length],['Work Package updates',wpCounts,availableWpUpdates,state.wpUpdates.size]]){
-      const row=textNode('div','','status-row');row.append(textNode('strong',`${title} · ${selected}/${total} selected`,'status-row-title'));
-      for(const [key,label] of [['completed','Completed'],['no_work','No work declared'],['draft','Still to finish']]){const metric=textNode('span','','status-metric');metric.append(textNode('b',String(items[key])),textNode('span',label));row.append(metric);}summary.append(row);
-      summary.append(textNode('small',`${Math.max(0,total-selected)} ${title.toLowerCase()} still available to add in the selected months.`,'status-available'));
+    for(const [title,items,total,selected] of [['Assigned Tasks',counts,eligible.length,[...state.selected.keys()].filter(id=>eligibleIds.has(id)).length],['Work Package leader updates',wpCounts,availableWpUpdates,state.wpUpdates.size]]){
+      if(!total&&!selected)continue;
+      const row=textNode('div','','status-row');row.append(textNode('strong',`${title} · ${selected} added of ${total} available`,'status-row-title'));
+      if(selected)for(const [key,label] of [['completed','Complete'],['no_work','No work'],['draft','Draft']]){if(!items[key])continue;const metric=textNode('span','','status-metric');metric.append(textNode('b',String(items[key])),textNode('span',label));row.append(metric);}else row.append(textNode('span','None added yet','status-empty'));
+      summary.append(row);
     }
-    if(state.extras.length||state.kpis.size)summary.append(textNode('p',`${state.extras.length} additional voluntary contribution${state.extras.length===1?'':'s'} · ${state.kpis.size} direct KPI contribution${state.kpis.size===1?'':'s'} included.`,'status-available'));
+    if(state.extras.length||state.kpis.size)summary.append(textNode('p',`${state.extras.length} voluntary contribution${state.extras.length===1?'':'s'} (${state.extras.filter(e=>e.status==='completed').length} complete) · ${state.kpis.size} KPI contribution${state.kpis.size===1?'':'s'}.`,'status-available'));
     if(outside.length)summary.append(textNode('p',`${outside.length} selected Task is outside these months.`,'status-warning'));
     for (const wp of config.workPackages) {
       const wpTasks = eligible.filter(t => t.wp === wp.id);
@@ -232,7 +239,12 @@
   function activeWpMonths(wp, p) { return p.selected_months.filter(m => model.active(wp,model.projectMonth(config,m))); }
   function renderExtras(p) {
     const host=$('extra-list');host.replaceChildren();
-    for(const entry of state.extras){const target=entry.kind==='task'?taskById(entry.id):wpById(entry.id);const card=textNode('article','','extra-entry');card.append(textNode('strong',`${entry.id} — ${target?.title||'Unknown item'}`),textNode('small',`${entry.kind==='task'?'Task':'Work Package'} · voluntary contribution · ${monthCodes(entry.months)}`),textNode('p',entry.description));if(entry.evidence)card.append(textNode('small',`Evidence: ${entry.evidence}`));const remove=textNode('button','Remove','text-button');remove.type='button';remove.addEventListener('click',()=>{state.extras=state.extras.filter(row=>row!==entry);renderOverview();});card.append(remove);host.append(card);}
+    for(const entry of state.extras){const target=entry.kind==='task'?taskById(entry.id):wpById(entry.id),card=textNode('article','','task-card extra-report-card');card.classList.add(entry.status==='completed'?'is-completed':'is-draft');
+      const head=textNode('div','','task-card-head'),title=textNode('div','','task-card-title-group');title.append(textNode('strong',`${entry.id} — ${target?.title||'Unknown item'}`),textNode('span','Voluntary contribution','role-badge is-participant'));head.append(title);card.append(head);
+      card.append(textNode('p',`${entry.kind==='task'?'Task':'Work Package'} · ${monthCodes(entry.months)} · ${entry.status==='completed'?'Report complete':entry.description||entry.results?'Draft in progress':'Still to finish'}`,'task-chosen-coverage'));
+      if(entry.description||entry.results)card.append(textNode('p',(entry.description||entry.results).slice(0,240),'extra-preview'));
+      const actions=textNode('div','','task-card-actions'),edit=textNode('button',entry.status==='completed'?'Edit contribution':'Continue report','button button-secondary');edit.type='button';edit.addEventListener('click',()=>openExtra(entry));actions.append(edit);
+      const remove=textNode('button','Remove contribution','button button-quiet');remove.type='button';remove.addEventListener('click',()=>{state.extras=state.extras.filter(row=>row!==entry);renderOverview();});actions.append(remove);card.append(actions);host.append(card);}
     const kind=value('extra-kind')||'task',target=$('extra-target'),previous=target.value;target.replaceChildren();
     const choices=p?(kind==='task'?config.tasks:config.workPackages).filter(item=>p.selected_months.some(m=>model.active(item,model.projectMonth(config,m)))&&(kind==='task'?!model.assigned(item,state.partner.code,config):item.lead!==state.partner.code)):[];
     for(const item of choices){const option=document.createElement('option');option.value=item.id;option.textContent=`${item.id} — ${item.title}`;target.append(option);}
@@ -241,46 +253,59 @@
     const monthHost=$('extra-months');monthHost.replaceChildren(textNode('strong','Months covered by this contribution'));
     for(const m of months){const label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.value=m;input.checked=!state.extraDraftMonths.size||state.extraDraftMonths.has(m);input.addEventListener('change',()=>{state.extraDraftMonths=new Set([...monthHost.querySelectorAll('input:checked')].map(row=>row.value));});label.append(input,textNode('span',`M${String(model.projectMonth(config,m)).padStart(2,'0')} · ${m}`));monthHost.append(label);}
     $('add-extra').disabled=!choices.length;
-    $('extra-message').textContent=choices.length?'':'Select project months with an available additional contribution.';
+    $('extra-message').hidden=!!choices.length;$('extra-message').textContent=choices.length?'':'Select project months with an available additional contribution.';
   }
+  function extraHasContent(entry){return ['description','results','difficulties','upcoming','evidence'].some(key=>String(entry[key]||'').trim());}
+  function openExtra(entry){
+    const target=entry.kind==='task'?taskById(entry.id):wpById(entry.id);state.extraEditing=entry;
+    $('extra-editor-title').textContent=`${entry.id} — ${target.title}`;$('extra-editor-months').textContent=`Voluntary ${entry.kind==='task'?'Task':'Work Package'} contribution · Selected months: ${monthCodes(entry.months)}`;
+    $('extra-agreement-summary').textContent=entry.kind==='task'?'Read full Task description':'Read full Work Package objectives';
+    if(entry.kind==='task')renderAgreementTask($('extra-agreement-text'),entry.id);else renderAgreementObjectives($('extra-agreement-text'),entry.id);
+    for(const [id,key] of [['extra-description','description'],['extra-results','results'],['extra-difficulties','difficulties'],['extra-upcoming','upcoming'],['extra-evidence','evidence']])$(id).value=entry[key]||'';
+    $('extra-editor-message').hidden=true;setExtraEditor(true);scrollTo($('extra-editor'));
+  }
+  function captureExtra(){const entry=state.extraEditing;if(!entry)return;const before=JSON.stringify([entry.description,entry.results,entry.difficulties,entry.upcoming,entry.evidence]);for(const [id,key] of [['extra-description','description'],['extra-results','results'],['extra-difficulties','difficulties'],['extra-upcoming','upcoming'],['extra-evidence','evidence']])entry[key]=value(id);if(entry.status==='completed'&&before!==JSON.stringify([entry.description,entry.results,entry.difficulties,entry.upcoming,entry.evidence]))entry.status='draft';}
+  $('extra-editor').addEventListener('input',captureExtra);
+  $('extra-back').addEventListener('click',()=>{captureExtra();const entry=state.extraEditing;if(!extraHasContent(entry))state.extras=state.extras.filter(row=>row!==entry);state.extraEditing=null;setExtraEditor(false);renderOverview();scrollTo($('extra-contributions'));});
+  $('extra-back-top').addEventListener('click',()=>$('extra-back').click());
+  $('extra-done').addEventListener('click',()=>{captureExtra();const entry=state.extraEditing;if(!entry.description&&!entry.results){$('extra-editor-message').textContent='Describe activities carried out or results achieved before completing this contribution.';$('extra-editor-message').hidden=false;return;}entry.status='completed';state.extraEditing=null;setExtraEditor(false);renderOverview();scrollTo($('extra-contributions'));});
   $('extra-kind').addEventListener('change',()=>{state.extraDraftMonths=new Set();renderExtras(period());});
   $('extra-target').addEventListener('change',()=>{state.extraDraftMonths=new Set();renderExtras(period());});
   $('add-extra').addEventListener('click',()=>{
-    const p=period(),kind=value('extra-kind'),id=value('extra-target'),target=kind==='task'?taskById(id):wpById(id),months=[...$('extra-months').querySelectorAll('input:checked')].map(row=>row.value),description=value('extra-description'),evidence=value('extra-evidence');
-    if(!p||!target||!months.length||!months.every(m=>p.selected_months.includes(m)&&model.active(target,model.projectMonth(config,m)))||(kind==='task'?model.assigned(target,state.partner.code,config):target.lead===state.partner.code)){$('extra-message').textContent='Choose an eligible item and at least one active selected month.';return;}
-    if(!description){$('extra-message').textContent='Describe the contribution before adding it.';return;}
-    const existing=state.extras.findIndex(row=>row.kind===kind&&row.id===id);
-    const entry={kind,id,months,description,evidence};if(existing>=0)state.extras[existing]=entry;else state.extras.push(entry);
-    $('extra-description').value='';$('extra-evidence').value='';state.extraDraftMonths=new Set();renderOverview();$('extra-message').textContent=`${id} additional contribution added. You can update it by entering a new contribution for the same item.`;
+    const p=period(),kind=value('extra-kind'),id=value('extra-target'),target=kind==='task'?taskById(id):wpById(id),months=[...$('extra-months').querySelectorAll('input:checked')].map(row=>row.value);
+    if(!p||!target||!months.length||!months.every(m=>p.selected_months.includes(m)&&model.active(target,model.projectMonth(config,m)))||(kind==='task'?model.assigned(target,state.partner.code,config):target.lead===state.partner.code)){$('extra-message').textContent='Choose an eligible item and at least one active selected month.';$('extra-message').hidden=false;return;}
+    let entry=state.extras.find(row=>row.kind===kind&&row.id===id);if(entry){if(JSON.stringify(entry.months)!==JSON.stringify(months)){entry.months=months;entry.status='draft';}}else{entry={kind,id,months,description:'',results:'',difficulties:'',upcoming:'',evidence:'',status:'draft'};state.extras.push(entry);}
+    state.extraDraftMonths=new Set();openExtra(entry);
   });
   function kpiDefinition(id){return kpiCatalogue.find(item=>item.id===id);}
   function kpiType(item){return item?.unit==='status'?'status':item?.unit==='%'?'percent':['EUR','minutes'].includes(item?.unit)?'decimal':'count';}
   function renderKpis(){
-    const target=$('kpi-target'),previous=target.value;target.replaceChildren();
-    if(!kpiCatalogue.length){target.append(new Option('Indicators are loading…',''));$('add-kpi').disabled=true;return;}
-    const rows=[...kpiCatalogue].sort((a,b)=>state.reportType==='communication'?(a.group==='Reach'?0:1)-(b.group==='Reach'?0:1):0);
-    for(const item of rows)target.append(new Option(`${item.group} · ${item.name} (${item.unit})`,item.id));
-    if(kpiDefinition(previous))target.value=previous;
-    $('add-kpi').disabled=false;
-    renderKpiInput();
+    const catalogueHost=$('kpi-catalogue-list');catalogueHost.replaceChildren();
+    if(!kpiCatalogue.length){catalogueHost.append(textNode('p','Indicators are unavailable.','field-help'));$('kpi-editor').hidden=true;return;}
+    const groups=new Map();for(const item of kpiCatalogue){if(!groups.has(item.group))groups.set(item.group,[]);groups.get(item.group).push(item);}
+    for(const [group,items] of groups){const details=document.createElement('details');details.className='kpi-report-group';if(group==='Reach'||groups.size===1)details.open=true;
+      details.append(textNode('summary',`${group} · ${items.length} indicators`));const rows=textNode('div','','kpi-report-rows');
+      for(const item of items){const card=textNode('article','','kpi-report-row'),identity=textNode('div','','kpi-report-identity');identity.append(textNode('strong',item.name),textNode('small',`Agreement target: ${item.target} · Unit: ${item.unit}`));
+        const action=textNode('button',state.kpis.has(item.id)?'Edit value':'Report value','button button-secondary');action.type='button';action.addEventListener('click',()=>selectKpi(item.id));card.append(identity,action);rows.append(card);}details.append(rows);catalogueHost.append(details);}
     const list=$('kpi-list');list.replaceChildren();
     for(const entry of state.kpis.values()){
       const card=textNode('article','','extra-entry');card.append(textNode('strong',entry.name),textNode('small',`${entry.value}${entry.unit==='%'?'%':entry.unit==='status'?'':` ${entry.unit}`} · ${entry.proof_status==='uploaded'?'Proof uploaded':'Proof to upload'}`),textNode('p',`Evidence: ${entry.evidence}`));
       const remove=textNode('button','Remove','text-button');remove.type='button';remove.addEventListener('click',()=>{state.kpis.delete(entry.id);renderKpis();});card.append(remove);list.append(card);
     }
+    if(value('kpi-target'))renderKpiInput();
   }
+  function selectKpi(id){const item=kpiDefinition(id),saved=state.kpis.get(id);if(!item)return;$('kpi-target').value=id;$('kpi-editor').hidden=false;$('kpi-editor-title').textContent=item.name;renderKpiInput();$('kpi-value').value=saved&&typeof saved.value==='number'?String(saved.value):'';$('kpi-status').value=saved&&typeof saved.value==='string'?saved.value:'';$('kpi-basis').value=saved?.basis||'';$('kpi-evidence').value=saved?.evidence||'';document.querySelectorAll('input[name="kpi-proof"]').forEach(input=>input.checked=input.value===saved?.proof_status);$('kpi-message').hidden=true;scrollTo($('kpi-editor'));}
   function renderKpiInput(){const item=kpiDefinition(value('kpi-target')),type=kpiType(item);$('kpi-numeric-field').hidden=type==='status';$('kpi-status-field').hidden=type!=='status';$('kpi-basis-field').hidden=type!=='percent';$('kpi-unit-note').textContent=item?`${item.unit} · Agreement target: ${item.target}`:'';$('kpi-guidance').textContent=item?`Measurement breakdown: ${item.breakdown}. ${item.source_note||''}`:'';$('kpi-value').step=type==='count'?'1':'0.01';$('kpi-value').max=type==='percent'?'100':'';}
-  $('kpi-target').addEventListener('change',()=>{$('kpi-value').value='';$('kpi-status').value='';$('kpi-basis').value='';renderKpiInput();});
   $('add-kpi').addEventListener('click',()=>{
     const item=kpiDefinition(value('kpi-target')),type=kpiType(item),raw=value('kpi-value'),status=value('kpi-status'),proof=document.querySelector('input[name="kpi-proof"]:checked')?.value,evidence=value('kpi-evidence'),basis=value('kpi-basis');
-    if(!item){$('kpi-message').textContent='Choose an indicator.';return;}
-    if(type==='status'?!['in_progress','achieved'].includes(status):!Number.isFinite(Number(raw))||raw===''||Number(raw)<0||Number(raw)>1e12||(type==='count'&&!validCount(raw))||(type!=='count'&&!/^\d+(?:\.\d{1,2})?$/.test(raw))||(type==='percent'&&Number(raw)>100)){ $('kpi-message').textContent=`Enter a valid ${item.unit} value.`;return;}
-    if(type==='percent'&&!basis){$('kpi-message').textContent='Explain the numerator, denominator and source for this percentage.';return;}
-    if(!evidence||!['uploaded','will_upload'].includes(proof)){$('kpi-message').textContent='Add an evidence reference and confirm when the proof is or will be on Nextcloud.';return;}
+    if(!item){$('kpi-message').textContent='Choose an indicator.';$('kpi-message').hidden=false;return;}
+    if(type==='status'?!['in_progress','achieved'].includes(status):!Number.isFinite(Number(raw))||raw===''||Number(raw)<0||Number(raw)>1e12||(type==='count'&&!validCount(raw))||(type!=='count'&&!/^\d+(?:\.\d{1,2})?$/.test(raw))||(type==='percent'&&Number(raw)>100)){ $('kpi-message').textContent=`Enter a valid ${item.unit} value.`;$('kpi-message').hidden=false;return;}
+    if(type==='percent'&&!basis){$('kpi-message').textContent='Explain the numerator, denominator and source for this percentage.';$('kpi-message').hidden=false;return;}
+    if(!evidence||!['uploaded','will_upload'].includes(proof)){$('kpi-message').textContent='Add an evidence reference and confirm when the proof is or will be on Nextcloud.';$('kpi-message').hidden=false;return;}
     state.kpis.set(item.id,{id:item.id,name:item.name,unit:item.unit,group:item.group,value:type==='status'?status:Number(raw),basis:type==='percent'?basis:'',evidence,proof_status:proof});
-    $('kpi-value').value='';$('kpi-status').value='';$('kpi-basis').value='';$('kpi-evidence').value='';document.querySelectorAll('input[name="kpi-proof"]').forEach(input=>input.checked=false);renderKpis();$('kpi-message').textContent=`${item.name} added to this report. The coordinator will review it before the dashboard is updated.`;
+    $('kpi-value').value='';$('kpi-status').value='';$('kpi-basis').value='';$('kpi-evidence').value='';$('kpi-target').value='';$('kpi-editor').hidden=true;document.querySelectorAll('input[name="kpi-proof"]').forEach(input=>input.checked=false);renderKpis();$('kpi-message').textContent=`${item.name} saved in this report for coordinator review.`;$('kpi-message').hidden=false;
   });
-  kpiReady=fetch('assets/dashboard-catalogue.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error('Indicator catalogue unavailable');return response.json();}).then(data=>{if(!Array.isArray(data.kpis))throw new Error('Indicator catalogue invalid');kpiCatalogue=data.kpis;renderKpis();}).catch(error=>{$('kpi-message').textContent=`Could not load indicators: ${error.message}`;});
+  try {const data=window.AISHA_EMBEDDED_DATA?.catalogue;if(!Array.isArray(data?.kpis))throw new Error('Indicator catalogue unavailable');kpiCatalogue=data.kpis;renderKpis();}catch(error){$('kpi-message').textContent=`Could not load indicators: ${error.message}`;}
   function emptyWp() { return { status:'draft', progress:'', coordination:'', difficulties:'', next:'', support:'', task_updates:{} }; }
   function hasWpContribution(entry) { return ['progress','coordination','difficulties','next','support'].some(k => String(entry[k] || '').trim()) || Object.values(entry.task_updates || {}).some(row => ['status','progress','blocker','next'].some(k => String(row[k] || '').trim())); }
   function renderWpLeadership(p) {
@@ -459,7 +484,7 @@
     reconcileSelectedCoverage(oldPeriod,period());
     renderOverview();
   });
-  window.addEventListener('aisha:contributor-ready', event => { if (state.partner && state.partner.code !== event.detail.partner.code) { state.selected = new Map(); state.wpUpdates=new Map(); state.extras=[];state.kpisByType={tasks:new Map(),communication:new Map()}; state.kpis=new Map();state.extraDraftMonths=new Set(); state.selectedMonths = new Set(); state.lastPeriod = null; state.reportType = null; state.revision = 1; state.reviewed = null; state.editing = null; state.wpEditing = null; $('report-revision').value = '1'; $('report-start').value = ''; $('report-end').value = ''; commForm.reset(); $('comm-events-list').replaceChildren(); $('comm-reach-unknown').checked = false; $('comm-enrolments-unknown').checked = false; updateConditions(); for (const url of state.urls) URL.revokeObjectURL(url); state.urls = []; if (state.taskPdfUrl) URL.revokeObjectURL(state.taskPdfUrl); state.taskPdfUrl = null; for (const dialog of document.querySelectorAll('dialog[open]')) dialog.close(); } state.partner = event.detail.partner; state.contributor = event.detail.contributor; $('report-workspace').hidden = true; $('review-section').hidden = true; $('submission-section').hidden = true; });
+  window.addEventListener('aisha:contributor-ready', event => { if (state.partner && state.partner.code !== event.detail.partner.code) { state.selected = new Map(); state.wpUpdates=new Map(); state.extras=[];state.extraEditing=null;state.kpisByType={tasks:new Map(),communication:new Map()}; state.kpis=new Map();state.extraDraftMonths=new Set(); state.selectedMonths = new Set(); state.lastPeriod = null; state.reportType = null; state.revision = 1; state.reviewed = null; state.editing = null; state.wpEditing = null; $('report-revision').value = '1'; $('report-start').value = ''; $('report-end').value = ''; commForm.reset(); $('comm-events-list').replaceChildren(); $('comm-reach-unknown').checked = false; $('comm-enrolments-unknown').checked = false; updateConditions(); for (const url of state.urls) URL.revokeObjectURL(url); state.urls = []; if (state.taskPdfUrl) URL.revokeObjectURL(state.taskPdfUrl); state.taskPdfUrl = null; for (const dialog of document.querySelectorAll('dialog[open]')) dialog.close(); } state.partner = event.detail.partner; state.contributor = event.detail.contributor; $('report-workspace').hidden = true; $('review-section').hidden = true; $('submission-section').hidden = true; });
   window.addEventListener('aisha:edit-details', () => { $('report-workspace').hidden = true; $('review-section').hidden = true; $('submission-section').hidden = true; });
   window.addEventListener('aisha:report-selected', event => {
     const chosenType = event.detail.reportType === 'task' ? 'tasks' : 'communication';
@@ -469,10 +494,9 @@
     clearError(); message('');
     const tasks = state.reportType === 'tasks';
     $('overview-import').hidden = !tasks;
-    $('draft-pdf-choice').hidden = !tasks;
     $('selected-task-summary').hidden = !tasks;
     $('kpi-reporting').hidden = false;
-    $('task-picker').hidden = !tasks; taskForm.hidden = true; $('wp-leader-form').hidden = true; commForm.hidden = tasks; $('back-to-choice').hidden=false;
+    $('task-picker').hidden = !tasks; taskForm.hidden = true; $('wp-leader-form').hidden = true; $('extra-editor').hidden=true;commForm.hidden = tasks; $('back-to-choice').hidden=false;
     $('draft-actions').hidden = false; $('revision-controls').hidden = false; $('report-form-actions').hidden = false;
     $('workspace-title').textContent = tasks ? 'Build your partner report' : 'Communication & Dissemination';
     $('review-report').innerHTML = tasks ? 'Review full report before submission <span aria-hidden="true">→</span>' : 'Review communication report <span aria-hidden="true">→</span>';
@@ -511,7 +535,7 @@
         if (!['completed','no_work'].includes(entry.status)) return fail(`Finish the leadership update for ${id}, declare no Work Package work, or remove it.`);
         if (entry.status === 'no_work' && hasWpContribution(entry)) return fail(`Clear the leadership update for ${id} before declaring no Work Package work.`);
       }
-      for(const entry of state.extras){const item=entry.kind==='task'?taskById(entry.id):wpById(entry.id);if(!item||!entry.description.trim()||!entry.months.length||entry.months.some(m=>!p.selected_months.includes(m)||!model.active(item,model.projectMonth(config,m)))||(entry.kind==='task'?model.assigned(item,state.partner.code,config):item.lead===state.partner.code))return fail(`Review additional contribution ${entry.id} and its selected months.`);}
+      for(const entry of state.extras){const item=entry.kind==='task'?taskById(entry.id):wpById(entry.id);if(!item||entry.status!=='completed'||!(entry.description||entry.results)||!entry.months.length||entry.months.some(m=>!p.selected_months.includes(m)||!model.active(item,model.projectMonth(config,m)))||(entry.kind==='task'?model.assigned(item,state.partner.code,config):item.lead===state.partner.code))return fail(`Finish additional contribution ${entry.id}, or remove it before generating the report.`);}
       return true;
     }
     const start = value('comm-start'), end = value('comm-end');
@@ -548,7 +572,7 @@
     const tasks = state.reportType === 'tasks';
     const p = tasks ? (period() || { start: value('report-start'), end: value('report-end'), start_project_month: null, end_project_month: null, start_code: null, end_code: null, selected_months: sortedMonths() }) : { start: value('comm-start'), end: value('comm-end') };
     const key = tasks ? `${state.partner.code}:TASKS:${p.start}:${p.end}` : `${state.partner.code}:COMM:${p.start}:${p.end}`;
-    const base = { schema_version: tasks ? '2.3' : '1.2', project: 'AISHA', document_kind: kind, report_type: tasks ? 'tasks' : 'communication', report_key: key, revision: state.revision, partner: { code: state.partner.code, name: state.partner.name, kind: state.partner.kind || 'beneficiary' }, contributor: { ...state.contributor }, reporting_period: p, generated_at: kind === 'submission' ? new Date().toISOString() : null, kpi_contributions:[...state.kpis.values()] };
+    const base = { schema_version: tasks ? '2.4' : '1.2', project: 'AISHA', document_kind: kind, report_type: tasks ? 'tasks' : 'communication', report_key: key, revision: state.revision, partner: { code: state.partner.code, name: state.partner.name, kind: state.partner.kind || 'beneficiary' }, contributor: { ...state.contributor }, reporting_period: p, generated_at: kind === 'submission' ? new Date().toISOString() : null, kpi_contributions:[...state.kpis.values()] };
     if (tasks) {
       base.tasks = [...state.selected].map(([id, answers]) => { const task = taskById(id); const months = p.selected_months.filter(m => m >= answers.coverage_start.slice(0,7) && m <= answers.coverage_end.slice(0,7) && model.active(task,model.projectMonth(config,m))); return { id, title: task.title, work_package: task.wp, task_lead: task.lead, partner_role: model.role(task, state.partner.code, config), work_status: answers.status || 'draft', coverage: { start: answers.coverage_start, end: answers.coverage_end, months }, agreement_source_page: task.sourcePage, answers: kind === 'draft' ? { ...answers } : finalTaskAnswers(answers) }; });
       base.work_package_leadership=[...state.wpUpdates].map(([id,entry])=>{const wp=wpById(id);return {id,title:wp.title,leader:wp.lead,work_status:entry.status,coverage:{months:activeWpMonths(wp,p)},answers:{progress:entry.progress,coordination:entry.coordination,difficulties:entry.difficulties,next:entry.next,support:entry.support},task_updates:Object.entries(entry.task_updates).filter(([taskId])=>{const t=taskById(taskId);return t && p.selected_months.some(m=>model.active(t,model.projectMonth(config,m)));}).map(([taskId,row])=>({id:taskId,title:taskById(taskId).title,task_lead:taskById(taskId).lead,...row}))};});
@@ -588,11 +612,15 @@
   }
   $('close-individual-pdf').addEventListener('click', () => $('individual-pdf-dialog').close());
   $('download-individual-pdf').addEventListener('click', event => { if (event.currentTarget.getAttribute('aria-disabled') === 'true') event.preventDefault(); });
-  $('save-draft').addEventListener('click', () => { try { const r = record('draft'); if (localStorage.getItem(draftKey()) && !window.confirm('Saving will replace the existing browser draft for this partner and report type. Download a draft file first if you want to keep both. Continue?')) return; localStorage.setItem(draftKey(), JSON.stringify(r)); message('Whole-report browser draft saved on this device. Download a draft file as a backup.'); } catch (error) { message(`Could not save browser draft: ${error.message}`); } });
+  $('open-draft-downloads').addEventListener('click',()=>{$('download-draft-pdf').hidden=state.reportType!=='tasks';$('draft-dialog-description').textContent=state.reportType==='tasks'?'The PDF is readable and can be reopened in this platform. The JSON file is an additional editable backup. You can download both.':'Download the editable JSON draft to continue this communication report later. The readable PDF is generated after review.';$('draft-download-dialog').showModal();});
+  $('close-draft-downloads').addEventListener('click',()=>{$('draft-download-dialog').close();});
+  $('open-browser-draft').addEventListener('click',()=>{$('browser-draft-dialog').showModal();});
+  $('close-browser-draft').addEventListener('click',()=>{$('browser-draft-dialog').close();});
+  $('save-draft').addEventListener('click', () => { try { const r = record('draft'); localStorage.setItem(draftKey(), JSON.stringify(r)); message('Browser draft saved on this device. Download a draft file as a portable backup.'); } catch (error) { message(`Could not save browser draft: ${error.message}`); } });
   $('download-draft').addEventListener('click', () => { try { const r = record('draft'); download(new Blob([JSON.stringify(r,null,2)],{type:'application/json'}),`${filename(r,true)}.json`); message('Whole-report draft file downloaded.'); } catch (error) { message(`Could not download draft: ${error.message}`); } });
   $('download-draft-pdf').addEventListener('click', async () => {try {if(!period())throw new Error('Select project months first.');const editable=record('draft'),display=record('submission');display.document_kind='draft';display.pdf_kind='draft_report';display.generated_at=new Date().toISOString();download(await window.AISHA_PDF.createPdf(display,editable),`${filename(editable,true)}.pdf`);message('Readable draft PDF downloaded. It also contains your editable AISHA draft data for reopening here.');}catch(error){message(`Could not download draft PDF: ${error.message}`);}});
-  $('load-browser-draft').addEventListener('click', async () => { try { await kpiReady; const saved = localStorage.getItem(draftKey()); if (!saved) return message('No browser draft was found for this partner and report type.'); if (!window.confirm('Restoring the browser draft will replace the report currently on screen. Download the current draft first if you want to keep it. Continue?')) return; restore(JSON.parse(saved)); } catch (error) { message(`Could not load browser draft: ${error.message}`); } });
-  $('delete-browser-draft').addEventListener('click', () => { try { if (!localStorage.getItem(draftKey())) return message('No browser draft was found for this partner and report type.'); if (!window.confirm('Delete the saved browser draft for this partner and report type? This cannot be undone.')) return; localStorage.removeItem(draftKey()); message('Browser draft deleted.'); } catch { message('Browser storage is unavailable.'); } });
+  $('load-browser-draft').addEventListener('click', async () => { try { await kpiReady; const saved = localStorage.getItem(draftKey()); if (!saved) { $('browser-draft-dialog').close();return message('No browser draft was found for this partner and report type.'); } restore(JSON.parse(saved));$('browser-draft-dialog').close(); } catch (error) { $('browser-draft-dialog').close();message(`Could not load browser draft: ${error.message}`); } });
+  $('delete-browser-draft').addEventListener('click', () => { try { if (!localStorage.getItem(draftKey())) { $('browser-draft-dialog').close();return message('No browser draft was found for this partner and report type.'); } localStorage.removeItem(draftKey());$('browser-draft-dialog').close();message('Browser draft deleted.'); } catch { $('browser-draft-dialog').close();message('Browser storage is unavailable.'); } });
 
   function importedTaskAnswers(a, status) {
     if (!a || ['activities_carried_out','results_achieved','difficulties_encountered','upcoming_activities','additional_comments'].some(k=>typeof a[k] !== 'string' || a[k].length > 100000)) throw new Error('A Task answer is invalid.');
@@ -604,7 +632,7 @@
     return { status, activities_carried_out:a.activities_carried_out, results_achieved:a.results_achieved, difficulties_encountered:a.difficulties_encountered, raw_costs:cost.amount || '', raw_costs_note:cost.note, upcoming_activities:a.upcoming_activities, additional_comments:a.additional_comments, significant_issue:a.significant_issue === null ? '' : a.significant_issue ? 'yes' : 'no', severity:a.severity || '', coordinator_action_required:a.coordinator_action_required === null ? '' : a.coordinator_action_required ? 'yes' : 'no', coordinator_support_request:a.coordinator_support_request || '' };
   }
   function importedAsDraft(r) {
-    if (!r || r.project !== 'AISHA' || r.report_type !== 'tasks' || !['submission','individual_task_copy'].includes(r.document_kind) || !['2.0','2.1','2.2','2.3'].includes(r.schema_version)) throw new Error('Choose an AISHA Task report generated by this tool.');
+    if (!r || r.project !== 'AISHA' || r.report_type !== 'tasks' || !['submission','individual_task_copy'].includes(r.document_kind) || !['2.0','2.1','2.2','2.3','2.4'].includes(r.schema_version)) throw new Error('Choose an AISHA Task report generated by this tool.');
     if (r.partner?.code !== state.partner.code || r.partner?.name !== state.partner.name) throw new Error('The report belongs to another partner. Select that partner before importing.');
     if (!r.contributor || ['name','role','email'].some(k=>typeof r.contributor[k] !== 'string' || !r.contributor[k].trim() || r.contributor[k].length > 300)) throw new Error('Contributor details are invalid.');
     const months=r.reporting_period?.selected_months || model.monthsBetween(config,r.reporting_period?.start || '',r.reporting_period?.end || '');
@@ -613,7 +641,7 @@
     const seen=new Set(), tasks=[];
     for(const item of r.tasks){
       const task=taskById(item.id), coverage=task && model.taskCoverage(config,task,p.start,p.end,p.selected_months);
-      const expectedRole=task?model.role(task,state.partner.code,config):null,legacyRole=r.schema_version!=='2.3'&&expectedRole==='Voluntary associated partner participant'&&item.partner_role==='Named participant';
+      const expectedRole=task?model.role(task,state.partner.code,config):null,legacyRole=!['2.3','2.4'].includes(r.schema_version)&&expectedRole==='Voluntary associated partner participant'&&item.partner_role==='Named participant';
       if(!task || !model.assigned(task,state.partner.code,config) || !coverage || seen.has(task.id) || item.title !== task.title || item.work_package !== task.wp || item.task_lead !== task.lead || (item.partner_role !== expectedRole&&!legacyRole))throw new Error('A Task does not match the partner’s listed assignment.');
       const start=item.coverage?.start,end=item.coverage?.end, expected=coverage.months.filter(m=>m >= start?.slice(0,7) && m <= end?.slice(0,7));
       if(!model.rangePeriod(config,start,end) || start < coverage.start || end > coverage.end || !expected.length || expected[0] !== start.slice(0,7) || expected.at(-1) !== end.slice(0,7) || (r.schema_version !== '2.0' && JSON.stringify(item.coverage.months) !== JSON.stringify(expected)))throw new Error(`Task dates or months are invalid for ${task.id}.`);
@@ -634,7 +662,7 @@
     }
     if(r.document_kind === 'individual_task_copy' && (tasks.length !== 1 || wpItems.length))throw new Error('Individual Task PDF data is invalid.');
     if(!tasks.length && !wpItems.length && !(r.additional_contributions||[]).length && !(r.kpi_contributions||[]).length)throw new Error('The report contains no contribution.');
-    return {...r,schema_version:'2.3',document_kind:'draft',reporting_period:p,tasks,work_package_leadership:wpItems,additional_contributions:r.additional_contributions||[],kpi_contributions:r.kpi_contributions||[],generated_at:null,saved_at:new Date().toISOString()};
+    return {...r,schema_version:'2.4',document_kind:'draft',reporting_period:p,tasks,work_package_leadership:wpItems,additional_contributions:r.additional_contributions||[],kpi_contributions:r.kpi_contributions||[],generated_at:null,saved_at:new Date().toISOString()};
   }
   let taskImportTarget=null, pendingWholeImport=null;
   function openTaskImport(task){
@@ -699,15 +727,17 @@
   }
   function validatedExtras(entries,p){
     if(!Array.isArray(entries)||entries.length>config.tasks.length+config.workPackages.length)throw new Error('Additional contributions are invalid.');
-    const seen=new Set();return entries.map(entry=>{const item=entry.kind==='task'?taskById(entry.id):entry.kind==='work_package'?wpById(entry.id):null,key=`${entry.kind}:${entry.id}`;if(!item||seen.has(key)||entry.title!==item.title||entry.assignment_basis!=='voluntary_unlisted'||(entry.kind==='task'?model.assigned(item,state.partner.code,config):item.lead===state.partner.code)||!Array.isArray(entry.months)||!entry.months.length||entry.months.length>48||entry.months.some(m=>!p.selected_months.includes(m)||!model.active(item,model.projectMonth(config,m)))||typeof entry.description!=='string'||!entry.description.trim()||entry.description.length>100000||typeof entry.evidence!=='string'||entry.evidence.length>10000)throw new Error(`Additional contribution ${entry.id||''} is invalid.`);seen.add(key);return {kind:entry.kind,id:entry.id,months:entry.months,description:entry.description,evidence:entry.evidence};});
+    const seen=new Set();return entries.map(entry=>{const item=entry.kind==='task'?taskById(entry.id):entry.kind==='work_package'?wpById(entry.id):null,key=`${entry.kind}:${entry.id}`,status=entry.status||'completed',results=entry.results||'',difficulties=entry.difficulties||'',upcoming=entry.upcoming||'';
+      if(!item||seen.has(key)||entry.title!==item.title||entry.assignment_basis!=='voluntary_unlisted'||(entry.kind==='task'?model.assigned(item,state.partner.code,config):item.lead===state.partner.code)||!Array.isArray(entry.months)||!entry.months.length||entry.months.length>48||entry.months.some(m=>!p.selected_months.includes(m)||!model.active(item,model.projectMonth(config,m)))||!['draft','completed'].includes(status)||['description','evidence'].some(field=>typeof entry[field]!=='string'||entry[field].length>(field==='evidence'?10000:100000))||[results,difficulties,upcoming].some(field=>typeof field!=='string'||field.length>100000)||(status==='completed'&&!(entry.description||results).trim()))throw new Error(`Additional contribution ${entry.id||''} is invalid.`);
+      seen.add(key);return {kind:entry.kind,id:entry.id,months:entry.months,description:entry.description,results,difficulties,upcoming,evidence:entry.evidence,status};});
   }
   function restore(r) {
     if (!r || r.project !== 'AISHA' || r.document_kind !== 'draft' || r.partner?.code !== state.partner.code || r.report_type !== state.reportType) throw new Error('Choose the draft’s partner and report type before loading it.');
-    if (!['2.0','2.1','2.2','2.3','1.1','1.2'].includes(r.schema_version)) throw new Error('Unsupported draft version.');
+    if (!['2.0','2.1','2.2','2.3','2.4','1.1','1.2'].includes(r.schema_version)) throw new Error('Unsupported draft version.');
     if (!r.contributor || ['name','role','email'].some(k => typeof r.contributor[k] !== 'string' || r.contributor[k].length > 300)) throw new Error('Invalid contributor details.');
     const importedKpis=validatedKpiEntries(r.kpi_contributions||[]);
     if (state.reportType === 'tasks') {
-      if (!['2.0','2.1','2.2','2.3'].includes(r.schema_version) || !Array.isArray(r.tasks)) throw new Error('This is not a whole-partner Task draft.');
+      if (!['2.0','2.1','2.2','2.3','2.4'].includes(r.schema_version) || !Array.isArray(r.tasks)) throw new Error('This is not a whole-partner Task draft.');
       const selectedMonths = r.reporting_period?.selected_months || model.monthsBetween(config,r.reporting_period?.start || '',r.reporting_period?.end || '');
       if (!Array.isArray(selectedMonths) || selectedMonths.length > config.project.durationMonths) throw new Error('Draft month selection is invalid.');
       const p = model.rangePeriod(config, r.reporting_period?.start, r.reporting_period?.end, selectedMonths);
@@ -760,7 +790,7 @@
     if (r.report_type === 'tasks') {
       for (const item of r.tasks) { const a = item.answers; reviewGroup(host,`${item.id} — ${item.title}`,[['Work Package',item.work_package],['Your role',item.partner_role === 'Task lead (COO)' ? 'Task leader' : 'Task participant'],['Task leader',item.task_lead],['Work reported',item.work_status === 'no_work' ? 'No work carried out' : 'Contribution completed'],['Task coverage',`${item.coverage.start} to ${item.coverage.end}`],['Task months',item.coverage.months.join(', ')],...(item.work_status === 'no_work' ? [] : [['Activities carried out',a.activities_carried_out],['Results achieved',a.results_achieved],['Difficulties encountered',a.difficulties_encountered],...(state.partner.kind === 'associated_partner' ? [] : [['Raw costs',`${a.raw_costs_incurred.amount === null ? 'Not provided' : `${a.raw_costs_incurred.amount} EUR`}${a.raw_costs_incurred.note ? ` · ${a.raw_costs_incurred.note}` : ''}`]]),['Upcoming activities',a.upcoming_activities],['Additional comments',a.additional_comments],['Significant issue',a.significant_issue],['Severity',a.severity],['Coordinator action required',a.coordinator_action_required],['Support requested',a.coordinator_support_request]])]); }
       for(const wp of r.work_package_leadership || []) {reviewGroup(host,`${wp.id} — ${wp.title} · leadership update`,[['Leader',wp.leader],['Selected months',wp.coverage.months.join(', ')],['Work declared',wp.work_status === 'no_work' ? 'No Work Package work carried out' : 'Leadership update completed'],...(wp.work_status === 'no_work' ? [] : [['Progress and achievements',wp.answers.progress],['Coordination and integration',wp.answers.coordination],['Difficulties and dependencies',wp.answers.difficulties],['Next priorities',wp.answers.next],['Support needed',wp.answers.support]])]);if(wp.work_status !== 'no_work')for(const row of wp.task_updates)reviewGroup(host,`${row.id} — Work Package leader assessment`,[['Status',assessmentLabel(row.status)],['Progress',row.progress],['Blocker',row.blocker],['Next action',row.next]]);}
-      for(const entry of r.additional_contributions||[])reviewGroup(host,`${entry.id} — ${entry.title} · additional voluntary contribution`,[['Scope',entry.kind==='task'?'Task':'Work Package'],['Months',entry.months.join(', ')],['Activities and results',entry.description],['Evidence reference',entry.evidence]]);
+      for(const entry of r.additional_contributions||[])reviewGroup(host,`${entry.id} — ${entry.title} · additional voluntary contribution`,[['Scope',entry.kind==='task'?'Task':'Work Package'],['Months',entry.months.join(', ')],['Activities carried out',entry.description],['Results achieved',entry.results],['Difficulties encountered',entry.difficulties],['Upcoming activities',entry.upcoming],['Evidence reference',entry.evidence]]);
     }
     else { const a = r.answers; reviewGroup(host,'Communication activities',[['Events organised',a.events_organised],['Events',a.events.map(x => `${x.description} (${x.participants} participants)`)],['Media outreach',a.media_outreach],['Journalists contacted',a.journalists_contacted],['Media outlets contacted',a.media_outlets_contacted],['Media details',a.media_details],['Website articles published',a.website_articles_published],['Website articles',a.website_articles.map(x => `${x.url}${x.details ? ` · ${x.details}` : ''}`)],['Social posts',a.social_posts_count],['Social links',a.social_post_urls],['Social details',a.social_details],['Email/newsletter sent',a.email_or_newsletter_sent],['Estimated recipients',a.estimated_recipients],['Email details',a.email_details],['Other activities',a.other_activities_or_materials],['Estimated reach',a.estimated_people_reached],['Pre-registrations/enrolments',a.preregistrations_or_enrolments],['Coordinator support required',a.coordinator_support_required],['Support requested',a.coordinator_support_request]]); }
     for(const entry of r.kpi_contributions||[])reviewGroup(host,`${entry.name} · direct KPI contribution`,[['Measured value',`${entry.value}${entry.unit==='%'?'%':entry.unit==='status'?'':` ${entry.unit}`}`],...(entry.basis?[['Calculation basis',entry.basis]]:[]),['Evidence reference',entry.evidence],['Nextcloud proof',entry.proof_status==='uploaded'?'Already uploaded':'Will upload after downloading']]);

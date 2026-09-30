@@ -165,7 +165,11 @@
           section(`${entry.id} — ${entry.title}`);
           pair("Contribution scope", `${entry.kind === "task" ? "Task" : "Work Package"} outside the partner's listed assignments`);
           pair("Months covered", entry.months.join(", "));
-          pair("Activities and results", entry.description);
+          pair("Report status", entry.status === "draft" ? "Draft in progress" : "Contribution completed");
+          pair("Activities carried out", entry.description);
+          pair("Results achieved", entry.results);
+          pair("Difficulties encountered", entry.difficulties);
+          pair("Upcoming activities", entry.upcoming);
           pair("Evidence reference", entry.evidence);
         }
       }
