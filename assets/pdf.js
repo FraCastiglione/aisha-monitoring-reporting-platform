@@ -159,6 +159,16 @@
           }
         }
       }
+      if (report.additional_contributions?.length) {
+        section("Additional voluntary contributions");
+        for (const entry of report.additional_contributions) {
+          section(`${entry.id} — ${entry.title}`);
+          pair("Contribution scope", `${entry.kind === "task" ? "Task" : "Work Package"} outside the partner's listed assignments`);
+          pair("Months covered", entry.months.join(", "));
+          pair("Activities and results", entry.description);
+          pair("Evidence reference", entry.evidence);
+        }
+      }
     } else {
       section("Events");
       pair("Events organised", a.events_organised);
@@ -183,6 +193,16 @@
       section("Coordinator support");
       pair("Support required", a.coordinator_support_required);
       pair("Support requested", a.coordinator_support_request || "None");
+    }
+    if (report.kpi_contributions?.length) {
+      section("Direct KPI contributions — for coordinator review");
+      for (const entry of report.kpi_contributions) {
+        section(entry.name);
+        pair("Measured value", `${entry.value}${entry.unit === "%" ? "%" : entry.unit === "status" ? "" : ` ${entry.unit}`}`);
+        if (entry.basis) pair("Percentage calculation", entry.basis);
+        pair("Evidence reference", entry.evidence);
+        pair("Nextcloud proof", entry.proof_status === "uploaded" ? "Partner confirms uploaded" : "Partner confirms they will upload after download");
+      }
     }
 
     pdf.getPages().forEach((sheet, index, pages) => {

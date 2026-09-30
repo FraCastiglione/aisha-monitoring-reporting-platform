@@ -1,5 +1,7 @@
 # Partner reporting assignment audit
 
+**Historical formal-Agreement baseline (before the 30 September 2026 Attachment 6 update).** The associated-partner rows and route total below describe only formal Annex 1 participation. The live reporting platform now includes coordinator-confirmed voluntary Task commitments from Attachment 6. See [the current audit](audit-2026-09-30.md) for the updated partner matrix.
+
 Source: signed AISHA Grant Agreement 101299070, beneficiary and associated-partner lists (PDF pp. 1–3, 10–11, 19–20) and Annex 1 Work Packages and Tasks (PDF pp. 69–88). The participant marked COO is the Task leader. T1.3 assigns all beneficiaries and all associated partners; T3.1 additionally names ADRA. Task 2.1's UVEG is beneficiary 11, whose signed short name is UV.
 
 This audit compares the reporting catalogue with each Agreement Task's participant line, leader and activity months; then checks each of the 42 partner reporting routes in every one of the 48 project months. It also verifies Work Package leadership independently of Task leadership. The M01–M05 column covers May–September 2026. It lists eligible Tasks, not completed reports.
@@ -51,4 +53,4 @@ This audit compares the reporting catalogue with each Agreement Task's participa
 | RT | Associated partner | T1.3 | T1.3 | — | — |
 | SC | Associated partner | T1.3 | T1.3 | — | — |
 
-Associated partners are restricted to T1.3, except ADRA, which is also named in T3.1. Beneficiary-only Tasks are not assigned to them. T9.1's narrative describes an in-kind ADRA outreach role, while its formal Participants line excludes ADRA and names `ALL (BEN)`; the catalogue follows the formal line pending coordinator resolution. The reporting form omits cost fields for associated partners because the Agreement does not allow them to charge costs to the action.
+Under formal Annex 1 participation alone, associated partners appear on T1.3, with ADRA also named in T3.1. This historical baseline excludes the Attachment 6 voluntary commitments now used by the live reporting platform. The reporting form omits cost fields for associated partners because the Agreement does not allow them to charge costs to the action.

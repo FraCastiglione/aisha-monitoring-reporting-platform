@@ -6,24 +6,41 @@
   "snapshot_month": "2026-09",
   "status_source": "Coordinator update supplied in this conversation, late September 2026",
   "deliverable_status": {
-    "D1.1": {"state": "submitted"},
-    "D1.2": {"state": "submitted"},
-    "D10.1": {"state": "submitted"}
+    "D1.1": {
+      "state": "submitted"
+    },
+    "D1.2": {
+      "state": "submitted"
+    },
+    "D10.1": {
+      "state": "submitted"
+    }
   },
   "milestone_status": {
-    "MS1": {"state": "achieved"},
-    "MS17": {"state": "achieved"},
-    "MS19": {"state": "achieved"},
-    "MS20": {"state": "achieved"},
-    "MS21": {"state": "achieved"}
+    "MS1": {
+      "state": "achieved"
+    },
+    "MS17": {
+      "state": "achieved"
+    },
+    "MS19": {
+      "state": "achieved"
+    },
+    "MS20": {
+      "state": "achieved"
+    },
+    "MS21": {
+      "state": "achieved"
+    }
   },
   "reporting_records": [],
   "task_flags": [],
   "task_progress": {},
   "kpi_values": [],
   "planning": {
-    "internal_draft_day": 5,
+    "internal_draft_day": 1,
     "note": "Suggested early-month internal review checkpoint for items with an Agreement due month; not an Agreement deadline."
   },
-  "task_report_deadlines": []
+  "task_report_deadlines": [],
+  "messages": []
 }

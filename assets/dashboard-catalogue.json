@@ -957,5 +957,301 @@
       "breakdown": "Define baseline and comparable annual participation rate",
       "source_page": 113
     }
-  ]
+  ],
+  "commitment_links": {
+    "D1.1": [
+      {
+        "task": "T1.1",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D1.2": [
+      {
+        "task": "T1.2",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D2.1": [
+      {
+        "task": "T2.1",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D2.2": [
+      {
+        "task": "T2.4",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D3.1": [
+      {
+        "task": "T3.1",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D3.2": [
+      {
+        "task": "T3.3",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D4.1": [
+      {
+        "task": "T4.1",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D4.2": [
+      {
+        "task": "T4.2",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D4.3": [
+      {
+        "task": "T4.3",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D5.1": [
+      {
+        "task": "T5.1",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D5.2": [
+      {
+        "task": "T5.2",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D6.1": [
+      {
+        "task": "T6.1",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D6.2": [
+      {
+        "task": "T6.2",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D6.3": [
+      {
+        "task": "T6.3",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D7.1": [
+      {
+        "task": "T7.1",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D7.2": [
+      {
+        "task": "T7.2",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D8.1": [
+      {
+        "task": "T8.1",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D8.2": [
+      {
+        "task": "T8.3",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D9.1": [
+      {
+        "task": "T9.1",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D9.2": [
+      {
+        "task": "T9.2",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D10.1": [
+      {
+        "task": "T10.1",
+        "basis": "explicit Task text"
+      }
+    ],
+    "D10.2": [
+      {
+        "task": "T10.3",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS1": [
+      {
+        "task": "T1.1",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS2": [
+      {
+        "task": "T1.3",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS3": [
+      {
+        "task": "T2.1",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS4": [
+      {
+        "task": "T2.2",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS5": [
+      {
+        "task": "T3.1",
+        "basis": "explicit Task text"
+      },
+      {
+        "task": "T3.2",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS6": [
+      {
+        "task": "T3.3",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS7": [
+      {
+        "task": "T4.1",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS8": [
+      {
+        "task": "T4.2",
+        "basis": "explicit Task text"
+      },
+      {
+        "task": "T4.3",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS9": [
+      {
+        "task": "T5.1",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS10": [
+      {
+        "task": "T5.2",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS11": [
+      {
+        "task": "T6.1",
+        "basis": "explicit Task text"
+      },
+      {
+        "task": "T6.2",
+        "basis": "explicit Task text"
+      },
+      {
+        "task": "T6.3",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS12": [
+      {
+        "task": "T6.1",
+        "basis": "explicit Task text"
+      },
+      {
+        "task": "T6.2",
+        "basis": "explicit Task text"
+      },
+      {
+        "task": "T6.3",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS13": [
+      {
+        "task": "T7.2",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS14": [
+      {
+        "task": "T7.2",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS15": [
+      {
+        "task": "T8.1",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS16": [
+      {
+        "task": "T8.2",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS17": [
+      {
+        "task": "T9.1",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS18": [
+      {
+        "task": "T9.1",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS19": [
+      {
+        "task": "T10.1",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS20": [
+      {
+        "task": "T10.1",
+        "basis": "explicit Task text"
+      }
+    ],
+    "MS21": [
+      {
+        "task": "T1.3",
+        "basis": "contextual FSTP connection; not an explicit Task outcome sentence"
+      }
+    ],
+    "MS22": [
+      {
+        "task": "T2.4",
+        "basis": "Task text names interim milestones 22 and 23"
+      }
+    ],
+    "MS23": [
+      {
+        "task": "T2.4",
+        "basis": "Task text names interim milestones 22 and 23"
+      }
+    ]
+  }
 }

@@ -1,6 +1,6 @@
 // Project facts transcribed from the signed AISHA Grant Agreement.
 // Full exact Work Package objectives and Task wording are in agreement-content.js.
-// COO marks the Task lead, which may differ from the Work Package lead.
+// Associated-partner Task commitments from Attachment 6 are recorded separately from formal Annex 1 participants.
 window.AISHA_CONFIG = Object.freeze({
   "project": {
     "id": "101299070",
@@ -116,7 +116,15 @@ window.AISHA_CONFIG = Object.freeze({
         "IAL.T",
         "VARM"
       ],
-      "sourcePage": 69
+      "sourcePage": 69,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "DE",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T1.2",
@@ -132,7 +140,14 @@ window.AISHA_CONFIG = Object.freeze({
         "IAL.T",
         "PF"
       ],
-      "sourcePage": 69
+      "sourcePage": 69,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T1.3",
@@ -151,7 +166,15 @@ window.AISHA_CONFIG = Object.freeze({
       ],
       "allBeneficiaries": true,
       "allAssociatedPartners": true,
-      "sourcePage": 69
+      "sourcePage": 69,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RAM",
+        "RT"
+      ]
     },
     {
       "id": "T2.1",
@@ -173,7 +196,15 @@ window.AISHA_CONFIG = Object.freeze({
         "ALLAI"
       ],
       "sourcePage": 70,
-      "sourceAlias": "11-UVEG is beneficiary 11-UV"
+      "sourceAlias": "11-UVEG is beneficiary 11-UV",
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "DE",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T2.2",
@@ -194,7 +225,14 @@ window.AISHA_CONFIG = Object.freeze({
         "UBW",
         "ALLAI"
       ],
-      "sourcePage": 71
+      "sourcePage": 71,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T2.3",
@@ -215,7 +253,14 @@ window.AISHA_CONFIG = Object.freeze({
         "UBW",
         "ALLAI"
       ],
-      "sourcePage": 71
+      "sourcePage": 71,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T2.4",
@@ -235,7 +280,14 @@ window.AISHA_CONFIG = Object.freeze({
         "EFRI",
         "PF"
       ],
-      "sourcePage": 72
+      "sourcePage": 72,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T3.1",
@@ -254,7 +306,15 @@ window.AISHA_CONFIG = Object.freeze({
         "COG"
       ],
       "associatedPartners": [
-        "ADRA"
+        "AD",
+        "ADRA",
+        "BOSCH",
+        "CEPS",
+        "DE",
+        "EPRD",
+        "JOIST",
+        "JSI",
+        "RT"
       ],
       "sourcePage": 73,
       "sourceNote": "EDSA occurs twice in the participant line; listed once here."
@@ -277,7 +337,17 @@ window.AISHA_CONFIG = Object.freeze({
         "EDSA",
         "PF"
       ],
-      "sourcePage": 73
+      "sourcePage": 73,
+      "associatedPartners": [
+        "AD",
+        "ART-ER",
+        "BOSCH",
+        "CEPS",
+        "DE",
+        "EPRD",
+        "JSI",
+        "RT"
+      ]
     },
     {
       "id": "T3.3",
@@ -295,7 +365,17 @@ window.AISHA_CONFIG = Object.freeze({
         "VALGRAI",
         "PF"
       ],
-      "sourcePage": 74
+      "sourcePage": 74,
+      "associatedPartners": [
+        "AD",
+        "ART-ER",
+        "BOSCH",
+        "CEPS",
+        "DE",
+        "EPRD",
+        "JSI",
+        "RT"
+      ]
     },
     {
       "id": "T4.1",
@@ -318,7 +398,14 @@ window.AISHA_CONFIG = Object.freeze({
         "LIG",
         "ALLAI"
       ],
-      "sourcePage": 75
+      "sourcePage": 75,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T4.2",
@@ -343,7 +430,14 @@ window.AISHA_CONFIG = Object.freeze({
         "UWK",
         "VALGRAI"
       ],
-      "sourcePage": 75
+      "sourcePage": 75,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T4.3",
@@ -366,7 +460,14 @@ window.AISHA_CONFIG = Object.freeze({
         "UBW"
       ],
       "sourcePage": 76,
-      "sourceNote": "IAL.T occurs twice in the participant line; listed once here."
+      "sourceNote": "IAL.T occurs twice in the participant line; listed once here.",
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T5.1",
@@ -386,7 +487,14 @@ window.AISHA_CONFIG = Object.freeze({
         "EDSA",
         "LIG"
       ],
-      "sourcePage": 77
+      "sourcePage": 77,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T5.2",
@@ -407,7 +515,14 @@ window.AISHA_CONFIG = Object.freeze({
         "LIG"
       ],
       "sourcePage": 78,
-      "sourceNote": "UiB occurs twice in the participant line; listed once here."
+      "sourceNote": "UiB occurs twice in the participant line; listed once here.",
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T5.3",
@@ -428,7 +543,14 @@ window.AISHA_CONFIG = Object.freeze({
         "TILDE",
         "EFRI"
       ],
-      "sourcePage": 78
+      "sourcePage": 78,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T6.1",
@@ -446,7 +568,14 @@ window.AISHA_CONFIG = Object.freeze({
         "ALLAI",
         "LIG"
       ],
-      "sourcePage": 79
+      "sourcePage": 79,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T6.2",
@@ -463,7 +592,14 @@ window.AISHA_CONFIG = Object.freeze({
         "UBW",
         "ALLAI"
       ],
-      "sourcePage": 79
+      "sourcePage": 79,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T6.3",
@@ -482,7 +618,14 @@ window.AISHA_CONFIG = Object.freeze({
         "ALLAI",
         "LIG"
       ],
-      "sourcePage": 79
+      "sourcePage": 79,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T7.1",
@@ -497,7 +640,16 @@ window.AISHA_CONFIG = Object.freeze({
         "EDSA",
         "XR8"
       ],
-      "sourcePage": 80
+      "sourcePage": 80,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "DE",
+        "EPRD",
+        "JOIST",
+        "RT"
+      ]
     },
     {
       "id": "T7.2",
@@ -512,7 +664,15 @@ window.AISHA_CONFIG = Object.freeze({
         "UNIBO",
         "POLIMI"
       ],
-      "sourcePage": 80
+      "sourcePage": 80,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "DE",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T7.3",
@@ -528,7 +688,15 @@ window.AISHA_CONFIG = Object.freeze({
         "ALLAI",
         "EDSA"
       ],
-      "sourcePage": 80
+      "sourcePage": 80,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "DE",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T8.1",
@@ -546,7 +714,14 @@ window.AISHA_CONFIG = Object.freeze({
         "ALLAI",
         "TDT"
       ],
-      "sourcePage": 81
+      "sourcePage": 81,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T8.2",
@@ -563,7 +738,14 @@ window.AISHA_CONFIG = Object.freeze({
         "UKON",
         "TDT"
       ],
-      "sourcePage": 82
+      "sourcePage": 82,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T8.3",
@@ -581,7 +763,14 @@ window.AISHA_CONFIG = Object.freeze({
         "TDT",
         "COG"
       ],
-      "sourcePage": 82
+      "sourcePage": 82,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T9.1",
@@ -596,7 +785,21 @@ window.AISHA_CONFIG = Object.freeze({
         "EDSA"
       ],
       "allBeneficiaries": true,
-      "sourcePage": 83
+      "sourcePage": 83,
+      "associatedPartners": [
+        "AD",
+        "ADRA",
+        "ART-ER",
+        "BOSCH",
+        "CEPS",
+        "DE",
+        "EPRD",
+        "JOIST",
+        "JSI",
+        "RAM",
+        "RT",
+        "SC"
+      ]
     },
     {
       "id": "T9.2",
@@ -611,7 +814,21 @@ window.AISHA_CONFIG = Object.freeze({
         "EDSA"
       ],
       "allBeneficiaries": true,
-      "sourcePage": 84
+      "sourcePage": 84,
+      "associatedPartners": [
+        "AD",
+        "ADRA",
+        "ART-ER",
+        "BOSCH",
+        "CEPS",
+        "DE",
+        "EPRD",
+        "JOIST",
+        "JSI",
+        "RAM",
+        "RT",
+        "SC"
+      ]
     },
     {
       "id": "T9.3",
@@ -626,7 +843,21 @@ window.AISHA_CONFIG = Object.freeze({
         "EDSA"
       ],
       "allBeneficiaries": true,
-      "sourcePage": 85
+      "sourcePage": 85,
+      "associatedPartners": [
+        "AD",
+        "ADRA",
+        "ART-ER",
+        "BOSCH",
+        "CEPS",
+        "DE",
+        "EPRD",
+        "JOIST",
+        "JSI",
+        "RAM",
+        "RT",
+        "SC"
+      ]
     },
     {
       "id": "T9.4",
@@ -641,7 +872,15 @@ window.AISHA_CONFIG = Object.freeze({
         "TDT"
       ],
       "allBeneficiaries": true,
-      "sourcePage": 86
+      "sourcePage": 86,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "JSI",
+        "RT"
+      ]
     },
     {
       "id": "T10.1",
@@ -655,7 +894,14 @@ window.AISHA_CONFIG = Object.freeze({
         "XR8"
       ],
       "allBeneficiaries": true,
-      "sourcePage": 87
+      "sourcePage": 87,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T10.2",
@@ -669,7 +915,14 @@ window.AISHA_CONFIG = Object.freeze({
         "XR8"
       ],
       "allBeneficiaries": true,
-      "sourcePage": 87
+      "sourcePage": 87,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RT"
+      ]
     },
     {
       "id": "T10.3",
@@ -683,7 +936,14 @@ window.AISHA_CONFIG = Object.freeze({
         "XR8"
       ],
       "allBeneficiaries": true,
-      "sourcePage": 87
+      "sourcePage": 87,
+      "associatedPartners": [
+        "AD",
+        "BOSCH",
+        "CEPS",
+        "EPRD",
+        "RT"
+      ]
     }
   ],
   "partners": [
@@ -868,5 +1128,6 @@ window.AISHA_CONFIG = Object.freeze({
       "kind": "associated_partner"
     }
   ],
-  "nextcloudUrl": null
+  "nextcloudUrl": null,
+  "associatedPartnerAssignmentSource": "Attachment 6: voluntary associated-partner Task commitments supplied by the coordinator on 30 September 2026; all listed Tasks treated as assigned by instruction. Formal Annex 1 Task participant lines remain unchanged."
 });

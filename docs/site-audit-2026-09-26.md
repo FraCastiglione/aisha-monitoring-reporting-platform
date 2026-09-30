@@ -1,5 +1,7 @@
 # AISHA website audit — 26 September 2026
 
+**Historical audit.** The 30 September 2026 Attachment 6 update supersedes this document's associated-partner assignment finding. See [the current audit](audit-2026-09-30.md).
+
 ## Scope and evidence
 
 I reviewed the partner entry flow, Task and Work Package reporting, Communication & Dissemination, draft and PDF handling, report review, dashboard overview, Gantt/calendar, Work Packages, partner coverage, risks, KPIs, and the guidance page. I checked the assignment model for all 42 partners with `coordinator/audit-partners.mjs` and compared the relevant dashboard catalogue against the signed Grant Agreement. I tested the site in the local browser at desktop and 390-pixel widths. No partner submissions or KPI actuals were available; those displays were checked as empty states. This is a preview audit, not a security penetration test or a full WCAG conformance audit.

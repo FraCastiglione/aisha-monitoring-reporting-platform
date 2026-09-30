@@ -44,7 +44,8 @@
   function role(task, partnerCode, config) {
     if (!assigned(task, partnerCode, config)) return null;
     if (task.lead === partnerCode) return "Task lead (COO)";
-    if (task.partners.includes(partnerCode) || task.associatedPartners?.includes(partnerCode)) return "Named participant";
+    if (task.partners.includes(partnerCode)) return "Named participant";
+    if (task.associatedPartners?.includes(partnerCode)) return config?.partners.find(item => item.code === partnerCode)?.kind === "associated_partner" ? "Voluntary associated partner participant" : "Named participant";
     const partner = config?.partners.find(item => item.code === partnerCode);
     return partner?.kind === "associated_partner" ? "All associated partners participant" : "All beneficiaries participant";
   }

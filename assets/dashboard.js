@@ -4,7 +4,7 @@
   const config = window.AISHA_CONFIG;
   const agreement = window.AISHA_AGREEMENT;
   const model = window.AISHA_MODEL;
-  const view = { tab: 'overview', overviewDetail: null, selectedWp: 'WP1', ganttYear: 2026, ganttMonth: 6, ganttExpanded: new Set(), calendarDay: null, draftDay: 5, reportingMode: 'tasks', from: 1, through: 5, wp: 'all', search: '', kpiGroup: 'all', risk: 'high-medium', dueThrough: 6 };
+  const view = { tab: 'overview', overviewDetail: null, selectedWp: 'WP1', ganttYear: 2026, ganttMonth: 6, ganttExpanded: new Set(), ganttLarge: false, calendarDay: null, draftDay: 1, reportingMode: 'tasks', partnerKind: 'all', from: 1, through: 5, wp: 'all', search: '', kpiGroup: 'all', risk: 'all', dueThrough: 6 };
   let catalogue, snapshot, agreementDetail;
   const el = (tag, className = '', value) => { const item = document.createElement(tag); if (className) item.className = className; if (value !== undefined) item.textContent = value; return item; };
   const month = number => model.calendarMonth(config, number);
@@ -18,7 +18,7 @@
   const wpRows = (wp, partner) => reportRows().filter(row => row.kind === 'work_package' && row.id === wp.id && row.partner === partner && row.coverage?.months?.some(value => activeMonths(wp).includes(value)));
   const selectedCoverage = rows => [...new Set(rows.flatMap(row => row.coverage.months).filter(value => model.projectMonth(config, value) >= view.from && model.projectMonth(config, value) <= view.through))].sort();
   const knownState = record => record?.state || null;
-  const sourceNote = () => `Agreement schedule and assignments · Status update: ${snapshot.status_source || 'not supplied'} · Status last supplied ${snapshot.status_as_of || snapshot.as_of || 'date not supplied'}${snapshot.status_as_of && snapshot.status_as_of !== snapshot.as_of ? ` · Snapshot prepared ${snapshot.as_of}` : ''}`;
+  const sourceNote = () => `Agreement schedule and formal assignments · Attachment 6 voluntary associated-partner commitments · Status update: ${snapshot.status_source || 'not supplied'} · Status last supplied ${snapshot.status_as_of || snapshot.as_of || 'date not supplied'}${snapshot.status_as_of && snapshot.status_as_of !== snapshot.as_of ? ` · Snapshot prepared ${snapshot.as_of}` : ''}`;
   function pill(text, tone = 'neutral') { return el('span', `dash-pill ${tone}`, text); }
   function header(title, description) { const wrap = el('div', 'dash-section-head'); wrap.append(el('h2', '', title)); if (description) wrap.append(el('p', '', description)); return wrap; }
   function card(label, value, note, tone, action) { const item = el('button', `dash-stat ${tone}`); item.type='button'; item.setAttribute('aria-label', `${label}: ${value}. ${note}. Open full details`); item.append(el('span', '', label), el('strong', '', value), el('small', '', note), el('em', '', 'View details →')); item.addEventListener('click', action); return item; }
@@ -47,7 +47,7 @@
       const note=el('div','dash-state-note');note.append(el('strong','','Coordinator intake needs reconciliation'),el('p','',`${snapshot.intake.rejected_files || 0} rejected and ${snapshot.intake.unconfirmed_files || 0} unconfirmed files were excluded from this snapshot. Check the private intake log before treating partner coverage as complete.`));section.append(note);
     }
     const hero = el('div', 'dash-hero'), heroCopy = el('div', 'dash-hero-copy'), heroPosition = el('div', 'dash-hero-position');
-    heroCopy.append(el('p', 'dash-hero-kicker', `PROJECT SNAPSHOT · ${monthName(current).toUpperCase()} · REPORTING PERIOD ${current <= 18 ? '1' : current <= 36 ? '2' : '3'}`), el('h2', '', `${monthName(current)} at a glance`), el('p', '', 'See the commitments already reported, what is coming in the next six months, and each Work Package’s place in the timeline.'));
+    heroCopy.append(el('p', 'dash-hero-kicker', `PROJECT SNAPSHOT · ${monthName(current).toUpperCase()} · REPORTING PERIOD ${current <= 18 ? '1' : current <= 36 ? '2' : '3'}`), el('h2', '', 'AISHA at a glance'), el('p', '', 'See the commitments already reported, what is coming in the next six months, and each Work Package’s place in the timeline.'));
     const positionLabel = el('div', 'dash-position-label'); positionLabel.append(el('strong', '', monthCode(current)), el('span', '', 'of M48'));
     const progress = el('div', 'dash-progress-track'); const progressFill = el('span', 'dash-progress-fill'); progressFill.style.width = `${Math.min(100, current / 48 * 100)}%`; progress.append(progressFill);
     heroPosition.append(positionLabel, progress, el('small', '', 'Project calendar position · May 2026 to April 2030'));
@@ -59,6 +59,10 @@
       card('Work Packages active', `${activeWp.length} / ${config.workPackages.length}`, 'View all Work Packages, objectives, Tasks and reporting evidence', 'violet', () => switchTab('workpackages'))
     );
     section.append(stats);
+    const boardPreview=el('section','dash-board-preview'),boardTop=el('div','dash-board-preview-top'),openBoard=el('button','dash-wp-open','Open message board →');openBoard.type='button';openBoard.addEventListener('click',()=>switchTab('messages'));boardTop.append(el('h3','','Message board'),openBoard);boardPreview.append(boardTop);
+    const latest=[...(snapshot.messages||[])].sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,2);
+    if(latest.length)for(const item of latest)boardPreview.append(el('p','',`${item.priority==='urgent'?'Urgent · ':''}${item.title} · ${item.date}`));else boardPreview.append(el('p','','No project messages have been published yet.'));
+    section.append(boardPreview);
     if(view.overviewDetail) section.append(overviewDetailPanel(view.overviewDetail,current));
     const next = el('div', 'dash-next'),futureLabel=current>=48?'The 48-month Agreement schedule has ended.':`${monthName(current+1)}–${monthName(Math.min(48,current+6))} · ${monthCode(current+1)}–${monthCode(Math.min(48,current+6))}`;next.append(header('Upcoming in the next six months', futureLabel));
     const upcoming = [
@@ -87,7 +91,11 @@
       identity.append(el('strong','',`${item.id} · ${item.title}`),el('small','',`${item.wp} · Lead ${item.lead} · Due ${monthCode(item.due)} (${monthName(item.due)})${item.visibility?` · ${item.visibility}`:''}`));
       summary.append(identity,pill(state==='submitted'?'Submitted':state==='accepted'?'Accepted':state==='achieved'?'Achieved':state?state.replaceAll('_',' '):upcomingMonth(item.due,current)?'Upcoming · next 6 months':'Status not recorded',state?'positive':upcomingMonth(item.due,current)?'watch':'neutral'));
       body.append(el('strong','',isDeliverable?'Agreement description':'Agreement means of verification'),el('p','',(isDeliverable?agreementDetail.deliverables:agreementDetail.milestones)[item.id]));
-      body.append(el('small','',`Source: Grant Agreement, Annex 1 · ${isDeliverable?'Deliverables, PDF pp. 93–98':'Milestones, PDF pp. 99–101'}. Due dates are specified by project month.`));block.append(summary,body);list.append(block);
+      const links=catalogue.commitment_links?.[item.id]||[];
+      const related=el('div','dash-related-tasks');related.append(el('strong','',`Related Tasks · ${links.length}`));
+      if(links.length) for(const link of links){const task=config.tasks.find(row=>row.id===link.task);if(!task)continue;const button=el('button','dash-related-task',`${task.id} · ${task.title} →`);button.type='button';button.addEventListener('click',()=>{view.selectedWp=task.wp;switchTab('workpackages');document.getElementById('dash-wp-detail')?.scrollIntoView({block:'start',behavior:'smooth'});});related.append(button);if(link.basis?.startsWith('contextual'))related.append(el('small','','Contextual link: the Agreement does not explicitly name this Task as the milestone outcome.'));}
+      else related.append(el('p','', 'No Task outcome link is stated in the Agreement text.'));
+      body.append(related,el('small','',`Source: Grant Agreement, Annex 1 · ${isDeliverable?'Deliverables, PDF pp. 93–98':'Milestones, PDF pp. 99–101'}. Due dates are specified by project month.`));block.append(summary,body);list.append(block);
     }
     section.append(list);return section;
   }
@@ -153,22 +161,27 @@
     for(const [name,collection,status] of [['Deliverables',catalogue.deliverables,snapshot.deliverable_status],['Milestones',catalogue.milestones,snapshot.milestone_status]]){
       const group=el('div','dash-wp-outputs');group.append(el('h3','',`${name} · ${collection.filter(item=>item.wp===wp.id).length}`));
       for(const item of collection.filter(item=>item.wp===wp.id).sort((a,b)=>a.due-b.due)){
-        const row=el('details','dash-wp-output-row'),summary=el('summary','');summary.append(el('strong','',`${item.id} · ${item.title}`),el('small','',`Due ${monthCode(item.due)} (${monthName(item.due)}) · Lead ${item.lead}`),pill(knownState(status?.[item.id])?.replaceAll('_',' ')||'Status not recorded',knownState(status?.[item.id])?'positive':'neutral'));row.append(summary,el('p','',name==='Deliverables'?agreementDetail.deliverables[item.id]:agreementDetail.milestones[item.id]));group.append(row);
+        const row=el('details','dash-wp-output-row'),summary=el('summary','');summary.append(el('strong','',`${item.id} · ${item.title}`),el('small','',`Due ${monthCode(item.due)} (${monthName(item.due)}) · Lead ${item.lead}`),pill(knownState(status?.[item.id])?.replaceAll('_',' ')||'Status not recorded',knownState(status?.[item.id])?'positive':'neutral'));row.append(summary,el('p','',name==='Deliverables'?agreementDetail.deliverables[item.id]:agreementDetail.milestones[item.id]));const links=catalogue.commitment_links?.[item.id]||[];if(links.length)row.append(el('p','dash-record-note',`Related Tasks: ${links.map(link=>link.task).join(', ')}${links.some(link=>link.basis?.startsWith('contextual'))?' (MS21 link is contextual)':''}.`));group.append(row);
       }
       outputColumn.append(group);
     }
     work.append(taskColumn,outputColumn);section.append(work);return section;
   }
   function ganttSection() {
-    const section=el('section','dash-section dash-gantt');
-    section.append(header('Project Gantt','Explore the Agreement schedule by year, then choose a month to see its calendar and planned review checkpoints.'));
+    const section=el('section',`dash-section dash-gantt ${view.ganttLarge?'is-large':''}`);
+    section.append(header('Project Gantt','Explore any calendar year or the complete 48-month schedule. Choose a month for its calendar and review checkpoints.'));
     const tools=el('div','dash-gantt-tools'),years=[2026,2027,2028,2029,2030];
-    tools.append(select('Calendar year',years.map(year=>[year,String(year)]),view.ganttYear,value=>{view.ganttYear=Number(value);if(Number(month(view.ganttMonth).slice(0,4))!==view.ganttYear){const first=view.ganttYear===2026?5:1;view.ganttMonth=model.projectMonth(config,`${view.ganttYear}-${String(first).padStart(2,'0')}`);}view.calendarDay=null;render();}));
-    tools.append(select('Internal draft review day',Array.from({length:10},(_,i)=>[i+1,`${i+1}${i===0?'st':i===1?'nd':i===2?'rd':'th'} of the due month`]),view.draftDay,value=>{view.draftDay=Number(value);render();}));
+    const changeYear=year=>{view.ganttYear=year;if(year!=='all'&&Number(month(view.ganttMonth).slice(0,4))!==year){view.ganttMonth=model.projectMonth(config,`${year}-${year===2026?'05':'01'}`);}view.calendarDay=null;render();};
+    const previous=el('button','dash-gantt-expand','← Earlier');previous.type='button';previous.disabled=view.ganttYear==='all'||view.ganttYear===2026;previous.addEventListener('click',()=>changeYear(view.ganttYear-1));tools.append(previous);
+    tools.append(select('Calendar year',[['all','Full project · M01–M48'],...years.map(year=>[year,String(year)])],view.ganttYear,value=>changeYear(value==='all'?'all':Number(value))));
+    const nextYear=el('button','dash-gantt-expand','Later →');nextYear.type='button';nextYear.disabled=view.ganttYear==='all'||view.ganttYear===2030;nextYear.addEventListener('click',()=>changeYear(view.ganttYear+1));tools.append(nextYear);
+    tools.append(el('span','dash-gantt-checkpoint','Internal review drafts: 1st of due month'));
+    const enlarge=el('button','dash-gantt-expand',view.ganttLarge?'Use normal width':'Expand Gantt');enlarge.type='button';enlarge.addEventListener('click',()=>{view.ganttLarge=!view.ganttLarge;render();});tools.append(enlarge);
     const expand=el('button','dash-gantt-expand',view.ganttExpanded.size===config.workPackages.length?'Hide all Task rows':'Show all Task rows');expand.type='button';expand.addEventListener('click',()=>{view.ganttExpanded=view.ganttExpanded.size===config.workPackages.length?new Set():new Set(config.workPackages.map(wp=>wp.id));render();});tools.append(expand);section.append(tools);
     const legend=el('div','dash-gantt-legend');for(const [tone,label] of [['wp','Work Package active'],['task','Task active'],['selected','Selected month'],['due','Deliverable / milestone due']]){const item=el('span','');item.append(el('i',tone),label);legend.append(item);}section.append(legend);
     const scroller=el('div','dash-gantt-scroll'),matrix=el('div','dash-gantt-matrix'),head=el('div','dash-gantt-row dash-gantt-header');head.append(el('div','dash-gantt-label','WORK PACKAGE / TASK'));
-    const months=Array.from({length:12},(_,i)=>`${view.ganttYear}-${String(i+1).padStart(2,'0')}`);
+    const months=view.ganttYear==='all'?Array.from({length:48},(_,i)=>month(i+1)):Array.from({length:12},(_,i)=>`${view.ganttYear}-${String(i+1).padStart(2,'0')}`);
+    matrix.style.setProperty('--gantt-months',String(months.length));
     for(const calendar of months){
       const number=model.projectMonth(config,calendar),cell=el('button',`dash-gantt-month ${number===view.ganttMonth?'is-selected':''}`);cell.type='button';cell.disabled=!number;
       cell.append(el('strong','',new Intl.DateTimeFormat('en',{month:'short',timeZone:'UTC'}).format(new Date(`${calendar}-01T00:00:00Z`))),el('small','',number?monthCode(number):'—'));
@@ -180,7 +193,7 @@
       matrix.append(ganttRow(wp,false,months));
       if(view.ganttExpanded.has(wp.id))for(const task of config.tasks.filter(task=>task.wp===wp.id))matrix.append(ganttRow(task,true,months));
     }
-    scroller.append(matrix);requestAnimationFrame(()=>{if(scroller.isConnected&&scroller.scrollWidth>scroller.clientWidth){const index=Number(month(view.ganttMonth).slice(5))-1;scroller.scrollLeft=Math.max(0,index*(matchMedia('(max-width:700px)').matches?64:71)-20);}});section.append(scroller,el('p','dash-gantt-hint','Choose a month above for its calendar. Select a Work Package row to expand its Tasks. Swipe or scroll horizontally on narrow screens.'));
+    scroller.append(matrix);requestAnimationFrame(()=>{if(scroller.isConnected&&scroller.scrollWidth>scroller.clientWidth){const index=view.ganttYear==='all'?view.ganttMonth-1:Number(month(view.ganttMonth).slice(5))-1;scroller.scrollLeft=Math.max(0,index*(matchMedia('(max-width:700px)').matches?64:71)-20);}});section.append(scroller,el('p','dash-gantt-hint','Choose a month above for its calendar. Select a Work Package row to expand its Tasks. Scroll horizontally to explore the full project.'));
     section.append(calendarSection(view.ganttMonth));return section;
   }
   function ganttRow(item,isTask,months){
@@ -202,7 +215,7 @@
       if(!/^\d{4}-\d{2}-\d{2}$/.test(item.due_date||''))continue;
       const dueMonth=item.due_date.slice(0,7),dueNumber=model.projectMonth(config,dueMonth),day=Number(item.due_date.slice(-2));
       const prior=dueNumber>1?month(dueNumber-1):null;
-      const plannedDraft=item.draft_due_date||(day>view.draftDay?`${dueMonth}-${String(view.draftDay).padStart(2,'0')}`:prior?`${prior}-${String(view.draftDay).padStart(2,'0')}`:null);
+      const plannedDraft=day>1?`${dueMonth}-01`:prior?`${prior}-01`:null;
       if(plannedDraft?.slice(0,7)===calendar)events.push({day:Number(plannedDraft.slice(-2)),type:'draft',label:`Internal review draft · ${item.id}`,detail:`Task report${item.partner?` · ${item.partner}`:''}`});
       if(dueMonth===calendar)events.push({day,type:'report',label:`Task report due · ${item.id}`,detail:item.partner?`Partner ${item.partner}`:'Coordinator scheduled'});
     }
@@ -225,7 +238,7 @@
     const shown=events.filter(event=>view.calendarDay===null||event.day===view.calendarDay);
     if(shown.length)for(const event of shown){const row=el('div',`dash-agenda-item ${event.type}`);row.append(el('span','dash-agenda-date',`${event.day} ${monthName(number).split(' ')[0]}`));const text=el('div');text.append(el('strong','',event.label),el('small','',event.detail));if(event.state)text.append(pill(event.state.replaceAll('_',' '),'positive'));row.append(text);agenda.append(row);}else agenda.append(empty('No scheduled items for this day or month.'));
     const recorded=reportRows().filter(row=>row.kind==='task'&&row.coverage?.months?.includes(calendar));if(recorded.length){const reports=el('div','dash-calendar-reports');reports.append(el('h4','',`Task reporting covering this month · ${recorded.length}`));for(const row of recorded)reports.append(el('p','',`${row.id} · ${row.partner} · ${row.coverage.start}–${row.coverage.end} · ${row.report_status.replaceAll('_',' ')}`));agenda.append(reports);}else agenda.append(el('p','dash-calendar-report-note','No coordinator-confirmed Task report entries cover this month.'));
-    body.append(grid,agenda);section.append(body,el('p','dash-calendar-caveat','The Agreement specifies deliverable and milestone due months, not exact due dates. Month-end markers show their due month on this calendar. Internal draft checkpoints are a planning convention on the selected early-month day; they are not Agreement deadlines. Task report deadlines appear only when the coordinator adds a monitoring schedule.'));return section;
+    body.append(grid,agenda);section.append(body,el('p','dash-calendar-caveat','The Agreement specifies deliverable and milestone due months, not exact due dates. Month-end markers show their due month on this calendar. Internal draft checkpoints are a coordinator planning convention on the first day of the due month; they are not Agreement deadlines. Task report deadlines appear only when the coordinator adds a monitoring schedule.'));return section;
   }
   function commitments() {
     const section = el('section', 'dash-section'); section.append(header('Agreement commitments', 'Due months come from the signed Grant Agreement. Items without a status update remain “Not recorded”; they are not treated as overdue automatically.'));
@@ -247,6 +260,7 @@
     wrap.append(select('From',months,view.from,value => { view.from = Number(value); if (view.from > view.through) view.through = view.from; render(); }));
     wrap.append(select('Through',months,view.through,value => { view.through = Number(value); if (view.through < view.from) view.from = view.through; render(); }));
     wrap.append(select('Work Package',[['all','All Work Packages'],...config.workPackages.map(wp => [wp.id,`${wp.id} · ${wp.title}`])],view.wp,value => {view.wp=value;render();}));
+    if(view.reportingMode==='partners')wrap.append(select('Partner category',[['all','All partners'],['beneficiary','Full partners'],['associated_partner','Associated partners']],view.partnerKind,value=>{view.partnerKind=value;render();}));
     if(view.reportingMode==='tasks') { const search = el('label','dash-control dash-search'); search.append(el('span','','Find Task')); const input=el('input'); input.type='search';input.placeholder='Task number or title';input.value=view.search;
     input.addEventListener('input',()=>{view.search=input.value.toLowerCase().trim();renderReportingOnly();});search.append(input);wrap.append(search); } return wrap;
   }
@@ -272,7 +286,7 @@
     const tasks=config.tasks.filter(task=>task.wp===wp.id && activeMonths(task).length);
     const assigned=config.partners.filter(partner=>tasks.some(task=>model.assigned(task,partner.code,config)));
     const box=el('div','dash-record-box'), wpLeader=wpRows(wp,wp.lead);
-    box.append(el('p','dash-record-note',`Work Package leader: ${wp.lead}. Leadership update: ${wpLeader.length ? wpLeader.map(recordDetail).join('; ') : 'No update recorded for these months'}. Task coverage below counts each partner’s Agreement-assigned active Tasks; a leader’s assessment of another Task is not that partner’s own report.`));
+    box.append(el('p','dash-record-note',`Work Package leader: ${wp.lead}. Leadership update: ${wpLeader.length ? wpLeader.map(recordDetail).join('; ') : 'No update recorded for these months'}. Task coverage below counts each partner’s listed active Tasks, including Attachment 6 voluntary associated-partner commitments; a leader’s assessment of another Task is not that partner’s own report.`));
     const table=el('div','dash-record-table');
     for(const partner of assigned){
       const eligible=tasks.filter(task=>model.assigned(task,partner.code,config)), rows=eligible.flatMap(task=>taskRows(task,partner.code)), reported=new Set(rows.map(row=>row.id));
@@ -287,20 +301,35 @@
     if(wpRisks.length)box.append(el('p','dash-record-note',`Agreement potential risks: ${wpRisks.map(risk=>`Risk ${risk.id}`).join(', ')}. See the risk register below for definitions and mitigations.`));
     return detail(`${wp.id} · ${wp.title} · ${assigned.length} assigned partners`,box,'dash-wp-detail');
   }
+  function partnerBlock(partner,tasks) {
+    const assigned=tasks.filter(task=>model.assigned(task,partner.code,config));
+    const rows=assigned.flatMap(task=>taskRows(task,partner.code));
+    const reported=new Set(rows.map(row=>row.id));
+    const box=el('div','dash-record-box');
+    box.append(el('p','dash-record-note',`${reported.size} of ${assigned.length} assigned active Tasks have a confirmed entry in the selected months. An unrecorded Task is not automatically overdue.`));
+    if(!assigned.length)box.append(empty('No assigned Tasks match this Work Package and period.'));
+    else {const table=el('div','dash-record-table');for(const task of assigned){const taskEntries=taskRows(task,partner.code),line=el('div','dash-record-line'),who=el('div'),what=el('div');who.append(el('strong','',task.id),el('small','',task.title));if(taskEntries.length)for(const row of taskEntries)what.append(el('p','',recordDetail(row)));else what.append(el('span','dash-muted','No report recorded in selected months'));line.append(who,what);table.append(line);}box.append(table);}
+    return detail(`${partner.code} · ${partner.name} · ${reported.size}/${assigned.length} Tasks with entries`,box,'dash-task-detail');
+  }
   function reportingSection() {
     const section=el('section','dash-section');section.id='dashboard-reporting';
-    section.append(header('Partner reporting coverage','See the assigned partners, their confirmed report entries, and the exact periods they covered.'));
-    if (!reportRows().length) { const note=el('div','dash-state-note');note.append(el('strong','','No partner files added yet'),el('p','','Each Task and Work Package already shows its Agreement assignments. Confirmed partner coverage will appear after submitted files are reviewed and imported.'));section.append(note); }
+    section.append(header('Partner reporting coverage','See listed partners, their confirmed report entries, and the exact periods they covered. Associated-partner assignments include the coordinator-confirmed voluntary Task list from Attachment 6.'));
+    if (!reportRows().length) { const note=el('div','dash-state-note');note.append(el('strong','','No partner files added yet'),el('p','','Each Task and Work Package already shows its listed partner assignments. Confirmed partner coverage will appear after submitted files are reviewed and imported.'));section.append(note); }
     section.append(reportingControls()); const eligibleWps=config.workPackages.filter(wp=>view.wp==='all'||view.wp===wp.id), active=eligibleWps.filter(wp=>activeMonths(wp).length), future=eligibleWps.filter(wp=>!activeMonths(wp).length);
     const tasks=config.tasks.filter(task=>activeMonths(task).length && (view.wp==='all'||task.wp===view.wp) && (!view.search||`${task.id} ${task.title}`.toLowerCase().includes(view.search)));
     const mode=el('div','dash-mode-switch');
-    for(const [key,label,count] of [['tasks','Tasks',tasks.length],['work_packages','Work Packages',active.length]]){const button=el('button',view.reportingMode===key?'is-selected':'',`${label}  ${count}`);button.type='button';button.setAttribute('aria-pressed',String(view.reportingMode===key));button.addEventListener('click',()=>{view.reportingMode=key;render();});mode.append(button);}section.append(mode);
+    const allReportingPartners=config.partners.filter(partner=>tasks.some(task=>model.assigned(task,partner.code,config)));
+    const reportingPartners=allReportingPartners.filter(partner=>view.partnerKind==='all'||partner.kind===view.partnerKind);
+    for(const [key,label,count] of [['tasks','Tasks',tasks.length],['work_packages','Work Packages',active.length],['partners','Partners',view.reportingMode==='partners'?reportingPartners.length:allReportingPartners.length]]){const button=el('button',view.reportingMode===key?'is-selected':'',`${label}  ${count}`);button.type='button';button.setAttribute('aria-pressed',String(view.reportingMode===key));button.addEventListener('click',()=>{view.reportingMode=key;render();});mode.append(button);}section.append(mode);
     const taskPanel=el('div','dash-panel dash-report-panel');taskPanel.append(el('h3','',`Tasks · ${tasks.length}`));
     if(tasks.length) tasks.forEach(task=>taskPanel.append(taskBlock(task))); else taskPanel.append(empty('No Tasks match the selected months and filter.'));
     const wpPanel=el('div','dash-panel dash-report-panel');wpPanel.append(el('h3','',`Work Packages · ${active.length} active`));
     if(active.length) active.forEach(wp=>wpPanel.append(wpBlock(wp)));else wpPanel.append(empty('No Work Package is active in the selected months.'));
     if(future.length) wpPanel.append(el('p','dash-record-note',`Outside this selection: ${future.map(wp=>`${wp.id} (${monthCode(wp.startMonth)}–${monthCode(wp.endMonth)})`).join(', ')}.`));
-    section.append(view.reportingMode==='tasks'?taskPanel:wpPanel);return section;
+    const partnerPanel=el('div','dash-panel dash-report-panel');partnerPanel.append(el('h3','',`Partners · ${reportingPartners.length} with assigned active Tasks`));
+    reportingPartners.forEach(partner=>partnerPanel.append(partnerBlock(partner,tasks)));
+    if(!reportingPartners.length)partnerPanel.append(empty('No partner assignments match the selected months and Work Package.'));
+    section.append(view.reportingMode==='tasks'?taskPanel:view.reportingMode==='work_packages'?wpPanel:partnerPanel);return section;
   }
   function renderReportingOnly() { const current=document.getElementById('dashboard-reporting');if(!current)return; const replacement=reportingSection();current.replaceWith(replacement); const field=replacement.querySelector('input[type="search"]');field.focus();field.setSelectionRange(field.value.length,field.value.length); }
   function risksSection() {
@@ -309,7 +338,7 @@
     const callout=el('div','dash-risk-callout');callout.append(el('strong','',activeFlags.length ? `${new Set(activeFlags.map(item=>item.id)).size} Tasks flagged` : 'No Task risk flags recorded'));
     if(activeFlags.length) for(const item of activeFlags)callout.append(el('p','',`${item.id} · ${item.status.replaceAll('_',' ')}${item.severity ? ` · ${item.severity} issue` : ''} · ${item.source || 'Coordinator update'}${item.note ? ` · ${item.note}` : ''}`));
     else callout.append(el('p','','No Task-specific risk flags have been supplied yet.'));section.append(callout);
-    const controls=el('div','dash-controls');controls.append(select('Explore Agreement risks',[['high-medium','High impact · medium likelihood'],['high','All high-impact risks'],['all','All 17 potential risks']],view.risk,value=>{view.risk=value;render();}));section.append(controls);
+    const controls=el('div','dash-controls');controls.append(select('Explore Agreement risks',[['all','All 17 potential risks'],['high','All high-impact risks'],['high-medium','High impact · medium likelihood']],view.risk,value=>{view.risk=value;render();}));section.append(controls);
     const grid=el('div','dash-risk-grid');
     for(const risk of catalogue.risks.filter(risk=>view.risk==='all'||(risk.impact==='High'&&(view.risk==='high'||risk.likelihood==='Medium')))){
       const item=el('div','dash-risk-card'),top=el('div','dash-risk-top');top.append(el('strong','',`Risk ${risk.id} · ${risk.title}`),pill(`${risk.impact} impact · ${risk.likelihood} likelihood`,risk.impact==='High'&&risk.likelihood==='Medium'?'watch':'neutral'));
@@ -335,18 +364,27 @@
     }
     section.append(grid);return section;
   }
+  function messageBoard() {
+    const section=el('section','dash-section dash-message-board');section.append(header('Message board','Project updates shared by the coordination team and partners. Messages appear after the coordination team publishes them.'));
+    const messages=Array.isArray(snapshot.messages)?snapshot.messages:[];
+    if(!messages.length)section.append(empty('No project messages have been published yet.'));
+    for(const item of [...messages].sort((a,b)=>String(b.date).localeCompare(String(a.date)))){
+      const card=el('article','dash-message'),top=el('div','dash-message-top');top.append(el('strong','',item.title||'Project update'),pill(item.priority==='urgent'?'Urgent':item.priority==='important'?'Important':'Update',item.priority==='urgent'?'watch':'neutral'));card.append(top,el('small','',`${item.date||'Date not supplied'} · ${item.author||'Coordination team'}`),el('p','',item.body||''));if(item.url&&/^https:\/\//.test(item.url)){const link=el('a','','Read more →');link.href=item.url;link.target='_blank';link.rel='noopener noreferrer';card.append(link);}section.append(card);
+    }
+    return section;
+  }
   function render() {
     if(!catalogue||!snapshot||!agreementDetail)return;
     const tabs=el('nav','dash-tabs');tabs.setAttribute('aria-label','Dashboard sections');
-    for(const [key,label] of [['overview','Overview'],['gantt','Gantt'],['workpackages','Work Packages'],['reporting','Partner reporting'],['risks','Risks'],['kpis','KPIs']]){
+    for(const [key,label] of [['overview','Overview'],['gantt','Gantt'],['workpackages','Work Packages'],['reporting','Partner reporting'],['messages','Message board'],['risks','Risks'],['kpis','KPIs']]){
       const button=el('button',view.tab===key?'is-active':'',label);button.type='button';button.setAttribute('aria-current',view.tab===key?'page':'false');button.addEventListener('click',()=>switchTab(key));tabs.append(button);
     }
-    const panel=view.tab==='gantt'?ganttSection():view.tab==='workpackages'?workPackagesSection():view.tab==='reporting'?reportingSection():view.tab==='risks'?risksSection():view.tab==='kpis'?kpisSection():overview();
+    const panel=view.tab==='gantt'?ganttSection():view.tab==='workpackages'?workPackagesSection():view.tab==='reporting'?reportingSection():view.tab==='messages'?messageBoard():view.tab==='risks'?risksSection():view.tab==='kpis'?kpisSection():overview();
     host.replaceChildren(tabs,panel);
   }
   Promise.all([
     fetch('assets/dashboard-catalogue.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error('Agreement catalogue unavailable');return response.json();}),
     fetch('dashboard-data.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error('Dashboard snapshot unavailable');return response.json();}),
     fetch('assets/dashboard-detail.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error('Agreement detail unavailable');return response.json();})
-  ]).then(([source,data,detailData])=>{if(data.schema_version!=='2.0'||data.project!=='AISHA'||!Array.isArray(source.deliverables)||!Array.isArray(source.milestones)||!Array.isArray(source.risks)||!Array.isArray(source.kpis)||!detailData.deliverables||!detailData.milestones||!agreement?.workPackages)throw new Error('Dashboard data is incomplete');catalogue=source;snapshot=data;agreementDetail=detailData;const current=model.projectMonth(config,data.snapshot_month);if(current){view.through=current;view.dueThrough=current<=6?6:current<=12?12:current<=18?18:current<=36?36:48;view.ganttMonth=Math.min(48,current+1);view.ganttYear=Number(month(view.ganttMonth).slice(0,4));}view.draftDay=data.planning?.internal_draft_day||5;render();}).catch(error=>{host.replaceChildren(el('p','dash-error',`Dashboard could not load: ${error.message}.`));});
+  ]).then(([source,data,detailData])=>{if(data.schema_version!=='2.0'||data.project!=='AISHA'||!Array.isArray(source.deliverables)||!Array.isArray(source.milestones)||!Array.isArray(source.risks)||!Array.isArray(source.kpis)||!detailData.deliverables||!detailData.milestones||!agreement?.workPackages)throw new Error('Dashboard data is incomplete');catalogue=source;snapshot=data;agreementDetail=detailData;const current=model.projectMonth(config,data.snapshot_month);if(current){view.through=current;view.dueThrough=current<=6?6:current<=12?12:current<=18?18:current<=36?36:48;view.ganttMonth=Math.min(48,current+1);view.ganttYear=Number(month(view.ganttMonth).slice(0,4));}view.draftDay=1;render();}).catch(error=>{host.replaceChildren(el('p','dash-error',`Dashboard could not load: ${error.message}.`));});
 })();
