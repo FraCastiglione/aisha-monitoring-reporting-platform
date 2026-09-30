@@ -280,6 +280,13 @@
   });
   function kpiDefinition(id){return kpiCatalogue.find(item=>item.id===id);}
   function kpiType(item){return item?.unit==='status'?'status':item?.unit==='%'?'percent':['EUR','minutes'].includes(item?.unit)?'decimal':'count';}
+  function renderKpiContext(data){
+    const smart=$('kpi-smart-context'),call=$('kpi-call-list');smart.replaceChildren();call.replaceChildren();
+    smart.append(textNode('h4',`Nine SMART objectives · choose the outcome you are helping measure`,'kpi-context-title'));
+    const grid=textNode('div','','kpi-context-grid');
+    for(const objective of data.smart_objectives||[]){const card=document.createElement('details');card.className='kpi-context-card';const summary=textNode('summary','','');summary.append(textNode('span',String(objective.number).padStart(2,'0'),'kpi-context-number'),textNode('strong',objective.title),textNode('small',objective.due));card.append(summary);const body=textNode('div','','kpi-context-body');body.append(textNode('p',objective.commitment),textNode('p',`Agreement measures: ${objective.measures}`));const actions=textNode('div','','kpi-context-actions');for(const id of objective.indicator_ids||[]){const indicator=kpiDefinition(id);if(!indicator)continue;const button=textNode('button',indicator.name,'button button-secondary');button.type='button';button.addEventListener('click',()=>selectKpi(id));actions.append(button);}body.append(textNode('small','Report an indicator related to this objective:'),actions);card.append(body);grid.append(card);}smart.append(grid);
+    for(const entry of data.call_kpis||[]){const card=document.createElement('details');card.className='kpi-call-row';card.append(textNode('summary',`${entry.id} · ${entry.kpi}`));const body=textNode('div','','kpi-call-row-body');body.append(textNode('strong','How we measure it'),textNode('p',entry.metric),textNode('strong','Target by M48'),textNode('p',entry.target));const actions=textNode('div','','kpi-context-actions');for(const id of entry.indicator_ids||[]){const indicator=kpiDefinition(id);if(!indicator)continue;const button=textNode('button',indicator.name,'button button-secondary');button.type='button';button.addEventListener('click',()=>selectKpi(id));actions.append(button);}body.append(textNode('small','Report a related indicator:'),actions);card.append(body);call.append(card);}
+  }
   function renderKpis(){
     const catalogueHost=$('kpi-catalogue-list');catalogueHost.replaceChildren();
     if(!kpiCatalogue.length){catalogueHost.append(textNode('p','Indicators are unavailable.','field-help'));$('kpi-editor').hidden=true;return;}
@@ -309,7 +316,7 @@
     state.kpis.set(item.id,{id:item.id,name:item.name,unit:item.unit,group:item.group,value:type==='status'?status:Number(raw),basis:type==='percent'?basis:'',evidence,proof_status:proof});
     $('kpi-value').value='';$('kpi-status').value='';$('kpi-basis').value='';$('kpi-evidence').value='';$('kpi-target').value='';$('kpi-editor').hidden=true;document.querySelectorAll('input[name="kpi-proof"]').forEach(input=>input.checked=false);renderKpis();$('kpi-message').textContent=`${item.name} saved in this report for coordinator review.`;$('kpi-message').hidden=false;
   });
-  try {const data=window.AISHA_EMBEDDED_DATA?.catalogue;if(!Array.isArray(data?.kpis))throw new Error('Indicator catalogue unavailable');kpiCatalogue=data.kpis;renderKpis();}catch(error){$('kpi-message').textContent=`Could not load indicators: ${error.message}`;}
+  try {const data=window.AISHA_EMBEDDED_DATA?.catalogue;if(!Array.isArray(data?.kpis))throw new Error('Indicator catalogue unavailable');kpiCatalogue=data.kpis;renderKpiContext(data);renderKpis();}catch(error){$('kpi-message').textContent=`Could not load indicators: ${error.message}`;}
   function emptyWp() { return { status:'draft', progress:'', coordination:'', difficulties:'', next:'', support:'', task_updates:{} }; }
   function hasWpContribution(entry) { return ['progress','coordination','difficulties','next','support'].some(k => String(entry[k] || '').trim()) || Object.values(entry.task_updates || {}).some(row => ['status','progress','blocker','next'].some(k => String(row[k] || '').trim())); }
   function renderWpLeadership(p) {

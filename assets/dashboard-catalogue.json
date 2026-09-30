@@ -1253,5 +1253,330 @@
         "basis": "Task text names interim milestones 22 and 23"
       }
     ]
-  }
+  },
+  "smart_objectives": [
+    {
+      "number": 1,
+      "title": "Design and validation",
+      "due": "M12",
+      "commitment": "Complete a pan-EU SOTA report and skills-gap survey covering all targeted sectors and 27+ Member States; produce the draft Common Competence & Qualification Framework (CCQF) aligned to ESCO and EQF.",
+      "measures": "SOTA report published; CCQF v0.1 validated by at least 30 stakeholders across academia, industry and public sector.",
+      "indicator_ids": [
+        "sota_geography",
+        "ccqf_validation"
+      ],
+      "source_page": 113
+    },
+    {
+      "number": 2,
+      "title": "Curriculum development",
+      "due": "M24",
+      "commitment": "Translate CCQF into deployable curricula for HE (GenAI Master’s), VET schemes, and on-the-job training packs.",
+      "measures": "CQF (families, levels, LOs, assessment blueprints) converted into full, ECTS-mapped syllabi and teaching/assessment materials. Ready-to-use on-the-job training packs per profile/sector with micro-credential shells and proctoring options.",
+      "indicator_ids": [
+        "he_curricula",
+        "vet_schemes",
+        "onjob_packages"
+      ],
+      "source_page": 113
+    },
+    {
+      "number": 3,
+      "title": "Higher education and microcredential deployment",
+      "due": "M30",
+      "commitment": "Launch and enroll students in at least one accredited GenAI Master’s (minimum 80 students per cycle, with ≥35% women) and one certified Bachelor or equivalent module pathway (120 students per cycle, ≥35% women).",
+      "measures": "Enrollment & completion rates; gender parity targets met or on track.",
+      "indicator_ids": [
+        "he_curricula",
+        "he_enrolments_per_cycle",
+        "he_women_by_route",
+        "he_completion"
+      ],
+      "source_page": 113
+    },
+    {
+      "number": 4,
+      "title": "Vocational and on-the-job training roll-out",
+      "due": "M30",
+      "commitment": "Implement at least one 2-year vocational scheme (≥100 learners per institute per cycle) and pilot at least 5 sector-specific on-the-job training packages reaching 500 professionals total (≥35% women).",
+      "measures": "Number of professionals trained, completion and employer satisfaction scores.",
+      "indicator_ids": [
+        "vet_schemes",
+        "vet_institute_enrolments",
+        "onjob_packages",
+        "onjob_professionals"
+      ],
+      "source_page": 113
+    },
+    {
+      "number": 5,
+      "title": "Apprenticeship pipeline and employability",
+      "due": "M36",
+      "commitment": "Deliver a pilot EU AI apprenticeship programme with at least 300 apprentices completing a 6–9 month cycle (≥35% women; 15% positions reserved for unemployed/returnees from abroad), 70% of whom secure relevant employment or internships within 6 months post-completion.",
+      "measures": "Apprentices completing, job placement rate at 6 months.",
+      "indicator_ids": [
+        "apprentices_completed",
+        "apprentice_women",
+        "apprentice_places",
+        "employment_placement_share"
+      ],
+      "source_page": 113
+    },
+    {
+      "number": 6,
+      "title": "Train-the-Trainer package",
+      "due": "M42",
+      "commitment": "Complete three cycles of Training-of-Trainers and package reusable courseware, toolkits and assessment rubrics for dissemination to ≥50 partner HE/VET institutions across Member States.",
+      "measures": "Number of trainers certified; number of institutions adopting packaged modules.",
+      "indicator_ids": [
+        "trainers_certified",
+        "institutional_adoption"
+      ],
+      "source_page": 113
+    },
+    {
+      "number": 7,
+      "title": "Accreditation, microcredentials and sustainability",
+      "due": "M45",
+      "commitment": "Pilot an EQF-aligned accreditation mechanism and ELEVATE-compatible seal for at least 20 modular microcredentials; produce a sustainability strategy securing at least two non-EU funding commitments and a post-grant governance model.",
+      "measures": "Certificate seals issued; partnership/co-funding commitments secured.",
+      "indicator_ids": [
+        "microcredentials",
+        "non_eu_funding"
+      ],
+      "source_page": 113
+    },
+    {
+      "number": 8,
+      "title": "Inclusion and gender impact",
+      "due": "Years 1–4",
+      "commitment": "Implement scholarship and returnship schemes supporting at least 80 women/year and outreach activities targeting under-served regions; increase female participation in AISHA activities by 30% relative to baseline, including by the help of the FSTP instrument.",
+      "measures": "Number of scholarships/returnships awarded; female share of participants in the schemes.",
+      "indicator_ids": [
+        "women_supported",
+        "scheme_count",
+        "female_participation_growth"
+      ],
+      "source_page": 113
+    },
+    {
+      "number": 9,
+      "title": "Monitoring, evaluation and policy feedback",
+      "due": "M12 / M48",
+      "commitment": "Deploy the evaluation framework by Month 12; by Month 48 deliver three evaluation cycles, policy briefs and semi-annual reports to DG CONNECT/DG EMPL with evidence-based recommendations to inform Apply AI and AI Factories roll-out.",
+      "measures": "Evaluation reports produced; number of policy briefs formally shared and acknowledged.",
+      "indicator_ids": [
+        "policy_briefs",
+        "evaluation_reports_shared"
+      ],
+      "source_page": 113
+    }
+  ],
+  "call_kpis": [
+    {
+      "id": "CALL-01",
+      "kpi": "Number of higher education curricula developed and implemented",
+      "metric": "Count of distinct HE curricula (full programmes or modular degree-pathways) formally validated and launched, documented by programme specification and enrolment opening.",
+      "target": "3 curricula created: 1 certified GenAI Master (2-year, 80+ students per cycle), 1 GenAI Bachelor pathway / major module (120+ students per cycle), 1 joint/short Master (1-year, 40+ students).",
+      "source_page": 113,
+      "indicator_ids": [
+        "he_curricula"
+      ]
+    },
+    {
+      "id": "CALL-02",
+      "kpi": "Number of women attending the higher education curricula",
+      "metric": "Count of women participating in each distinct HE curriculum.",
+      "target": "≥42 women for the 3-year Bachelor; ≥28 women for the 2-year Master; ≥14 women for the 1-year Master.",
+      "source_page": 113,
+      "indicator_ids": [
+        "he_women_by_route"
+      ]
+    },
+    {
+      "id": "CALL-03",
+      "kpi": "Number of vocational training schemes developed and implemented",
+      "metric": "Count of vocational schemes (complete curricula adopted by VET partners) with at least one pilot cohort completed.",
+      "target": "3 vocational schemes implemented (covering key sectors); 2-year scheme: 100 learners per cycle; 3-year scheme pathway options packaged.",
+      "source_page": 114,
+      "indicator_ids": [
+        "vet_schemes"
+      ]
+    },
+    {
+      "id": "CALL-04",
+      "kpi": "Number of on-the-job trainings per AI profile developed and implemented",
+      "metric": "Count of distinct on-the-job training packages (per profile/profession) developed, piloted and delivered; tracked per profile.",
+      "target": "8 on-the-job training packages developed and delivered, covering priority profiles across sectors.",
+      "source_page": 114,
+      "indicator_ids": [
+        "onjob_packages"
+      ]
+    },
+    {
+      "id": "CALL-05",
+      "kpi": "Number of participants in HE, VET and on-the-job training, including full completion",
+      "metric": "Count of participants enrolled (HE / VET / on-job); full completion per modality (completions ÷ enrolments); disaggregation by gender and country.",
+      "target": "Total participants (all modes) ≥2,500. Completion rates: HE ≥75%, VET ≥80%, on-the-job ≥85%. Gender reporting included.",
+      "source_page": 114,
+      "indicator_ids": [
+        "learners",
+        "he_completion",
+        "vet_completion",
+        "onjob_completion"
+      ]
+    },
+    {
+      "id": "CALL-06",
+      "kpi": "Number of students enrolled in a single institute’s scheme per cycle",
+      "metric": "Count of participants enrolled per institute.",
+      "target": "≥100 per 2-year scheme (minimum 35 women); ≥200 per 3-year scheme (minimum 70 women).",
+      "source_page": 114,
+      "indicator_ids": [
+        "vet_institute_enrolments"
+      ]
+    },
+    {
+      "id": "CALL-07",
+      "kpi": "Scholarship and returnship schemes, value and women beneficiaries",
+      "metric": "Count of implemented schemes; total monetary value allocated (EUR); number of women beneficiaries (aggregate); average award per beneficiary.",
+      "target": "2 schemes implemented (scholarship + returnship). EUR 500,000 committed for each scheme. At least 80 women; average support ≈ EUR 12,500 each (indicative).",
+      "source_page": 114,
+      "indicator_ids": [
+        "scheme_count",
+        "scheme_funding",
+        "women_supported"
+      ]
+    },
+    {
+      "id": "CALL-08",
+      "kpi": "Participants successfully joining the labour market as AI specialists",
+      "metric": "Count of participants reporting improved employment or securing an AI-related job/internship within 6 months after training; disaggregate by gender, age-group, profession and Member State.",
+      "target": "≥800 participants reporting improved employment outcomes within 6 months of completion; ≥50% from HE/VET, ≥30% from apprenticeship, rest from on-job training. ≥35% women among placed participants.",
+      "source_page": 114,
+      "indicator_ids": [
+        "employment_improved"
+      ]
+    },
+    {
+      "id": "CALL-09",
+      "kpi": "Apprenticeship places offered to unemployed citizens",
+      "metric": "Count of apprenticeship seats reserved/allocated to unemployed citizens and returnees abroad, with advertised and filled places documented.",
+      "target": "At least 45 seats per full apprenticeship cycle for unemployed citizens (15% of total apprenticeship places).",
+      "source_page": 114,
+      "indicator_ids": [
+        "apprentice_places"
+      ]
+    },
+    {
+      "id": "CALL-10",
+      "kpi": "Apprentices completing the programme",
+      "metric": "Count of apprentices completing the 6–9 month cycle, gender breakdown, and percentage securing relevant employment/internship after completion.",
+      "target": "300 apprentices completing the programme, at least 105 women (35%); ≥70% secure relevant employment/internship within 6 months.",
+      "source_page": 114,
+      "indicator_ids": [
+        "apprentices_completed",
+        "apprentice_women",
+        "employment_placement_share"
+      ]
+    },
+    {
+      "id": "CALL-11",
+      "kpi": "Website visitors and social media followers",
+      "metric": "Unique website visitors (analytics); total followers across LinkedIn, X/Twitter, Mastodon, Facebook and Instagram; engagement metrics including average session duration and bounce rate.",
+      "target": "150,000 unique website visitors over 4 years; combined social followers ≥25,000 (LinkedIn 12k; X/Mastodon 7k; others 6k); average session ≥2.5 minutes.",
+      "source_page": 114,
+      "indicator_ids": [
+        "unique_visitors",
+        "social_followers",
+        "session_duration"
+      ]
+    },
+    {
+      "id": "CALL-12",
+      "kpi": "Longer videos and podcasts",
+      "metric": "Number of longer audiovisual pieces published on relevant platforms (YouTube, Spotify); number of views and engagements.",
+      "target": "6 pieces with subtitles in multiple languages; ≥5,000 views and ≥100 engagements per piece across all platforms, including social media.",
+      "source_page": 114,
+      "indicator_ids": [
+        "long_videos"
+      ]
+    },
+    {
+      "id": "CALL-13",
+      "kpi": "Communications and awareness-raising activities and participants",
+      "metric": "Count of communication events/activities (webinars, career days, workshops, national roadshows, bootcamps, matchmakings, summer schools) and aggregate reach from registrations and attendance.",
+      "target": "≥180 communication and outreach activities, including roadshows, online webinars and sector deep-dives; ≥20,000 aggregate attendances.",
+      "source_page": 114,
+      "indicator_ids": [
+        "communication_activities",
+        "dissemination_participants"
+      ]
+    },
+    {
+      "id": "CALL-14",
+      "kpi": "Collaborations with industry and the public sector",
+      "metric": "Count of formal collaborations/MOUs/internship or training agreements with industry and public bodies; count organisations supplying real-world data, placements or apprenticeship hosting.",
+      "target": "≥120 formal collaborations with SMEs, large industry and public-sector bodies across target sectors; ≥60 organisations providing placements, project data or apprenticeship hosting.",
+      "source_page": 115,
+      "indicator_ids": [
+        "formal_collaborations",
+        "placement_hosts"
+      ]
+    },
+    {
+      "id": "CALL-15",
+      "kpi": "Links with other EU-sponsored initiatives",
+      "metric": "Count of activated liaisons beyond first contact, such as jointly organised events, exchanged meeting participation and co-authored publications.",
+      "target": "≥30 EU-sponsored initiatives connected by project end.",
+      "source_page": 115,
+      "indicator_ids": [
+        "eu_initiative_links"
+      ]
+    },
+    {
+      "id": "CALL-16",
+      "kpi": "On-the-job professionals benefiting from training",
+      "metric": "Count of professionals completing on-the-job training packages, disaggregated by gender and employer type.",
+      "target": "≥500 professionals completing on-the-job training; ≥175 women (≥35%).",
+      "source_page": 115,
+      "indicator_ids": [
+        "onjob_professionals"
+      ]
+    },
+    {
+      "id": "CALL-17",
+      "kpi": "Communication channels and DSJP landing-page metrics",
+      "metric": "Count of external communication channels; DSJP landing page live and integrated; DSJP page visits and referrals to partner offers.",
+      "target": "≥20 channels involved; DSJP landing page integrated and indexed; ≥10,000 DSJP referrals to AISHA resources over the project lifetime.",
+      "source_page": 115,
+      "indicator_ids": [
+        "communication_channels",
+        "dsjp_landing",
+        "dsjp_referrals"
+      ]
+    },
+    {
+      "id": "CALL-18",
+      "kpi": "Monitoring and evaluation outputs",
+      "metric": "Count of evaluation reports, policy briefs and KPI dashboards produced and shared with the EC/DGs; semiannual policy brief frequency.",
+      "target": "8 semiannual policy briefs/evaluation cycles (every 6 months) plus 3 major public evaluation reports at the end of RP1, RP2 and RP3; all shared with DG CNECT/DG EMPL.",
+      "source_page": 115,
+      "indicator_ids": [
+        "policy_briefs",
+        "evaluation_reports_shared"
+      ]
+    },
+    {
+      "id": "CALL-19",
+      "kpi": "Academic and practitioner impact",
+      "metric": "Count of academic publications and practitioner-oriented publications.",
+      "target": "≥16 academic conference/journal papers and ≥16 short abstracts/publications in technical and professional journals.",
+      "source_page": 115,
+      "indicator_ids": [
+        "academic_publications",
+        "practitioner_publications"
+      ]
+    }
+  ]
 }
