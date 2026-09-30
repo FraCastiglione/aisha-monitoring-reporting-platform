@@ -4,7 +4,7 @@
   const config = window.AISHA_CONFIG;
   const agreement = window.AISHA_AGREEMENT;
   const model = window.AISHA_MODEL;
-  const view = { tab: 'overview', overviewDetail: null, selectedWp: 'WP1', ganttYear: 2026, ganttMonth: 6, ganttExpanded: new Set(), ganttLarge: false, calendarDay: null, draftDay: 1, reportingMode: 'tasks', partnerKind: 'all', from: 1, through: 5, wp: 'all', search: '', kpiGroup: 'all', risk: 'all', dueThrough: 6 };
+  const view = { tab: 'overview', overviewDetail: null, selectedWp: 'WP1', ganttMonth: 6, ganttExpanded: new Set(), ganttLarge: false, calendarDay: null, draftDay: 1, reportingMode: 'tasks', partnerKind: 'all', from: 1, through: 5, wp: 'all', search: '', kpiGroup: 'all', risk: 'all', dueThrough: 6 };
   let catalogue, snapshot, agreementDetail;
   const el = (tag, className = '', value) => { const item = document.createElement(tag); if (className) item.className = className; if (value !== undefined) item.textContent = value; return item; };
   const month = number => model.calendarMonth(config, number);
@@ -93,7 +93,7 @@
       body.append(el('strong','',isDeliverable?'Agreement description':'Agreement means of verification'),el('p','',(isDeliverable?agreementDetail.deliverables:agreementDetail.milestones)[item.id]));
       const links=catalogue.commitment_links?.[item.id]||[];
       const related=el('div','dash-related-tasks');related.append(el('strong','',`Related Tasks · ${links.length}`));
-      if(links.length) for(const link of links){const task=config.tasks.find(row=>row.id===link.task);if(!task)continue;const button=el('button','dash-related-task',`${task.id} · ${task.title} →`);button.type='button';button.addEventListener('click',()=>{view.selectedWp=task.wp;switchTab('workpackages');document.getElementById('dash-wp-detail')?.scrollIntoView({block:'start',behavior:'smooth'});});related.append(button);if(link.basis?.startsWith('contextual'))related.append(el('small','','Contextual link: the Agreement does not explicitly name this Task as the milestone outcome.'));}
+      if(links.length) for(const link of links){const task=config.tasks.find(row=>row.id===link.task);if(!task)continue;const button=el('button','dash-related-task',`${task.id} · ${task.title} →`);button.type='button';button.addEventListener('click',()=>{view.selectedWp=task.wp;view.tab='workpackages';render();const target=document.getElementById(`dash-task-${task.id}`);if(target){target.open=true;target.scrollIntoView({block:'start',behavior:'smooth'});target.focus({preventScroll:true});}});related.append(button);if(link.basis?.startsWith('contextual'))related.append(el('small','','Contextual link: the Agreement does not explicitly name this Task as the milestone outcome.'));}
       else related.append(el('p','', 'No Task outcome link is stated in the Agreement text.'));
       body.append(related,el('small','',`Source: Grant Agreement, Annex 1 · ${isDeliverable?'Deliverables, PDF pp. 93–98':'Milestones, PDF pp. 99–101'}. Due dates are specified by project month.`));block.append(summary,body);list.append(block);
     }
@@ -149,7 +149,7 @@
     section.append(el('h3','','Work Package objectives'),agreementBlocks(agreement.workPackages[wp.id].objectives));
     const work=el('div','dash-wp-detail-columns'),taskColumn=el('div'),outputColumn=el('div');taskColumn.append(el('h3','',`Tasks · ${tasks.length}`));
     for(const task of tasks){
-      const rows=reportRows().filter(row=>row.kind==='task'&&row.id===task.id),assigned=config.partners.filter(partner=>model.assigned(task,partner.code,config)),details=el('details','dash-wp-task'),summary=el('summary',''),body=el('div','dash-wp-task-body');
+      const rows=reportRows().filter(row=>row.kind==='task'&&row.id===task.id),assigned=config.partners.filter(partner=>model.assigned(task,partner.code,config)),details=el('details','dash-wp-task'),summary=el('summary',''),body=el('div','dash-wp-task-body');details.id=`dash-task-${task.id}`;details.tabIndex=-1;
       const implementation=snapshot.task_progress?.[task.id]?.state;
       summary.append(el('strong','',`${task.id} · ${task.title}`),el('small','',`${monthCode(task.startMonth)}–${monthCode(task.endMonth)} · Lead ${task.lead} · ${new Set(rows.map(row=>row.partner)).size}/${assigned.length} partners with entries · Completion ${implementation?implementation.replaceAll('_',' '):'not assessed'}`));
       body.append(el('p','dash-record-note',`Task leader: ${partnerName(task.lead)} (${task.lead}) · Source: PDF p. ${task.sourcePage}. ${task.timingBasis==='work_package'?'Task timing inherits the Work Package window.':''}`));
@@ -169,23 +169,18 @@
   }
   function ganttSection() {
     const section=el('section',`dash-section dash-gantt ${view.ganttLarge?'is-large':''}`);
-    section.append(header('Project Gantt','Explore any calendar year or the complete 48-month schedule. Choose a month for its calendar and review checkpoints.'));
-    const tools=el('div','dash-gantt-tools'),years=[2026,2027,2028,2029,2030];
-    const changeYear=year=>{view.ganttYear=year;if(year!=='all'&&Number(month(view.ganttMonth).slice(0,4))!==year){view.ganttMonth=model.projectMonth(config,`${year}-${year===2026?'05':'01'}`);}view.calendarDay=null;render();};
-    const previous=el('button','dash-gantt-expand','← Earlier');previous.type='button';previous.disabled=view.ganttYear==='all'||view.ganttYear===2026;previous.addEventListener('click',()=>changeYear(view.ganttYear-1));tools.append(previous);
-    tools.append(select('Calendar year',[['all','Full project · M01–M48'],...years.map(year=>[year,String(year)])],view.ganttYear,value=>changeYear(value==='all'?'all':Number(value))));
-    const nextYear=el('button','dash-gantt-expand','Later →');nextYear.type='button';nextYear.disabled=view.ganttYear==='all'||view.ganttYear===2030;nextYear.addEventListener('click',()=>changeYear(view.ganttYear+1));tools.append(nextYear);
-    tools.append(el('span','dash-gantt-checkpoint','Internal review drafts: 1st of due month'));
+    section.append(header('Project Gantt','The full 48-month schedule. Choose a month for its calendar, or expand a Work Package to see its Tasks.'));
+    const tools=el('div','dash-gantt-tools');
     const enlarge=el('button','dash-gantt-expand',view.ganttLarge?'Use normal width':'Expand Gantt');enlarge.type='button';enlarge.addEventListener('click',()=>{view.ganttLarge=!view.ganttLarge;render();});tools.append(enlarge);
     const expand=el('button','dash-gantt-expand',view.ganttExpanded.size===config.workPackages.length?'Hide all Task rows':'Show all Task rows');expand.type='button';expand.addEventListener('click',()=>{view.ganttExpanded=view.ganttExpanded.size===config.workPackages.length?new Set():new Set(config.workPackages.map(wp=>wp.id));render();});tools.append(expand);section.append(tools);
-    const legend=el('div','dash-gantt-legend');for(const [tone,label] of [['wp','Work Package active'],['task','Task active'],['selected','Selected month'],['due','Deliverable / milestone due']]){const item=el('span','');item.append(el('i',tone),label);legend.append(item);}section.append(legend);
+    const legend=el('div','dash-gantt-legend');for(const [tone,label] of [['wp','Work Package active'],['task','Task active'],['selected','Selected month'],['draft','Internal review draft'],['due','Official deadline'],['event','Project event']]){const item=el('span','');item.append(el('i',tone),label);legend.append(item);}section.append(legend);
     const scroller=el('div','dash-gantt-scroll'),matrix=el('div','dash-gantt-matrix'),head=el('div','dash-gantt-row dash-gantt-header');head.append(el('div','dash-gantt-label','WORK PACKAGE / TASK'));
-    const months=view.ganttYear==='all'?Array.from({length:48},(_,i)=>month(i+1)):Array.from({length:12},(_,i)=>`${view.ganttYear}-${String(i+1).padStart(2,'0')}`);
+    const months=Array.from({length:48},(_,i)=>month(i+1));
     matrix.style.setProperty('--gantt-months',String(months.length));
     for(const calendar of months){
       const number=model.projectMonth(config,calendar),cell=el('button',`dash-gantt-month ${number===view.ganttMonth?'is-selected':''}`);cell.type='button';cell.disabled=!number;
       cell.append(el('strong','',new Intl.DateTimeFormat('en',{month:'short',timeZone:'UTC'}).format(new Date(`${calendar}-01T00:00:00Z`))),el('small','',number?monthCode(number):'—'));
-      if(number){const count=catalogue.deliverables.filter(item=>item.due===number).length+catalogue.milestones.filter(item=>item.due===number).length,reportDue=(snapshot.task_report_deadlines||[]).filter(item=>item.due_date?.startsWith(calendar)).length,reported=reportRows().filter(row=>row.kind==='task'&&row.coverage?.months?.includes(calendar)).length;if(count)cell.append(el('span','dash-gantt-due-count',`${count} due`));if(reportDue)cell.append(el('span','dash-gantt-report-count',`${reportDue} Task due`));if(reported)cell.append(el('span','dash-gantt-report-count',`${reported} report${reported===1?'':'s'}`));cell.addEventListener('click',()=>{view.ganttMonth=number;view.calendarDay=null;render();document.getElementById('dash-calendar')?.scrollIntoView({block:'start',behavior:'smooth'});});}
+      if(number){const count=catalogue.deliverables.filter(item=>item.due===number).length+catalogue.milestones.filter(item=>item.due===number).length,reportDue=(snapshot.task_report_deadlines||[]).filter(item=>item.due_date?.startsWith(calendar)).length,reported=reportRows().filter(row=>row.kind==='task'&&row.coverage?.months?.includes(calendar)).length,events=(snapshot.project_events||[]).filter(item=>item.start_date?.slice(0,7)===calendar);if(count)cell.append(el('span','dash-gantt-due-count',`${count} due`));if(reportDue)cell.append(el('span','dash-gantt-report-count',`${reportDue} Task due`));if(reported)cell.append(el('span','dash-gantt-report-count',`${reported} report${reported===1?'':'s'}`));if(events.length){cell.append(el('span','dash-gantt-event-count',`${events.length} event`));cell.title=events.map(item=>`${item.title} · ${item.start_date}–${item.end_date} · ${item.location}`).join('; ');for(const event of events){const marker=el('span','dash-project-event-marker');marker.style.left=`${(Number(event.start_date.slice(-2))-.5)/Number(model.periodForMonth(config,calendar).end.slice(-2))*100}%`;marker.setAttribute('aria-label',`${event.title} · ${event.start_date}–${event.end_date}`);cell.append(marker);}}cell.addEventListener('click',()=>{view.ganttMonth=number;view.calendarDay=null;render();document.getElementById('dash-calendar')?.scrollIntoView({block:'start',behavior:'smooth'});});}
       head.append(cell);
     }
     matrix.append(head);
@@ -193,22 +188,31 @@
       matrix.append(ganttRow(wp,false,months));
       if(view.ganttExpanded.has(wp.id))for(const task of config.tasks.filter(task=>task.wp===wp.id))matrix.append(ganttRow(task,true,months));
     }
-    scroller.append(matrix);requestAnimationFrame(()=>{if(scroller.isConnected&&scroller.scrollWidth>scroller.clientWidth){const index=view.ganttYear==='all'?view.ganttMonth-1:Number(month(view.ganttMonth).slice(5))-1;scroller.scrollLeft=Math.max(0,index*(matchMedia('(max-width:700px)').matches?64:71)-20);}});section.append(scroller,el('p','dash-gantt-hint','Choose a month above for its calendar. Select a Work Package row to expand its Tasks. Scroll horizontally to explore the full project.'));
+    scroller.append(matrix);requestAnimationFrame(()=>{if(scroller.isConnected&&scroller.scrollWidth>scroller.clientWidth){scroller.scrollLeft=Math.max(0,(view.ganttMonth-1)*(matchMedia('(max-width:700px)').matches?64:71)-20);}});section.append(scroller,el('p','dash-gantt-hint','Choose a month above for its calendar. Select a Work Package row to expand its Tasks. Scroll horizontally to explore the full project.'));
     section.append(calendarSection(view.ganttMonth));return section;
   }
   function ganttRow(item,isTask,months){
     const row=el('div',`dash-gantt-row ${isTask?'is-task':'is-wp'}`),label=el('button','dash-gantt-label','');label.type='button';label.append(el('strong','',item.id),el('span','',item.title));
-    if(isTask){label.addEventListener('click',()=>{view.selectedWp=item.wp;switchTab('workpackages');});label.title=`Open ${item.wp} Task details`;}else{label.setAttribute('aria-expanded',String(view.ganttExpanded.has(item.id)));label.addEventListener('click',()=>{view.ganttExpanded.has(item.id)?view.ganttExpanded.delete(item.id):view.ganttExpanded.add(item.id);render();});label.title=`${view.ganttExpanded.has(item.id)?'Hide':'Show'} Tasks in ${item.id}`;}
+    if(isTask){label.addEventListener('click',()=>{view.selectedWp=item.wp;view.tab='workpackages';render();const target=document.getElementById(`dash-task-${item.id}`);if(target){target.open=true;target.scrollIntoView({block:'start',behavior:'smooth'});}});label.title=`Open ${item.wp} Task details`;}else{label.setAttribute('aria-expanded',String(view.ganttExpanded.has(item.id)));label.addEventListener('click',()=>{view.ganttExpanded.has(item.id)?view.ganttExpanded.delete(item.id):view.ganttExpanded.add(item.id);render();});label.title=`${view.ganttExpanded.has(item.id)?'Hide':'Show'} Tasks in ${item.id}`;}
     row.append(label);
-    for(const calendar of months){const number=model.projectMonth(config,calendar),active=number&&model.active(item,number),cell=el('div',`dash-gantt-cell ${active?'is-active':''} ${number===view.ganttMonth?'is-selected':''}`);cell.title=number?`${item.id}: ${active?'active':'outside activity window'} in ${monthCode(number)} ${monthName(number)}`:'Outside the project';row.append(cell);}
+    for(const calendar of months){const number=model.projectMonth(config,calendar),active=number&&model.active(item,number),cell=el('div',`dash-gantt-cell ${active?'is-active':''} ${number===view.ganttMonth?'is-selected':''}`);const deadlines=number?rowDeadlines(item,isTask,number):[],events=(snapshot.project_events||[]).filter(event=>event.start_date?.slice(0,7)===calendar);cell.title=number?`${item.id}: ${active?'active':'outside activity window'} in ${monthCode(number)} ${monthName(number)}${deadlines.length?` · ${deadlines.map(entry=>entry.label).join('; ')}`:''}${events.length?` · Project event: ${events.map(event=>event.title).join(', ')}`:''}`:'Outside the project';for(const entry of deadlines){const marker=el('span',`dash-deadline-marker ${entry.type}`);marker.setAttribute('aria-label',entry.label);cell.append(marker);}for(const event of events){const marker=el('span','dash-project-event-marker');marker.style.left=`${(Number(event.start_date.slice(-2))-.5)/Number(model.periodForMonth(config,calendar).end.slice(-2))*100}%`;marker.setAttribute('aria-label',`${event.title} · ${event.start_date}–${event.end_date}`);cell.append(marker);}row.append(cell);}
     return row;
+  }
+  function rowDeadlines(item,isTask,number){
+    const relevant=entry=>isTask?(catalogue.commitment_links?.[entry.id]||[]).some(link=>link.task===item.id):entry.wp===item.id;
+    const commitments=[...catalogue.deliverables.map(entry=>({...entry,kind:'Deliverable'})),...catalogue.milestones.map(entry=>({...entry,kind:'Milestone'}))].filter(relevant);
+    const reports=(snapshot.task_report_deadlines||[]).filter(entry=>isTask?entry.id===item.id:config.tasks.some(task=>task.id===entry.id&&task.wp===item.id));
+    const markers=[];
+    for(const entry of commitments.filter(entry=>entry.due===number)){markers.push({type:'draft',label:`Internal draft: ${entry.id} (${entry.kind}) · 1 ${monthName(number)}`},{type:'due',label:`Official deadline: ${entry.id} (${entry.kind}) · ${model.periodForMonth(config,month(number)).end}`});}
+    for(const entry of reports){const dueNumber=model.projectMonth(config,entry.due_date?.slice(0,7)),day=Number(entry.due_date?.slice(-2));if(dueNumber===number)markers.push({type:'due',label:`Task report deadline: ${entry.id} · ${entry.due_date}`});if((day>1?dueNumber:dueNumber-1)===number)markers.push({type:'draft',label:`Internal Task report draft: ${entry.id} · 1 ${monthName(number)}`});}
+    return ['draft','due'].map(type=>{const matching=markers.filter(entry=>entry.type===type);return matching.length?{type,label:matching.map(entry=>entry.label).join('; ')}:null;}).filter(Boolean);
   }
   function calendarEvents(number){
     const calendar=month(number),last=Number(model.periodForMonth(config,calendar).end.slice(-2)),events=[];
     for(const [kind,collection,status] of [['Deliverable',catalogue.deliverables,snapshot.deliverable_status],['Milestone',catalogue.milestones,snapshot.milestone_status]]){
       for(const item of collection.filter(item=>item.due===number)){
-        const state=knownState(status?.[item.id]);if(!['submitted','accepted','achieved'].includes(state))events.push({day:view.draftDay,type:'draft',label:`Internal review draft · ${item.id}`,detail:`${kind}: ${item.title}`,state});
-        events.push({day:last,type:'agreement',label:`Agreement due month · ${item.id}`,detail:`${kind}: ${item.title}`,state});
+        const state=knownState(status?.[item.id]);events.push({day:view.draftDay,type:'draft',label:`Internal review draft · ${item.id}`,detail:`${kind}: ${item.title}`,state});
+        events.push({day:last,type:'agreement',label:`Official deadline · ${item.id}`,detail:`${kind}: ${item.title}`,state});
       }
     }
     for(const item of snapshot.task_report_deadlines||[]){
@@ -219,12 +223,17 @@
       if(plannedDraft?.slice(0,7)===calendar)events.push({day:Number(plannedDraft.slice(-2)),type:'draft',label:`Internal review draft · ${item.id}`,detail:`Task report${item.partner?` · ${item.partner}`:''}`});
       if(dueMonth===calendar)events.push({day,type:'report',label:`Task report due · ${item.id}`,detail:item.partner?`Partner ${item.partner}`:'Coordinator scheduled'});
     }
+    for(const item of snapshot.project_events||[]){
+      if(item.start_date?.slice(0,7)!==calendar)continue;
+      const start=Number(item.start_date.slice(-2)),end=item.end_date?.slice(0,7)===calendar?Number(item.end_date.slice(-2)):start;
+      for(let day=start;day<=end;day++)events.push({day,type:'event',label:item.title,detail:`${item.location||'Project event'} · ${item.start_date}–${item.end_date}`});
+    }
     return events.sort((a,b)=>a.day-b.day||a.label.localeCompare(b.label));
   }
   function calendarSection(number){
     const calendar=month(number),period=model.periodForMonth(config,calendar),last=Number(period.end.slice(-2)),firstWeekday=(new Date(`${calendar}-01T00:00:00Z`).getUTCDay()+6)%7,events=calendarEvents(number),section=el('section','dash-calendar');section.id='dash-calendar';
     const top=el('div','dash-calendar-top'),copy=el('div'),navigation=el('div','dash-calendar-nav');copy.append(el('span','dash-kpi-group',`${monthCode(number)} · PROJECT CALENDAR`),el('h2','',monthName(number)));
-    for(const [sign,target,label] of [['−1',number-1,'Previous month'],['+1',number+1,'Next month']]){const button=el('button','',sign==='−1'?'←':'→');button.type='button';button.disabled=target<1||target>48;button.setAttribute('aria-label',label);button.addEventListener('click',()=>{view.ganttMonth=target;view.ganttYear=Number(month(target).slice(0,4));view.calendarDay=null;render();document.getElementById('dash-calendar')?.scrollIntoView({block:'start',behavior:'smooth'});});navigation.append(button);}
+    for(const [sign,target,label] of [['−1',number-1,'Previous month'],['+1',number+1,'Next month']]){const button=el('button','',sign==='−1'?'←':'→');button.type='button';button.disabled=target<1||target>48;button.setAttribute('aria-label',label);button.addEventListener('click',()=>{view.ganttMonth=target;view.calendarDay=null;render();document.getElementById('dash-calendar')?.scrollIntoView({block:'start',behavior:'smooth'});});navigation.append(button);}
     top.append(copy,navigation);section.append(top);
     const body=el('div','dash-calendar-layout'),grid=el('div','dash-calendar-grid');
     for(const day of ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'])grid.append(el('span','dash-calendar-weekday',day));
@@ -238,7 +247,7 @@
     const shown=events.filter(event=>view.calendarDay===null||event.day===view.calendarDay);
     if(shown.length)for(const event of shown){const row=el('div',`dash-agenda-item ${event.type}`);row.append(el('span','dash-agenda-date',`${event.day} ${monthName(number).split(' ')[0]}`));const text=el('div');text.append(el('strong','',event.label),el('small','',event.detail));if(event.state)text.append(pill(event.state.replaceAll('_',' '),'positive'));row.append(text);agenda.append(row);}else agenda.append(empty('No scheduled items for this day or month.'));
     const recorded=reportRows().filter(row=>row.kind==='task'&&row.coverage?.months?.includes(calendar));if(recorded.length){const reports=el('div','dash-calendar-reports');reports.append(el('h4','',`Task reporting covering this month · ${recorded.length}`));for(const row of recorded)reports.append(el('p','',`${row.id} · ${row.partner} · ${row.coverage.start}–${row.coverage.end} · ${row.report_status.replaceAll('_',' ')}`));agenda.append(reports);}else agenda.append(el('p','dash-calendar-report-note','No coordinator-confirmed Task report entries cover this month.'));
-    body.append(grid,agenda);section.append(body,el('p','dash-calendar-caveat','The Agreement specifies deliverable and milestone due months, not exact due dates. Month-end markers show their due month on this calendar. Internal draft checkpoints are a coordinator planning convention on the first day of the due month; they are not Agreement deadlines. Task report deadlines appear only when the coordinator adds a monitoring schedule.'));return section;
+    body.append(grid,agenda);section.append(body);return section;
   }
   function commitments() {
     const section = el('section', 'dash-section'); section.append(header('Agreement commitments', 'Due months come from the signed Grant Agreement. Items without a status update remain “Not recorded”; they are not treated as overdue automatically.'));
@@ -385,6 +394,6 @@
   try {
     const source=window.AISHA_EMBEDDED_DATA?.catalogue,data=window.AISHA_EMBEDDED_DATA?.snapshot,detailData=window.AISHA_EMBEDDED_DATA?.detail;
     if(data?.schema_version!=='2.0'||data.project!=='AISHA'||!Array.isArray(source?.deliverables)||!Array.isArray(source?.milestones)||!Array.isArray(source?.risks)||!Array.isArray(source?.kpis)||!detailData?.deliverables||!detailData?.milestones||!agreement?.workPackages)throw new Error('Dashboard data is incomplete');
-    catalogue=source;snapshot=data;agreementDetail=detailData;const current=model.projectMonth(config,data.snapshot_month);if(current){view.through=current;view.dueThrough=current<=6?6:current<=12?12:current<=18?18:current<=36?36:48;view.ganttMonth=Math.min(48,current+1);view.ganttYear=Number(month(view.ganttMonth).slice(0,4));}view.draftDay=1;render();
+    catalogue=source;snapshot=data;agreementDetail=detailData;const current=model.projectMonth(config,data.snapshot_month);if(current){view.through=current;view.dueThrough=current<=6?6:current<=12?12:current<=18?18:current<=36?36:48;view.ganttMonth=Math.min(48,current+1);}view.draftDay=1;render();
   } catch(error){host.replaceChildren(el('p','dash-error',`Dashboard could not load: ${error.message}.`));}
 })();

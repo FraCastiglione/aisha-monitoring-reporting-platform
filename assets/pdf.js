@@ -24,10 +24,11 @@
     const { PDFDocument, rgb } = window.PDFLib;
     const pdf = await PDFDocument.create();
     pdf.registerFontkit(window.fontkit);
-    const [fontResponse, logoResponse] = await Promise.all([fetch("assets/NotoSans-Regular.ttf"), fetch("assets/aisha-logo.png")]);
-    if (!fontResponse.ok || !logoResponse.ok) throw new Error("The local font or logo could not be loaded.");
-    const font = await pdf.embedFont(await fontResponse.arrayBuffer(), { subset: true });
-    const logo = await pdf.embedPng(await logoResponse.arrayBuffer());
+    const bundled = window.AISHA_PDF_ASSETS;
+    if (!bundled?.font || !bundled?.logo) throw new Error("The PDF font or logo did not load.");
+    const bytes = value => Uint8Array.from(atob(value), character => character.charCodeAt(0));
+    const font = await pdf.embedFont(bytes(bundled.font), { subset: true });
+    const logo = await pdf.embedPng(bytes(bundled.logo));
     const color = (parts) => rgb(...parts);
     let page;
     let y;

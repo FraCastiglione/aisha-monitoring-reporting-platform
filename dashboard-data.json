@@ -42,5 +42,15 @@
     "note": "Suggested early-month internal review checkpoint for items with an Agreement due month; not an Agreement deadline."
   },
   "task_report_deadlines": [],
-  "messages": []
+  "messages": [],
+  "project_events": [
+    {
+      "id": "AISHA-CONSORTIUM-2026-11",
+      "title": "AISHA consortium meeting",
+      "location": "Brussels",
+      "start_date": "2026-11-18",
+      "end_date": "2026-11-19",
+      "source": "Coordinator update, 30 September 2026"
+    }
+  ]
 }
