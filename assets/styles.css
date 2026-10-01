@@ -161,7 +161,8 @@ h1, h2, h3 { color: var(--blue-deep); line-height: 1.16; }
 .timeline-month span, .timeline-month small { display: block; line-height: 1.35; }
 .timeline-month small { font-size: 9px; }
 .timeline-month:hover { border-color: #139a83; }
-.timeline-month.is-in-range { color: #fff; background: #078d7b; border-color: #087669; font-weight: 750; }
+.timeline-month.is-in-range { color: var(--blue-deep); background: #dff4f0; border-color: var(--teal); font-weight: 750; }
+#task-month-summary { width:100%; max-width:none; }
 .selected-summary { margin: 10px 0 24px; color: #12675e; font-weight: 700; font-size: 13px; }
 .task-package { padding: 19px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
 .task-package h4 { margin: 0; color: var(--blue-deep); font-size: 20px; }
@@ -755,11 +756,10 @@ fieldset.field legend { margin-bottom: 8px; color: var(--ink); font-size: 13px; 
 .is-task .dash-gantt-cell.is-active::before { top:13px; bottom:13px; background:#6579c3; }
 .dash-gantt-cell.is-selected { background:#fff8e8; }
 .dash-gantt-cell.is-closeout { background:#f8f5fc; }
-.dash-review-row .dash-gantt-label { background:#f8f5fc; }
-.dash-review-row .dash-gantt-label strong { color:#8059b7; }
-.dash-gantt-cell.is-review { background:#ede4f8; }
-.dash-gantt-cell.is-review::before { content:''; position:absolute; top:10px; bottom:10px; left:0; right:0; background:#8059b7; }
-.dash-gantt-cell.is-period-end::after { content:''; position:absolute; z-index:1; top:3px; bottom:3px; right:5px; width:3px; border-radius:2px; background:#cf3f49; }
+.dash-gantt-cell.is-review { background:#f1eaf9; }
+.dash-gantt-cell.is-review::before,.is-task .dash-gantt-cell.is-review::before { content:''; position:absolute; top:11px; bottom:11px; left:0; right:0; background:#8059b7; }
+.is-task .dash-gantt-cell.is-review::before { top:13px; bottom:13px; }
+.dash-gantt-cell.is-review.is-selected { background:#eadcf7; }
 .dash-gantt-tooltip { position:fixed; z-index:1000; width:min(300px,calc(100vw - 24px)); padding:13px 15px; border:1px solid #d3dbee; border-radius:11px; background:#fff; box-shadow:0 14px 38px #202c7040; pointer-events:none; }
 .dash-gantt-tooltip strong { display:block; margin-bottom:6px; color:var(--blue-deep); font-size:13px; }
 .dash-gantt-tooltip span { display:block; margin-top:4px; color:#42536e; font-size:11px; line-height:1.45; }
@@ -771,6 +771,7 @@ fieldset.field legend { margin-bottom: 8px; color: var(--ink); font-size: 13px; 
 .dash-calendar { scroll-margin-top:86px; padding:23px; border:1px solid #dce4f0; border-radius:15px; background:#fff; }
 .dash-calendar-top { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:16px; }
 .dash-calendar-top h2 { margin:4px 0 0; font-size:24px; }
+.dash-calendar-review-note { margin:0 0 17px; padding:11px 14px; border-left:4px solid #8059b7; border-radius:8px; background:#f3eef9; color:#51416d; font-size:12px; }
 .dash-calendar-nav { display:flex; gap:6px; }
 .dash-calendar-nav button { width:34px; height:34px; border:1px solid #d6e0ed; border-radius:7px; background:#f7f9fc; color:var(--blue); font-weight:800; }
 .dash-calendar-nav button:disabled { opacity:.4; }

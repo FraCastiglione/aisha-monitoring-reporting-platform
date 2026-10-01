@@ -8,6 +8,7 @@
   const commForm = $('communication-form');
   const state = { partner: null, contributor: null, reportType: null, selected: new Map(), wpUpdates: new Map(), extras: [], kpis: new Map(), kpisByType:{tasks:new Map(),communication:new Map()}, selectedMonths: new Set(), lastPeriod: null, editing: null, wpEditing: null, extraEditing: null, editWasNew: false, revision: 1, reviewed: null, urls: [], taskPdfUrl: null };
   let kpiCatalogue=[];
+  const communicationKpis=new Set(['dsjp_landing','unique_visitors','social_followers','communication_activities','dissemination_participants','media_mentions','long_videos','campaign_conversion','dsjp_referrals','resource_accesses','session_duration','webinar_retention','communication_channels','policy_briefs','member_states','eu_visibility']);
   let kpiReady=Promise.resolve();
   const value = id => $(id).value.trim();
   const radio = (form, name) => form.querySelector(`input[name="${name}"]:checked`)?.value || '';
@@ -290,14 +291,19 @@
   function renderKpis(){
     const catalogueHost=$('kpi-catalogue-list');catalogueHost.replaceChildren();
     if(!kpiCatalogue.length){catalogueHost.append(textNode('p','Indicators are unavailable.','field-help'));$('kpi-editor').hidden=true;return;}
-    const groups=new Map();for(const item of kpiCatalogue){if(!groups.has(item.group))groups.set(item.group,[]);groups.get(item.group).push(item);}
+    const communication=state.reportType==='communication';
+    $('kpi-smart-context').hidden=communication;document.querySelector('.kpi-call-context').hidden=communication;
+    const heading=$('kpi-reporting').querySelector('.section-heading');heading.querySelector('h3').textContent=communication?'Communication and dissemination indicators':'Choose a KPI to report';heading.querySelector(':scope > p').textContent=communication?'Report measured results from your communication and dissemination activities. Other project indicators belong in the partner Task report. The coordinator reviews claims before dashboard actuals are updated.':'Start with a project objective or browse the Agreement’s call KPI table. Then open a measured indicator to enter your value and evidence. The coordinator reviews claims before dashboard actuals are updated.';
+    $('kpi-reporting').querySelector('.kpi-measure-heading').textContent=communication?'Choose a communication measure':'Choose a measurable indicator';
+    const shown=kpiCatalogue.filter(item=>!communication||communicationKpis.has(item.id));
+    const groups=new Map();for(const item of shown){if(!groups.has(item.group))groups.set(item.group,[]);groups.get(item.group).push(item);}
     for(const [group,items] of groups){const details=document.createElement('details');details.className='kpi-report-group';if(group==='Reach'||groups.size===1)details.open=true;
       details.append(textNode('summary',`${group} · ${items.length} indicators`));const rows=textNode('div','','kpi-report-rows');
       for(const item of items){const card=textNode('article','','kpi-report-row'),identity=textNode('div','','kpi-report-identity');identity.append(textNode('strong',item.name),textNode('small',`Agreement target: ${item.target} · Unit: ${item.unit}`));
         const action=textNode('button',state.kpis.has(item.id)?'Edit value':'Report value','button button-secondary');action.type='button';action.addEventListener('click',()=>selectKpi(item.id));card.append(identity,action);rows.append(card);}details.append(rows);catalogueHost.append(details);}
     const list=$('kpi-list');list.replaceChildren();
     for(const entry of state.kpis.values()){
-      const card=textNode('article','','extra-entry');card.append(textNode('strong',entry.name),textNode('small',`${entry.value}${entry.unit==='%'?'%':entry.unit==='status'?'':` ${entry.unit}`} · ${entry.proof_status==='uploaded'?'Proof uploaded':'Proof to upload'}`),textNode('p',`Evidence: ${entry.evidence}`));
+      const card=textNode('article','','extra-entry');card.append(textNode('strong',entry.name),textNode('small',`${entry.value}${entry.unit==='%'?'%':entry.unit==='status'?'':` ${entry.unit}`} · ${entry.proof_status==='uploaded'?'Proof uploaded':'Proof to upload'}`),textNode('p',`Evidence: ${entry.evidence}`));if(communication&&!communicationKpis.has(entry.id))card.append(textNode('p','This indicator is outside the communication report. Remove it here and report it with your Task contributions instead.','field-help'));
       const remove=textNode('button','Remove','text-button');remove.type='button';remove.addEventListener('click',()=>{state.kpis.delete(entry.id);renderKpis();});card.append(remove);list.append(card);
     }
     if(value('kpi-target'))renderKpiInput();
@@ -560,6 +566,7 @@
     for (const id of ['comm-social-count', ...(radio(commForm,'email_or_newsletter_sent') === 'yes' ? ['comm-recipients'] : [])]) if (!validCount(value(id))) return fail('Enter the required non-negative activity count.');
     for (const [id,unknown] of [['comm-reach','comm-reach-unknown'],['comm-enrolments','comm-enrolments-unknown']]) if (!$(unknown).checked && !validCount(value(id))) return fail('Enter a non-negative count or select Unknown.');
     if (radio(commForm,'coordinator_support_required') === 'yes' && !value('comm-support')) return fail('Describe the support required.');
+    if ([...state.kpis.keys()].some(id=>!communicationKpis.has(id))) return fail('Remove KPI contributions outside communication and dissemination before reviewing this report. They belong in your partner Task report.');
     return true;
   }
   function finalTaskAnswers(a) {
