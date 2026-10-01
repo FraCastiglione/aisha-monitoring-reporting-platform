@@ -45,6 +45,14 @@
   "messages": [],
   "project_events": [
     {
+      "id": "AISHA-KICKOFF-2026-05",
+      "title": "AISHA kickoff meeting",
+      "location": "La Sapienza facilities, Rome",
+      "start_date": "2026-05-20",
+      "end_date": "2026-05-21",
+      "source": "Coordinator update supplied in this conversation, 1 October 2026"
+    },
+    {
       "id": "AISHA-CONSORTIUM-2026-11",
       "title": "AISHA consortium meeting",
       "location": "Brussels",

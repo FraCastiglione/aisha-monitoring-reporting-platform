@@ -109,7 +109,7 @@
     if (report.pdf_kind === "draft_report") pair("Scope", "Unfinished draft of the full partner report. Review before generating final files.");
     pair("Partner organisation", `${report.partner.name} (${report.partner.code})`);
     pair("Contributor", `${report.contributor.name} · ${report.contributor.role} · ${report.contributor.email}`);
-    pair("Reporting period", `${report.reporting_period.code ? `${report.reporting_period.code} · ` : ""}${report.reporting_period.start} to ${report.reporting_period.end}`);
+    pair("Reporting period", report.reporting_period.start && report.reporting_period.end ? `${report.reporting_period.code ? `${report.reporting_period.code} · ` : ""}${report.reporting_period.start} to ${report.reporting_period.end}` : "Reporting period not yet selected");
     if (report.report_type === "tasks") pair("Selected months", report.reporting_period.selected_months.join(", "));
     pair("Report key and revision", `${report.report_key} · v${report.revision}`);
     pair("Generated", generatedLabel(report.generated_at));
@@ -204,7 +204,9 @@
       for (const entry of report.kpi_contributions) {
         section(entry.name);
         pair("Measured value", `${entry.value}${entry.unit === "%" ? "%" : entry.unit === "status" ? "" : ` ${entry.unit}`}`);
-        if (entry.basis) pair("Percentage calculation", entry.basis);
+        if (entry.scope) pair("Programme, cohort, campaign or output", entry.scope);
+        if (entry.basis) pair("Calculation method", entry.basis);
+        if (entry.numerator !== undefined) pair("Calculation values", `${entry.numerator} / ${entry.denominator}`);
         pair("Evidence reference", entry.evidence);
         pair("Nextcloud proof", entry.proof_status === "uploaded" ? "Partner confirms uploaded" : "Partner confirms they will upload after download");
       }
@@ -215,7 +217,7 @@
       sheet.drawText("AISHA · European AI Skills Academy", { x: MARGIN, y: 32, size: 8, font, color: color(BLUE) });
       sheet.drawText(`${index + 1} / ${pages.length}`, { x: A4[0] - MARGIN - 28, y: 32, size: 8, font, color: color(BLUE) });
     });
-    if (report.report_type === "tasks") await pdf.attach(new TextEncoder().encode(JSON.stringify(embeddedRecord)), "AISHA-report-data.json", { mimeType: "application/json", description: "AISHA structured report data for reliable import" });
+    await pdf.attach(new TextEncoder().encode(JSON.stringify(embeddedRecord)), "AISHA-report-data.json", { mimeType: "application/json", description: "AISHA structured report data for reliable import" });
     return new Blob([await pdf.save()], { type: "application/pdf" });
   }
 
