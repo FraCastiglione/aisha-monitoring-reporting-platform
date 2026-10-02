@@ -42,6 +42,8 @@
     "note": "Suggested early-month internal review checkpoint for items with an Agreement due month; not an Agreement deadline."
   },
   "task_report_deadlines": [],
+  "monitoring_rounds": [],
+  "shared_activities": [],
   "messages": [],
   "project_events": [
     {

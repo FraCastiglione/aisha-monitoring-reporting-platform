@@ -177,7 +177,7 @@
     } else {
       section("Events");
       pair("Events organised", a.events_organised);
-      a.events.forEach((event, index) => pair(`Event ${index + 1}`, `${event.description}\nParticipants: ${event.participants}`));
+      a.events.forEach((event, index) => pair(`Event ${index + 1}`, `${event.description}\nParticipants: ${event.participants}${event.activity_id?`\nShared activity code: ${event.activity_id}`:''}`));
       section("Media and publications");
       pair("Media outreach", a.media_outreach);
       pair("Journalists contacted", a.journalists_contacted);
@@ -205,6 +205,7 @@
         section(entry.name);
         pair("Measured value", `${entry.value}${entry.unit === "%" ? "%" : entry.unit === "status" ? "" : ` ${entry.unit}`}`);
         if (entry.scope) pair("Programme, cohort, campaign or output", entry.scope);
+        if (entry.activity_id) pair("Shared activity code", entry.activity_id);
         if (entry.basis) pair("Calculation method", entry.basis);
         if (entry.numerator !== undefined) pair("Calculation values", `${entry.numerator} / ${entry.denominator}`);
         pair("Evidence reference", entry.evidence);

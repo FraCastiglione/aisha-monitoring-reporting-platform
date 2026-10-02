@@ -68,6 +68,8 @@
     const latest=[...(snapshot.messages||[])].sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,2);
     if(latest.length)for(const item of latest)boardPreview.append(el('p','',`${item.priority==='urgent'?'Urgent · ':''}${item.title} · ${item.date}`));else boardPreview.append(el('p','','No project messages have been published yet.'));
     section.append(boardPreview);
+    const rounds=(snapshot.monitoring_rounds||[]).filter(row=>Array.isArray(row.selected_months)&&row.selected_months.length);
+    if(rounds.length){const panel=el('section','dash-board-preview');panel.append(el('h3','','Coordinator monitoring rounds'));for(const row of rounds)panel.append(el('p','',`${row.title||row.id} · ${monthList(row.selected_months)}${row.opens_on?` · Opens ${row.opens_on}`:''}${row.closes_on?` · Closes ${row.closes_on}`:''}`));section.append(panel);}
     if(view.overviewDetail) section.append(overviewDetailPanel(view.overviewDetail,current));
     const next = el('div', 'dash-next'),futureLabel=current>=48?'The 48-month Agreement schedule has ended.':`${monthName(current+1)}–${monthName(Math.min(48,current+6))} · ${monthCode(current+1)}–${monthCode(Math.min(48,current+6))}`;next.append(header('Upcoming in the next six months', futureLabel));
     const upcoming = [
@@ -401,7 +403,18 @@
   }
   function kpisSection(){
     const section=el('section','dash-section');section.append(header('Project indicators','Read the Agreement’s objectives, measurement tables and targets. Each partner records attributable values and supporting evidence; actuals appear after coordinator review.'));
-    if(catalogue.source_conflicts?.length){const conflicts=el('details','dash-kpi-source-conflicts');conflicts.append(el('summary','',`${catalogue.source_conflicts.length} source differences need a coordinator decision`));for(const row of catalogue.source_conflicts)conflicts.append(el('p','',`${row.topic}: ${row.note}`));section.append(conflicts);}
+    if(catalogue.source_conflicts?.length){
+      const conflicts=el('details','dash-kpi-source-conflicts');conflicts.append(el('summary','',`${catalogue.source_conflicts.length} Agreement passages need a coordinator interpretation`));
+      conflicts.append(el('p','','The original passages remain separate. No target or deadline is changed until the coordinator records a decision.'));
+      const list=el('div','dash-source-differences');
+      for(const row of catalogue.source_conflicts){
+        const item=el('details','dash-source-difference');item.append(el('summary','',row.topic));
+        const body=el('div','dash-source-difference-body');body.append(el('p','',row.note),pill('Interpretation pending','watch'));
+        for(const ref of row.references||[]){const source=catalogue.source_index?.[ref];const block=el('div','dash-source-excerpt');block.append(el('strong','',`${ref}${source?.source_page?` · Agreement PDF p. ${source.source_page}`:''}`));if(source)for(const field of ['exact_text','footnote','kpi','metric','target','evidence'])if(source[field])block.append(el('p','agreement-text',source[field]));body.append(block);}
+        item.append(body);list.append(item);
+      }
+      conflicts.append(list);section.append(conflicts);
+    }
     const lenses=el('div','dash-kpi-lenses');const sources={objectives:catalogue.smart_objectives,call:catalogue.call_kpis,communication:catalogue.communication_kpis,framework:catalogue.measurement_indicators,additional:catalogue.additional_kpi_sources};
     for(const [key,label,count] of [['objectives','SMART objectives',sources.objectives?.length||0],['call','Call KPI table',sources.call?.length||0],['communication','Communication table',sources.communication?.length||0],['framework','SMART measurement framework',sources.framework?.length||0],['additional','Additional measures',sources.additional?.length||0],['indicators','Reportable indicators',catalogue.kpis.length]]){const b=el('button',view.kpiLens===key?'is-selected':'',`${label} · ${count}`);b.type='button';b.setAttribute('aria-pressed',String(view.kpiLens===key));b.onclick=()=>{view.kpiLens=key;view.kpiFocus=null;render();};lenses.append(b);}section.append(lenses);
     if(view.kpiLens!=='indicators'){
