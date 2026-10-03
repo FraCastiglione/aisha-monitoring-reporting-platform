@@ -143,7 +143,7 @@
           section(`${wp.id} — ${wp.title}`);
           pair("Work Package leader", wp.leader);
           pair("Selected months", wp.coverage.months.join(", "));
-          pair("Work declared", wp.work_status === "no_work" ? "No Work Package work carried out" : "Leadership update completed");
+          pair("Work declared", wp.work_status === "no_work" ? "No Work Package work carried out" : wp.work_status === "draft" ? "Leadership update draft — still to finish" : "Leadership update completed");
           if (wp.work_status === "no_work") continue;
           pair("Progress and achievements", wp.answers.progress);
           pair("Coordination and integration", wp.answers.coordination);

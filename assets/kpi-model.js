@@ -10,6 +10,7 @@
     if(typeof entry.activity_id!=='undefined'&&typeof entry.activity_id!=='string')throw new Error('Invalid shared activity code.');
     const scope=(entry.scope||'').trim(),kind=type(item),max=Object.hasOwn(item,'max_value')?item.max_value:kind==='percent'?100:1e12;
     if(scope.length>500)throw new Error('Invalid programme, cohort or campaign reference.');
+    if(item.requires_scope&&!scope)throw new Error('Name the programme, cohort, campaign or output measured.');
     const shared=activityId(entry);if(!validActivityId(shared))throw new Error('Use a coordinator-issued shared activity code, such as CAM-2026-01, or leave it blank.');
     if(kind==='status'?!['in_progress','achieved'].includes(entry.value):typeof entry.value!=='number'||!Number.isFinite(entry.value)||entry.value<(item.allow_negative?-1e12:0)||(max!==null&&entry.value>max)||Math.abs(entry.value)>1e12||(kind==='count'&&!Number.isSafeInteger(entry.value))||(kind!=='count'&&Math.abs(entry.value*100-Math.round(entry.value*100))>1e-7))throw new Error(`Enter a valid ${item.unit} value for ${item.name}.`);
     if(typeof entry.basis!=='string'||entry.basis.length>500||(kind==='percent'||item.requires_basis)&&!entry.basis.trim())throw new Error('Add the calculation method, measurement scale and source.');

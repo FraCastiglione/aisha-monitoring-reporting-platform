@@ -111,7 +111,7 @@
     const grid = el('div', 'dash-wp-grid');
     for (const wp of config.workPackages) {
       const item = el('div', `dash-wp-map-item ${model.active(wp, current) ? 'is-active' : 'is-future'}`), top = el('div', 'dash-wp-map-top'), text = el('div');
-      text.append(el('strong', '', wp.id), el('span', '', wp.title)); top.append(text, pill(model.active(wp, current) ? 'Active' : 'Later', model.active(wp, current) ? 'positive' : 'neutral'));
+      text.append(el('strong', '', wp.id), el('span', '', wp.title)); top.append(text, pill(model.active(wp, current) ? 'Active' : current > wp.endMonth ? 'Activity window ended' : 'Later', model.active(wp, current) ? 'positive' : 'neutral'));
       const track = el('div', 'dash-wp-track'), segment = el('span', 'dash-wp-segment'); segment.style.left = `${(wp.startMonth - 1) / 48 * 100}%`; segment.style.width = `${(wp.endMonth - wp.startMonth + 1) / 48 * 100}%`; track.append(segment);
       const open=el('button','dash-wp-open','View Work Package →');open.type='button';open.addEventListener('click',()=>{view.selectedWp=wp.id;switchTab('workpackages');});
       item.append(top, track, el('small', '', `${monthCode(wp.startMonth)}–${monthCode(wp.endMonth)} · Leader ${wp.lead}`),open); grid.append(item);
@@ -140,7 +140,7 @@
     for(const wp of config.workPackages){
       const tasks=config.tasks.filter(task=>task.wp===wp.id),assessed=tasks.filter(task=>snapshot.task_progress?.[task.id]),completed=tasks.filter(completion),reported=tasks.filter(task=>reportRows().some(row=>row.kind==='task'&&row.id===task.id));
       const item=el('button',`dash-wp-directory-card ${view.selectedWp===wp.id?'is-selected':''}`);item.type='button';item.setAttribute('aria-pressed',String(view.selectedWp===wp.id));
-      item.append(el('span','dash-wp-directory-id',wp.id),el('strong','',wp.title),el('small','',`${monthCode(wp.startMonth)}–${monthCode(wp.endMonth)} · ${model.active(wp,current)?'Active now':'Begins later'}`));
+      item.append(el('span','dash-wp-directory-id',wp.id),el('strong','',wp.title),el('small','',`${monthCode(wp.startMonth)}–${monthCode(wp.endMonth)} · ${model.active(wp,current)?'Active now':current>wp.endMonth?'Activity window ended':'Begins later'}`));
       const metrics=el('div','dash-wp-directory-metrics');metrics.append(el('span','',assessed.length?`${Math.round(completed.length/tasks.length*100)}% verified complete`:'Completion not assessed'),el('span','',wp.startMonth>current&&!reported.length?`Reporting begins ${monthCode(wp.startMonth)}`:`${reported.length}/${tasks.length} Tasks with report entries`));item.append(metrics);
       item.addEventListener('click',()=>{view.selectedWp=wp.id;render();document.getElementById('dash-wp-detail')?.scrollIntoView({block:'start',behavior:'smooth'});});grid.append(item);
     }
@@ -216,7 +216,7 @@
   function installGanttTooltip(scroller,section){
     const popup=el('div','dash-gantt-tooltip');popup.id='dash-gantt-tooltip';popup.setAttribute('role','tooltip');popup.hidden=true;section.append(popup);
     let target=null;
-    const place=(x,y)=>{const width=300,height=popup.getBoundingClientRect().height||105;popup.style.left=`${Math.min(innerWidth-width-12,Math.max(12,x+16))}px`;popup.style.top=`${y+height+18<innerHeight?y+16:Math.max(12,y-height-12)}px`;};
+    const place=(x,y)=>{const bounds=popup.getBoundingClientRect(),width=bounds.width||Math.min(300,innerWidth-24),height=bounds.height||105;popup.style.left=`${Math.max(12,Math.min(innerWidth-width-12,x+16))}px`;popup.style.top=`${y+height+18<innerHeight?y+16:Math.max(12,y-height-12)}px`;};
     const show=(cell,x,y)=>{if(!cell?.dataset.tooltip)return;target=cell;popup.replaceChildren();const lines=cell.dataset.tooltip.split('\n');popup.append(el('strong','',lines.shift()));for(const line of lines)popup.append(el('span','',line));popup.hidden=false;place(x,y);};
     const hide=()=>{popup.hidden=true;target=null;};
     scroller.addEventListener('pointerover',event=>{const cell=event.target.closest('.dash-gantt-cell[data-tooltip]');if(cell&&cell!==target)show(cell,event.clientX,event.clientY);});
@@ -364,10 +364,10 @@
     section.append(header('Partner reporting coverage','See listed partners, their confirmed report entries, and the exact periods they covered. Associated-partner assignments include the coordinator-confirmed voluntary Task list from Attachment 6.'));
     if (!reportRows().length) { const note=el('div','dash-state-note');note.append(el('strong','','No partner files added yet'),el('p','','Each Task and Work Package already shows its listed partner assignments. Confirmed partner coverage will appear after submitted files are reviewed and imported.'));section.append(note); }
     section.append(reportingControls()); const eligibleWps=config.workPackages.filter(wp=>view.wp==='all'||view.wp===wp.id), active=eligibleWps.filter(wp=>activeMonths(wp).length), future=eligibleWps.filter(wp=>!activeMonths(wp).length);
-    const tasks=config.tasks.filter(task=>activeMonths(task).length && (view.wp==='all'||task.wp===view.wp) && (!view.search||`${task.id} ${task.title}`.toLowerCase().includes(view.search)));
+    const tasks=config.tasks.filter(task=>activeMonths(task).length && (view.wp==='all'||task.wp===view.wp) && (view.reportingMode!=='tasks'||!view.search||`${task.id} ${task.title}`.toLowerCase().includes(view.search)));
     const mode=el('div','dash-mode-switch');
     const allReportingPartners=config.partners.filter(partner=>tasks.some(task=>model.assigned(task,partner.code,config)));
-    const reportingPartners=allReportingPartners.filter(partner=>view.partnerKind==='all'||partner.kind===view.partnerKind);
+    const reportingPartners=allReportingPartners.filter(partner=>view.partnerKind==='all'||(partner.kind||'beneficiary')===view.partnerKind);
     const summary=el('div','dash-report-summary');for(const [value,label] of [[`${monthCode(view.from)}–${monthCode(view.through)}`,'Selected period'],[String(tasks.length),'Active Tasks'],[String(active.length),'Active Work Packages'],[String(allReportingPartners.length),'Partners assigned']]){const item=el('div','');item.append(el('strong','',value),el('span','',label));summary.append(item);}section.append(summary);
     for(const [key,label,count] of [['tasks','Tasks',tasks.length],['work_packages','Work Packages',active.length],['partners','Partners',view.reportingMode==='partners'?reportingPartners.length:allReportingPartners.length]]){const button=el('button',view.reportingMode===key?'is-selected':'',`${label}  ${count}`);button.type='button';button.setAttribute('aria-pressed',String(view.reportingMode===key));button.addEventListener('click',()=>{view.reportingMode=key;render();});mode.append(button);}section.append(mode);
     const taskPanel=el('div','dash-report-panel'),taskHead=el('h3','','Tasks');taskHead.append(el('span','',`${tasks.length} in this view`));taskPanel.append(taskHead);
@@ -398,7 +398,7 @@
   function kpiLinks(host,row){
     host.append(el('small','',`Source: signed Grant Agreement, PDF p. ${row.source_page}.`));
     const contributors=el('details','dash-kpi-contributors');contributors.append(el('summary','','Proposed contributors'),el('p','',`Proposed lead: ${Array.isArray(row.suggested_lead)?row.suggested_lead.join(', '):row.suggested_lead||'To agree'}`),el('p','',(row.suggested_partners||[]).map(code=>`${code} · ${partnerName(code)}`).join('; ')),el('small','',row.proposal_basis||'Proposals for coordinator approval. Every partner may report a relevant contribution.'));host.append(contributors);
-    const tags=el('div','dash-objective-indicators');for(const id of row.indicator_ids||[]){const item=catalogue.kpis.find(k=>k.id===id);if(!item)continue;const b=el('button','button button-secondary',item.name);b.type='button';b.onclick=()=>{view.kpiLens='indicators';view.kpiGroup='all';view.kpiFocus=id;render();requestAnimationFrame(()=>document.getElementById(`dash-kpi-${id}`)?.scrollIntoView({block:'center',behavior:'smooth'}));};tags.append(b);}host.append(tags);
+    const tags=el('div','dash-objective-indicators');for(const id of row.indicator_ids||[]){const item=catalogue.kpis.find(k=>k.id===id);if(!item)continue;const b=el('button','button button-secondary',item.name);b.type='button';b.onclick=()=>{view.kpiLens='indicators';view.kpiGroup='all';view.kpiSearch='';view.kpiOnlyFavorites=false;view.kpiFocus=id;render();requestAnimationFrame(()=>document.getElementById(`dash-kpi-${id}`)?.scrollIntoView({block:'center',behavior:'smooth'}));};tags.append(b);}host.append(tags);
     const tasks=el('div','dash-objective-indicators');for(const id of row.related_tasks||[]){const task=config.tasks.find(t=>t.id===id);if(!task)continue;const b=el('button','button button-secondary',id);b.type='button';b.onclick=()=>{view.selectedWp=task.wp;view.tab='workpackages';render();const target=document.getElementById(`dash-task-${id}`);if(target){target.open=true;target.scrollIntoView({block:'start',behavior:'smooth'});target.focus({preventScroll:true});}};tasks.append(b);}if(tasks.childNodes.length){host.append(el('strong','','Related Tasks'),tasks);}
   }
   function kpisSection(){
@@ -434,7 +434,7 @@
         const sources=(kpi.source_refs||[]).map(ref=>catalogue.source_index?.[ref]).filter(Boolean).flatMap(row=>[row.kpi,row.metric,row.target,row.exact_text]);
         const searchable=[kpi.name,kpi.id,kpi.group,kpi.unit,...(kpi.source_refs||[]),...sources].filter(Boolean).join(' ').toLocaleLowerCase();
         return terms.every(term=>searchable.includes(term));
-      }).sort((a,b)=>{const rank=kpi=>query&&kpi.name.toLocaleLowerCase().includes(query)?2:query&&terms.every(term=>kpi.name.toLocaleLowerCase().includes(term))?1:0;return rank(b)-rank(a)||a.name.localeCompare(b.name);});
+      }).sort((a,b)=>{const rank=kpi=>query&&kpi.name.toLocaleLowerCase().includes(query)?2:query&&terms.every(term=>kpi.name.toLocaleLowerCase().includes(term))?1:0;return Number(b.id===view.kpiFocus)-Number(a.id===view.kpiFocus)||rank(b)-rank(a)||a.name.localeCompare(b.name);});
       resultCount.textContent=`${matches.length} indicator${matches.length===1?'':'s'} shown · ${catalogue.kpis.length} available`;
       if(!matches.length){list.append(empty(view.kpiOnlyFavorites?'No saved indicators match these filters.':'No indicators match. Try a different term or topic.'));return;}
       for(const kpi of matches.slice(0,view.kpiLimit)){const actual=(snapshot.kpi_values||[]).find(k=>k.id===kpi.id),card=el('details','dash-kpi-row');card.id=`dash-kpi-${kpi.id}`;card.open=view.kpiFocus===kpi.id;const summary=el('summary',''),identity=el('div','dash-kpi-identity'),figures=el('div','dash-kpi-figures');identity.append(el('span','dash-kpi-group',kpi.group),el('strong','',kpi.name),el('small','',`Unit: ${kpi.unit} · ${(kpi.source_refs||[]).join(', ')}`));figures.append(el('small','','Reviewed actual'),el('strong','',actual?.actual===null||actual?.actual===undefined?'Pending':`${actual.actual} ${kpi.unit}`));summary.append(identity,figures);card.append(summary);const body=el('div','dash-kpi-breakdown');

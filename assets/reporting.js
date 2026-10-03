@@ -31,6 +31,21 @@
   const activeForm = () => state.reportType === 'tasks' ? taskForm : commForm;
   const scrollTo = el => el.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
   const message = text => { $('draft-message').textContent = text; };
+  function confirmAction(title, explanation, action) {
+    const dialog = $('confirm-action-dialog');
+    $('confirm-action-title').textContent = title;
+    $('confirm-action-description').textContent = explanation;
+    $('confirm-action-accept').textContent = action;
+    dialog.returnValue = 'cancel';
+    return new Promise(resolve => {
+      dialog.addEventListener('close', () => resolve(dialog.returnValue === 'confirm'), { once: true });
+      dialog.showModal();
+      $('confirm-action-cancel').focus();
+    });
+  }
+  $('confirm-action-cancel').addEventListener('click', () => $('confirm-action-dialog').close('cancel'));
+  $('confirm-action-accept').addEventListener('click', () => $('confirm-action-dialog').close('confirm'));
+
   function clearError() { $('report-form-error').hidden = true; $('report-form-error').textContent = ''; document.querySelectorAll('[aria-invalid]').forEach(el => el.removeAttribute('aria-invalid')); }
   function fail(text, el) { $('report-form-error').textContent = text; $('report-form-error').hidden = false; if (el) { el.setAttribute('aria-invalid', 'true'); el.focus(); scrollTo(el); } return false; }
   function setTaskEditor(visible) {
@@ -380,6 +395,7 @@
     for(const button of $('kpi-view-filters').querySelectorAll('button')){button.classList.toggle('is-active',button.dataset.view===kpiView);button.setAttribute('aria-pressed',String(button.dataset.view===kpiView));}
     $('kpi-search').value=kpiQuery;renderKpiResults();
     const list=$('kpi-list');list.replaceChildren();if(state.kpis.size){list.append(textNode('h4',`In this report · ${state.kpis.size}`));for(const [key,entry] of state.kpis){const card=textNode('article','','kpi-saved-card'),copy=textNode('div','','kpi-saved-copy'),actions=textNode('div','','kpi-saved-actions');copy.append(textNode('strong',entry.name),textNode('small',`${entry.value}${entry.unit==='%'?'%':entry.unit==='status'?'':` ${entry.unit}`} · ${entry.activity_id?`${entry.activity_id} · ${entry.scope||'Shared activity'}`:entry.scope||'Activity reference not specified'}`));const edit=textNode('button','Edit','button button-secondary');edit.type='button';edit.onclick=()=>selectKpi(entry.id,key);const remove=textNode('button','Remove','button button-quiet');remove.type='button';remove.onclick=()=>{state.kpis.delete(key);resetKpiEditor();renderKpis();};actions.append(edit,remove);card.append(copy,actions);list.append(card);}}
+    if(state.reportType==='tasks')renderOverview();
   }
   $('kpi-search').addEventListener('input',event=>{kpiQuery=event.target.value;kpiLimit=18;renderKpiResults();});
   $('kpi-group-filter').addEventListener('change',event=>{kpiGroup=event.target.value;kpiLimit=18;renderKpiResults();});
@@ -439,20 +455,21 @@
       if (active) {
         const saved = entry.task_updates?.[task.id] || {};
         const field = textNode('div','','field'); const label = textNode('label',`Leader assessment for ${task.id}`); const select=document.createElement('select'); select.className='wp-task-status'; for (const [v,t] of [['','No assessment yet'],['on_track','On track'],['at_risk','At risk'],['delayed','Delayed'],['completed','Completed'],['unavailable','Update unavailable']]) {const option=document.createElement('option'); option.value=v; option.textContent=t; select.append(option);} select.value=saved.status || ''; label.append(select);field.append(label);row.append(field);
-        for (const [cls,title,key] of [['wp-task-progress','Progress or evidence','progress'],['wp-task-blocker','Blocker or dependency','blocker'],['wp-task-next','Next action','next']]) {const box=textNode('div','','field');const lab=textNode('label',title);const area=document.createElement('textarea');area.className=cls;area.rows=2;area.value=saved[key] || '';lab.append(area);box.append(lab);row.append(box);}
+        for (const [cls,title,key] of [['wp-task-progress','Progress or evidence','progress'],['wp-task-blocker','Blocker or dependency','blocker'],['wp-task-next','Next action','next']]) {const box=textNode('div','','field');const lab=textNode('label',title);const area=document.createElement('textarea');area.className=cls;area.rows=2;area.maxLength=100000;area.value=saved[key] || '';lab.append(area);box.append(lab);row.append(box);}
       }
       host.append(row);
     }
     $('wp-editor-message').hidden=true; setWpEditor(true); scrollTo($('wp-leader-form'));
   }
-  function setWpNoWork(wp) {
+  async function setWpNoWork(wp) {
     const existing = state.wpUpdates.get(wp.id);
-    if (existing && hasWpContribution(existing) && !window.confirm(`The Work Package leadership update for ${wp.id} will be declared as no work carried out. Existing entries for this Work Package will be cleared. Continue?`)) return;
+    if (existing && hasWpContribution(existing) && !await confirmAction('Declare no Work Package work', `The leadership update for ${wp.id} will be declared as no work carried out. Existing entries for this Work Package will be cleared.`, 'Declare no work')) return;
     state.wpUpdates.set(wp.id,{...emptyWp(),status:'no_work'});state.wpEditing=null;setWpEditor(false);renderOverview();scrollTo($('wp-leader-section'));
   }
   function emptyTask() { return { status: 'draft', coverage_start: '', coverage_end: '', activities_carried_out: '', results_achieved: '', difficulties_encountered: '', raw_costs: '', raw_costs_note: '', upcoming_activities: '', additional_comments: '', significant_issue: '', severity: '', coordinator_action_required: '', coordinator_support_request: '' }; }
   function hasContribution(answer) { return ['activities_carried_out','results_achieved','difficulties_encountered','raw_costs','raw_costs_note','upcoming_activities','additional_comments','significant_issue','severity','coordinator_action_required','coordinator_support_request'].some(key => String(answer[key] || '').trim()); }
   function taskAnswerIssue(id, answer) {
+    if (Object.values(answer).some(value=>typeof value==='string'&&value.length>100000)) return `Keep each answer for ${id} within 100,000 characters.`;
     if (state.partner.kind === 'associated_partner' && (answer.raw_costs || answer.raw_costs_note)) return `Remove cost information from ${id}; associated partners cannot charge costs to the action.`;
     if (answer.raw_costs !== '' && (!/^\d+(\.\d{1,2})?$/.test(answer.raw_costs) || !Number.isSafeInteger(Math.round(Number(answer.raw_costs) * 100)))) return `Enter a valid non-negative EUR amount for ${id}, or leave it blank.`;
     if (!['','yes','no'].includes(answer.significant_issue)) return `Check the significant-issue answer for ${id}.`;
@@ -461,9 +478,9 @@
     if (answer.significant_issue === 'yes' && answer.coordinator_action_required === 'yes' && !answer.coordinator_support_request.trim()) return `Describe the coordinator support requested for ${id}.`;
     return '';
   }
-  function setNoWork(task) {
+  async function setNoWork(task) {
     const existing = state.selected.get(task.id);
-    if (existing && hasContribution(existing) && !window.confirm(`This Task will be declared as no work carried out. The contribution already entered for ${task.id} will be cleared. Continue?`)) return;
+    if (existing && hasContribution(existing) && !await confirmAction('Declare no work carried out', `This Task will be declared as no work carried out. The contribution already entered for ${task.id} will be cleared.`, 'Declare no work')) return;
     const p = period(), coverage = model.taskCoverage(config, task, p.start, p.end, p.selected_months);
     state.selected.set(task.id, { ...emptyTask(), status: 'no_work', coverage_start: existing?.coverage_start || coverage.start, coverage_end: existing?.coverage_end || coverage.end });
     state.editing = null; setTaskEditor(false); renderOverview(); scrollTo($('task-picker'));
@@ -523,6 +540,7 @@
   }
   let eventSerial = 0;
   function addEvent(description = '', participants = '', activityId = '') {
+    if ($('comm-events-list').children.length >= 100) { message('A communication check-in can contain up to 100 events.'); return; }
     eventSerial++;
     const el = $('event-template').content.firstElementChild.cloneNode(true);
     const d = el.querySelector('.event-description'), p = el.querySelector('.event-participants'), shared=el.querySelector('.event-activity-id');
@@ -630,7 +648,11 @@
     const days = Math.round((Date.parse(`${end}T00:00:00Z`) - Date.parse(`${start}T00:00:00Z`)) / 86400000) + 1;
     if (days !== 14) return fail('Communication check-ins must cover exactly 14 calendar days.', $('comm-end'));
     for (const name of ['events_organised','media_outreach','website_articles_published','email_or_newsletter_sent','coordinator_support_required']) if (!radio(commForm,name)) return fail('Answer all Yes/No communication questions.');
-    if (radio(commForm,'events_organised') === 'yes') for (const el of $('comm-events-list').children) if (!el.querySelector('.event-description').value.trim() || !validCount(el.querySelector('.event-participants').value)) return fail('Describe each event and enter its participant count.');
+    if (radio(commForm,'events_organised') === 'yes') for (const el of $('comm-events-list').children) {
+      if (!el.querySelector('.event-description').value.trim() || !validCount(el.querySelector('.event-participants').value)) return fail('Describe each event and enter its participant count.');
+      const code = el.querySelector('.event-activity-id'), normalized = code.value.trim().toUpperCase();
+      if (normalized && !kpiModel.validActivityId(normalized)) return fail('Enter a valid shared event code, such as EVT-2026-01, or leave it blank.', code);
+    }
     if (radio(commForm,'media_outreach') === 'yes' && (![value('comm-journalists'),value('comm-outlets')].every(validCount))) return fail('Enter non-negative journalist and outlet counts.');
     if (radio(commForm,'website_articles_published') === 'yes' && !urls('comm-articles').length) return fail('Enter at least one article link.');
     for (const id of ['comm-articles','comm-social-links']) for (const u of urls(id)) if (!isUrl(u)) return fail('Enter valid http:// or https:// links.');
@@ -668,6 +690,9 @@
     }
     else base.answers = communicationAnswers();
     if (kind === 'draft') { base.saved_at = new Date().toISOString(); if (!tasks) base.form_state = commSnapshot(); }
+    const checkText = object => { for (const entry of Object.values(object || {})) { if (typeof entry === 'string' && entry.length > 100000) throw new Error('Keep each report answer within 100,000 characters.'); if (entry && typeof entry === 'object') checkText(entry); } };
+    checkText(base);
+    if (new TextEncoder().encode(JSON.stringify(base)).length > 5_000_000) throw new Error('This report exceeds the 5 MB editable-file limit. Shorten long answers or split the reporting period before downloading.');
     return base;
   }
   const safe = x => String(x).toUpperCase().replace(/[^A-Z0-9.]+/g,'-').replace(/^-|-$/g,'');
@@ -700,7 +725,7 @@
   }
   $('close-individual-pdf').addEventListener('click', () => $('individual-pdf-dialog').close());
   $('download-individual-pdf').addEventListener('click', event => { if (event.currentTarget.getAttribute('aria-disabled') === 'true') event.preventDefault(); });
-  $('open-draft-downloads').addEventListener('click',()=>{$('download-draft-pdf').hidden=state.reportType!=='tasks';$('draft-dialog-description').textContent=state.reportType==='tasks'?'The PDF is readable and can be reopened in this platform. The JSON file is an additional editable backup. You can download both.':'Download the editable JSON draft to continue this communication report later. The readable PDF is generated after review.';$('draft-download-dialog').showModal();});
+  $('open-draft-downloads').addEventListener('click',()=>{$('download-draft-pdf').hidden=false;$('draft-dialog-description').textContent='The PDF is readable and can be reopened in this platform. The JSON file is an additional editable backup. You can download both.';$('draft-download-dialog').showModal();});
   $('close-draft-downloads').addEventListener('click',()=>{$('draft-download-dialog').close();});
   $('open-browser-draft').addEventListener('click',()=>{$('browser-draft-dialog').showModal();});
   $('close-browser-draft').addEventListener('click',()=>{$('browser-draft-dialog').close();});
@@ -777,12 +802,13 @@
     const imported=raw.document_kind==='draft'?{...raw,work_package_leadership:raw.work_package_leadership||[],additional_contributions:raw.additional_contributions||[],kpi_contributions:raw.kpi_contributions||[]}:importedAsDraft(raw);
     if(imported.project!=='AISHA'||imported.report_type!=='tasks'||imported.partner?.code!==state.partner.code||imported.partner?.name!==state.partner.name||!Array.isArray(imported.tasks)||!Array.isArray(imported.work_package_leadership)||!Array.isArray(imported.additional_contributions)||!Array.isArray(imported.kpi_contributions)||imported.tasks.length>config.tasks.length||imported.work_package_leadership.length>config.workPackages.length||imported.additional_contributions.length>config.tasks.length+config.workPackages.length||imported.kpi_contributions.length>500)throw new Error('This is not a compatible report for the selected partner.');
     const incoming=imported.reporting_period,p=model.rangePeriod(config,incoming?.start,incoming?.end,incoming?.selected_months),current=period();
-    const untimedDraft=imported.document_kind==='draft'&&!imported.tasks.length&&!imported.work_package_leadership.length&&!imported.additional_contributions.length&&imported.kpi_contributions.length&&!incoming?.start&&!incoming?.end&&Array.isArray(incoming?.selected_months)&&!incoming.selected_months.length;
+    const untimedDraft=imported.document_kind==='draft'&&!imported.tasks.length&&!imported.work_package_leadership.length&&!imported.additional_contributions.length&&!incoming?.start&&!incoming?.end&&Array.isArray(incoming?.selected_months)&&!incoming.selected_months.length;
     if(!p&&!untimedDraft)throw new Error('The imported reporting months are invalid.');
     const samePeriod=untimedDraft||!!current&&current.start===p.start&&current.end===p.end&&JSON.stringify(current.selected_months)===JSON.stringify(p.selected_months);
     pendingWholeImport={imported,samePeriod};
-    $('whole-import-explanation').textContent=untimedDraft?'This KPI draft was saved before reporting months were chosen. Selected KPI contributions will be imported; your current timeline and other entries stay.':`File period: ${p.selected_months.map(m=>`${m} (M${String(model.projectMonth(config,m)).padStart(2,'0')})`).join(', ')}. ${samePeriod?'Selected entries will replace matching entries in this report; all other entries stay.':'These months differ from the current report. Importing will use the file’s timeline and replace the current entries. Download your current draft first if you need a separate copy.'}`;
+    $('whole-import-explanation').textContent=untimedDraft?(imported.kpi_contributions.length?'This KPI draft was saved before reporting months were chosen. Selected KPI contributions will be imported; your current timeline and other entries stay.':'This draft was saved before reporting months were chosen. Restore its contributor details; your current timeline and other entries stay.'):`File period: ${p.selected_months.map(m=>`${m} (M${String(model.projectMonth(config,m)).padStart(2,'0')})`).join(', ')}. ${samePeriod?'Selected entries will replace matching entries in this report; all other entries stay.':'These months differ from the current report. Importing will use the file’s timeline and replace the current entries. Download your current draft first if you need a separate copy.'}`;
     const host=$('whole-import-entries');host.replaceChildren();
+    if(untimedDraft&&!imported.kpi_contributions.length){const label=textNode('label','');const check=document.createElement('input');check.type='checkbox';check.checked=true;check.dataset.kind='contributor';label.append(check,textNode('span','Contributor details'));host.append(label);}
     for(const item of imported.tasks){const label=textNode('label','');const check=document.createElement('input');check.type='checkbox';check.checked=true;check.dataset.kind='task';check.value=item.id;label.append(check,textNode('span',`${item.id} — ${taskById(item.id)?.title||item.title}`));host.append(label);}
     for(const item of imported.work_package_leadership){const label=textNode('label','');const check=document.createElement('input');check.type='checkbox';check.checked=true;check.dataset.kind='wp';check.value=item.id;label.append(check,textNode('span',`${item.id} — Work Package leadership update`));host.append(label);}
     for(const item of imported.additional_contributions){const label=textNode('label','');const check=document.createElement('input');check.type='checkbox';check.checked=true;check.dataset.kind='extra';check.value=`${item.kind}:${item.id}`;label.append(check,textNode('span',`${item.id} — additional voluntary contribution`));host.append(label);}
@@ -794,7 +820,7 @@
     try{await kpiReady;if(file.size>(file.name.toLowerCase().endsWith('.pdf')?10_000_000:5_000_000))throw new Error('The file is too large.');const raw=file.name.toLowerCase().endsWith('.pdf')?await window.AISHA_PDF.readEmbeddedReport(file):JSON.parse(await file.text());prepareWholeImport(raw);$('overview-import-message').hidden=true;}
     catch(error){$('overview-import-message').textContent=`Could not read report: ${error.message}`;$('overview-import-message').hidden=false;}
   });
-  $('comm-import-file').addEventListener('change',async event=>{const file=event.target.files?.[0];event.target.value='';if(!file)return;try{if(file.size>10000000)throw new Error('The file is too large.');let raw=file.name.toLowerCase().endsWith('.pdf')?await window.AISHA_PDF.readEmbeddedReport(file):JSON.parse(await file.text());if(raw.project!=='AISHA'||raw.report_type!=='communication'||raw.partner?.code!==state.partner.code)throw new Error('Choose a communication report for the selected partner.');if(raw.document_kind==='submission'){const a=raw.answers;if(!a)throw new Error('The report has no communication answers.');const fields={period_start:raw.reporting_period.start,period_end:raw.reporting_period.end};fields.website_article_urls=(a.website_articles||[]).map(e=>e.url).join('\n');fields.website_article_details=(a.website_articles||[]).map(e=>e.details||'').filter(Boolean).join('\n');for(const control of commForm.querySelectorAll('[name]')){const v=a[control.name];if(v!==undefined)fields[control.name]=typeof v==='boolean'?(v?'yes':'no'):Array.isArray(v)?v.join('\n'):v===null?'':String(v);}raw={...raw,document_kind:'draft',form_state:{fields,events:(a.events||[]).map(e=>({description:e.description,participants:e.participants===null?'':String(e.participants),activity_id:e.activity_id||''})),reach_unknown:a.estimated_people_reached===null,enrolments_unknown:a.preregistrations_or_enrolments===null}};}if(!confirm('Importing replaces this communication check-in and its KPI contributions. Download your current draft first if you need to keep it. Continue?'))return;restore(raw);$('comm-import-message').textContent='Communication report restored. Review the dates, answers and KPI values.';}catch(error){$('comm-import-message').textContent=`Could not import report: ${error.message}`;}$('comm-import-message').hidden=false;});
+  $('comm-import-file').addEventListener('change',async event=>{const file=event.target.files?.[0];event.target.value='';if(!file)return;try{if(file.size>10000000)throw new Error('The file is too large.');let raw=file.name.toLowerCase().endsWith('.pdf')?await window.AISHA_PDF.readEmbeddedReport(file):JSON.parse(await file.text());if(raw.project!=='AISHA'||raw.report_type!=='communication'||raw.partner?.code!==state.partner.code)throw new Error('Choose a communication report for the selected partner.');if(raw.document_kind==='submission'){const a=raw.answers;if(!a)throw new Error('The report has no communication answers.');const fields={period_start:raw.reporting_period.start,period_end:raw.reporting_period.end};fields.website_article_urls=(a.website_articles||[]).map(e=>e.url).join('\n');fields.website_article_details=[...new Set((a.website_articles||[]).map(e=>e.details||'').filter(Boolean))].join('\n');for(const control of commForm.querySelectorAll('[name]')){const v=a[control.name];if(v!==undefined)fields[control.name]=typeof v==='boolean'?(v?'yes':'no'):Array.isArray(v)?v.join('\n'):v===null?'':String(v);}raw={...raw,document_kind:'draft',form_state:{fields,events:(a.events||[]).map(e=>({description:e.description,participants:e.participants===null?'':String(e.participants),activity_id:e.activity_id||''})),reach_unknown:a.estimated_people_reached===null,enrolments_unknown:a.preregistrations_or_enrolments===null}};}if(!await confirmAction('Replace this communication report?', 'Importing replaces this communication check-in and its KPI contributions. Download your current draft first if you need to keep a separate copy.', 'Import report'))return;restore(raw);$('comm-import-message').textContent='Communication report restored. Review the dates, answers and KPI values.';}catch(error){$('comm-import-message').textContent=`Could not import report: ${error.message}`;}$('comm-import-message').hidden=false;});
   $('cancel-whole-import').addEventListener('click',()=>{$('whole-import-dialog').close();pendingWholeImport=null;});
   $('confirm-whole-import').addEventListener('click',()=>{
     if(!pendingWholeImport)return;
@@ -805,7 +831,8 @@
       let toRestore;
       if(samePeriod){toRestore=record('draft');toRestore.tasks=toRestore.tasks.filter(item=>!taskIds.has(item.id)).concat(selectedTasks);toRestore.work_package_leadership=toRestore.work_package_leadership.filter(item=>!wpIds.has(item.id)).concat(selectedWps);toRestore.additional_contributions=toRestore.additional_contributions.filter(item=>!extraIds.has(`${item.kind}:${item.id}`)).concat(selectedExtras);toRestore.kpi_contributions=toRestore.kpi_contributions.filter(item=>!kpiIds.has(kpiKey(item))).concat(selectedKpis);}
       else toRestore={...imported,tasks:selectedTasks,work_package_leadership:selectedWps,additional_contributions:selectedExtras,kpi_contributions:selectedKpis};
-      restore(toRestore);$('whole-import-dialog').close();pendingWholeImport=null;message(`Imported ${selectedTasks.length} Task entries, ${selectedWps.length} Work Package updates, ${selectedExtras.length} additional contributions and ${selectedKpis.length} KPI values. Review them before generating files.`);
+      if(checks.some(el=>el.dataset.kind==='contributor'))toRestore={...toRestore,contributor:imported.contributor};
+      restore(toRestore);$('whole-import-dialog').close();pendingWholeImport=null;message(checks.some(el=>el.dataset.kind==='contributor')?'Contributor details restored. Your timeline and existing report entries are unchanged.':`Imported ${selectedTasks.length} Task entries, ${selectedWps.length} Work Package updates, ${selectedExtras.length} additional contributions and ${selectedKpis.length} KPI values. Review them before generating files.`);
     }catch(error){$('whole-import-error').textContent=`Could not import selected entries: ${error.message}`;$('whole-import-error').hidden=false;}
   });
   function validatedKpiEntries(entries){if(!Array.isArray(entries)||entries.length>500)throw new Error('KPI contributions are invalid.');const result=new Map();for(const raw of entries){const item=kpiDefinition(raw.id),entry=kpiModel.validate({...raw,basis:raw.basis||''},item),key=kpiKey(entry);if(result.has(key))throw new Error('Duplicate indicator and activity reference.');if(state.reportType==='communication'&&!communicationKpis.has(entry.id))throw new Error('The file contains a non-communication indicator. Import it into a Task report.');result.set(key,entry);}return result;}
@@ -881,7 +908,7 @@
     $('review-revision').value=String(r.revision);$('confirm-ready').checked = false; $('generate-submission').disabled = true; $('generation-error').hidden = true;
     $('report-workspace').hidden = true; $('review-section').hidden = false; $('submission-section').hidden = true; scrollTo($('review-section')); $('review-title').focus({preventScroll:true});
   }
-  $('review-report').addEventListener('click', () => { if (!validate()) return; state.reviewed = record('submission'); showReview(state.reviewed); });
+  $('review-report').addEventListener('click', () => { try { if (!validate()) return; state.reviewed = record('submission'); showReview(state.reviewed); } catch (error) { fail(error.message); } });
   function reviewRevisionValid(){const n=Number(value('review-revision'));return Number.isInteger(n)&&n>=1&&n<=99;}
   $('review-revision').addEventListener('input',()=>{if(!reviewRevisionValid()){$('generation-error').textContent='Enter a revision number from 1 to 99.';$('generation-error').hidden=false;$('generate-submission').disabled=true;return;}const n=Number(value('review-revision'));state.revision=n;state.reviewed.revision=n;$('report-revision').value=String(n);$('review-revision-display').textContent=`v${n}`;$('generation-error').hidden=true;$('generate-submission').disabled=!$('confirm-ready').checked;});
   $('confirm-ready').addEventListener('change', () => { $('generate-submission').disabled = !$('confirm-ready').checked||!reviewRevisionValid(); });
