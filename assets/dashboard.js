@@ -219,11 +219,15 @@
     const place=(x,y)=>{const bounds=popup.getBoundingClientRect(),width=bounds.width||Math.min(300,innerWidth-24),height=bounds.height||105;popup.style.left=`${Math.max(12,Math.min(innerWidth-width-12,x+16))}px`;popup.style.top=`${y+height+18<innerHeight?y+16:Math.max(12,y-height-12)}px`;};
     const show=(cell,x,y)=>{if(!cell?.dataset.tooltip)return;target=cell;popup.replaceChildren();const lines=cell.dataset.tooltip.split('\n');popup.append(el('strong','',lines.shift()));for(const line of lines)popup.append(el('span','',line));popup.hidden=false;place(x,y);};
     const hide=()=>{popup.hidden=true;target=null;};
+    const focusedCell=()=>document.activeElement?.closest?.('.dash-gantt-cell[data-tooltip]');
+    const showFocused=()=>{const cell=focusedCell();if(cell&&scroller.contains(cell)){const rect=cell.getBoundingClientRect();show(cell,rect.left+rect.width/2,rect.top+rect.height/2);return true;}return false;};
     scroller.addEventListener('pointerover',event=>{const cell=event.target.closest('.dash-gantt-cell[data-tooltip]');if(cell&&cell!==target)show(cell,event.clientX,event.clientY);});
     scroller.addEventListener('pointermove',event=>{if(target)place(event.clientX,event.clientY);});
-    scroller.addEventListener('pointerout',event=>{if(target&&!target.contains(event.relatedTarget))hide();});
+    scroller.addEventListener('pointerout',event=>{if(target&&!target.contains(event.relatedTarget)&&!showFocused())hide();});
     scroller.addEventListener('focusin',event=>{const cell=event.target.closest('.dash-gantt-cell[data-tooltip]');if(cell){const rect=cell.getBoundingClientRect();show(cell,rect.left+rect.width/2,rect.top+rect.height/2);}});
-    scroller.addEventListener('focusout',hide);scroller.addEventListener('scroll',hide);
+    scroller.addEventListener('focusout',hide);
+    scroller.addEventListener('scroll',()=>{if(!showFocused())hide();});
+    section.addEventListener('keydown',event=>{if(event.key==='Escape')hide();});
   }
   function rowDeadlines(item,isTask,number){
     const relevant=entry=>isTask?(catalogue.commitment_links?.[entry.id]||[]).some(link=>link.task===item.id):entry.wp===item.id;

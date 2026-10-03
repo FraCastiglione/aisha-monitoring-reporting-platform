@@ -65,7 +65,7 @@ The reporting preview now includes the 30 beneficiaries and 12 associated partne
 - T2.1 names beneficiary 11 `UVEG`; the beneficiary list gives beneficiary 11 the short name `UV`. The catalogue uses `UV` by beneficiary number. Beneficiary 4 `UWK` (Krems, T1.2 lead) is a different institution from beneficiary 11 `UV` (Valencia), so the two assignments remain separate despite the similar spoken abbreviations.
 - T3.1 repeats EDSA, T4.3 repeats IAL.T, and T5.2 repeats UiB in their participant lines. The catalogue lists each assignment once.
 - T3.3 marks ALLAI `(COO)` in the participant line while the narrative says IF.E and ALLAI co-lead the foresight work. The Task lead field remains ALLAI; IF.E’s narrative responsibility is shown separately.
-- T9.1's narrative assigns ADRA (an associated partner) in-kind syndication and a co-badged briefing, but the formal Participants line names IF.E, TRS, EDSA and `ALL (BEN)` only. The current assignment catalogue follows that formal line; ADRA therefore does not see T9.1 in its Task reporting route. This mismatch needs a coordinator decision before ADRA's T9.1 contribution is collected.
+- T9.1's narrative assigns ADRA (an associated partner) in-kind syndication and a co-badged briefing, but the formal Participants line names IF.E, TRS, EDSA and `ALL (BEN)` only. Formal Annex 1 participants remain unchanged. Coordinator-confirmed Attachment 6 separately assigns ADRA a voluntary T9.1 reporting route, so ADRA can report that contribution.
 
 ## Inspiring Futures Europe example
 

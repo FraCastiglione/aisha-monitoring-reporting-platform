@@ -225,10 +225,13 @@
   async function readEmbeddedReport(file) {
     if (!window.PDFLib || file.size > 10_000_000) throw new Error("Choose an AISHA PDF under 10 MB.");
     const P = window.PDFLib, pdf = await P.PDFDocument.load(await file.arrayBuffer());
-    const names = pdf.context.lookup(pdf.catalog.get(P.PDFName.of("Names")), P.PDFDict);
-    const embedded = names && pdf.context.lookup(names.get(P.PDFName.of("EmbeddedFiles")), P.PDFDict);
-    const entries = embedded && pdf.context.lookup(embedded.get(P.PDFName.of("Names")), P.PDFArray);
-    if (!entries) throw new Error("This PDF has no AISHA report data. Import its matching JSON file instead.");
+    const namesRef = pdf.catalog.get(P.PDFName.of("Names"));
+    const names = namesRef && pdf.context.lookup(namesRef, P.PDFDict);
+    const embeddedRef = names && names.get(P.PDFName.of("EmbeddedFiles"));
+    const embedded = embeddedRef && pdf.context.lookup(embeddedRef, P.PDFDict);
+    const entriesRef = embedded && embedded.get(P.PDFName.of("Names"));
+    const entries = entriesRef && pdf.context.lookup(entriesRef, P.PDFArray);
+    if (!entries) throw Object.assign(new Error("This PDF has no AISHA report data. Import its matching JSON file instead."), { code: "NO_AISHA_DATA" });
     for (let i = 0; i < entries.size(); i += 2) {
       if (entries.lookup(i)?.decodeText() !== "AISHA-report-data.json") continue;
       const spec = entries.lookup(i + 1, P.PDFDict), ef = pdf.context.lookup(spec.get(P.PDFName.of("EF")), P.PDFDict), stream = pdf.context.lookup(ef.get(P.PDFName.of("F")), P.PDFRawStream);
@@ -236,7 +239,7 @@
       if (bytes.length > 5_000_000) throw new Error("Embedded report data exceeds 5 MB.");
       return JSON.parse(new TextDecoder().decode(bytes));
     }
-    throw new Error("This PDF has no AISHA report data. Import its matching JSON file instead.");
+    throw Object.assign(new Error("This PDF has no AISHA report data. Import its matching JSON file instead."), { code: "NO_AISHA_DATA" });
   }
 
   window.AISHA_PDF = Object.freeze({ createPdf, readEmbeddedReport });

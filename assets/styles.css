@@ -1038,3 +1038,8 @@ fieldset.field legend { margin-bottom: 8px; color: var(--ink); font-size: 13px; 
 
 .dash-kpi-verbatim > span { display:block; margin-top:8px; }
 .dash-kpi-verbatim > span:first-child { margin-top:0; }
+/* Recovery and saved-copy checks share the existing report dialog treatment. */
+#saved-copy-dialog, #pdf-recovery-dialog { width: min(100% - 32px, 600px); max-height: 90vh; padding: 0; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 24px 75px #14235d55; }
+#saved-copy-dialog::backdrop, #pdf-recovery-dialog::backdrop { background: #101b42aa; }
+#saved-copy-dialog p, #pdf-recovery-dialog p { max-width: none; overflow-wrap: anywhere; }
+#saved-copy-dialog .review-actions, #pdf-recovery-dialog .review-actions { justify-content: flex-start; }
