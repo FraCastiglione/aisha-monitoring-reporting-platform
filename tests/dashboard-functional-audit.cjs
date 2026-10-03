@@ -31,3 +31,16 @@ x.view.partnerKind='all';x.view.search='T1.1';panel=x.reportingSection().querySe
 x.view.tab='kpis';x.view.kpiLens='objectives';x.view.kpiSearch='no matching term';x.view.kpiOnlyFavorites=true;x.view.kpiLimit=24;const source=x.kpisSection(),target=cat.kpis.find(k=>k.id==='sota_geography'),link=walk(source).find(n=>n.tagName==='button'&&n.textContent===target.name);assert(link?.onclick);link.onclick();assert(walk(host).some(n=>n.id==='dash-kpi-sota_geography'),'Objective link must reveal target beyond default24/filter');console.log('Regression checks passed: full partners, hidden search, KPI focus');
 
 const ended=x.workPackageMap(19);assert(walk(ended).some(n=>n.textContent==='Activity window ended'),'Ended WP windows must not be labelled future');console.log('Ended activity-window status regression: PASS');
+// Every source row is visible without expanding its Agreement wording.
+for(const [lens,key] of [['objectives','smart_objectives'],['call','call_kpis'],['communication','communication_kpis'],['framework','measurement_indicators'],['additional','additional_kpi_sources']]){
+  x.view.kpiLens=lens;const section=x.kpisSection(),nodes=walk(section);
+  for(const row of cat[key]){
+    const tr=nodes.find(n=>n.id===`dash-source-${row.id}`);assert(tr,`${row.id} must have a visible table row`);assert.equal(tr.tagName,'tr');const texts=walk(tr).map(n=>n.textContent);
+    for(const field of lens==='objectives'?['commitment','measures','footnote']:['exact_text','footnote','kpi','metric','target','evidence'])if(row[field])assert(texts.includes(row[field]),`${row.id} ${field} is preserved exactly`);
+    const part=row.source_page>=107?'B':'A',printed=row.source_page-(part==='B'?106:61);assert(texts.includes(`Grant Agreement PDF p. ${row.source_page} · Part ${part} p. ${printed}`));
+  }
+  assert(!nodes.some(n=>n.className==='dash-kpi-source-conflicts'));
+}
+x.view.kpiLens='additional';assert(walk(x.kpisSection()).some(n=>n.textContent==='Grant Agreement PDF p. 86 · Part A p. 25'),'Cross-page TARGET-85-2 must cite its continuation');
+x.view.kpiLens='indicators';x.view.kpiGroup='all';x.view.kpiSearch='';x.view.kpiOnlyFavorites=false;const indexNodes=walk(x.kpisSection());assert.equal(indexNodes.filter(n=>n.id?.startsWith('dash-kpi-')).length,114,'All index indicators appear without pagination');assert(!indexNodes.some(n=>n.textContent==='Report this indicator'));
+console.log('All 91 exact source rows, Part A/B page references and 114 index rows: PASS');

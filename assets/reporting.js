@@ -9,15 +9,8 @@
   const state = { partner: null, contributor: null, reportType: null, selected: new Map(), wpUpdates: new Map(), extras: [], kpis: new Map(), kpisByType:{tasks:new Map(),communication:new Map()}, selectedMonths: new Set(), lastPeriod: null, editing: null, wpEditing: null, extraEditing: null, editWasNew: false, revision: 1, reviewed: null, urls: [], taskPdfUrl: null };
   let kpiCatalogue=[];
   const communicationKpis=new Set();
-  const favoriteStorageKey='AISHA_KPI_FAVORITES_V1';
-  let kpiView='suggested', kpiGroup='all', kpiQuery='', kpiLimit=18;
-  let kpiFavorites=new Set();
-  try { const saved=JSON.parse(localStorage.getItem(favoriteStorageKey)||'[]'); if(Array.isArray(saved)) kpiFavorites=new Set(saved.filter(id=>typeof id==='string')); } catch { /* Favourites are optional when browser storage is unavailable. */ }
-  function saveKpiFavorites(){try{localStorage.setItem(favoriteStorageKey,JSON.stringify([...kpiFavorites]));}catch{ /* The current session still works without browser storage. */ }}
   const kpiModel=window.AISHA_KPI_MODEL;
-  const kpiSuggestions=window.AISHA_KPI_SUGGESTIONS;
   const kpiKey=kpiModel.key;
-  let dismissedKpiSuggestions=new Set();
   let kpiReady=Promise.resolve();
   const value = id => $(id).value.trim();
   const radio = (form, name) => form.querySelector(`input[name="${name}"]:checked`)?.value || '';
@@ -57,17 +50,16 @@
     $('revision-controls').hidden = visible;
     $('report-form-actions').hidden = visible;
     $('back-to-choice').hidden = visible;
-    $('kpi-reporting').hidden = visible;
     $('workspace-title').textContent = visible ? 'Your Task contribution' : 'Build your partner report';
   }
   function setWpEditor(visible) {
     $('wp-leader-form').hidden = !visible; taskForm.hidden = true; $('extra-editor').hidden = true;
-    $('task-picker').hidden = visible; $('draft-actions').hidden = visible; $('revision-controls').hidden = visible; $('report-form-actions').hidden = visible; $('back-to-choice').hidden = visible; $('kpi-reporting').hidden = visible;
+    $('task-picker').hidden = visible; $('draft-actions').hidden = visible; $('revision-controls').hidden = visible; $('report-form-actions').hidden = visible; $('back-to-choice').hidden = visible;
     $('workspace-title').textContent = visible ? 'Work Package leadership update' : 'Build your partner report';
   }
   function setExtraEditor(visible) {
     $('extra-editor').hidden=!visible;taskForm.hidden=true;$('wp-leader-form').hidden=true;
-    $('task-picker').hidden=visible;$('draft-actions').hidden=visible;$('revision-controls').hidden=visible;$('report-form-actions').hidden=visible;$('back-to-choice').hidden=visible;$('kpi-reporting').hidden=visible;
+    $('task-picker').hidden=visible;$('draft-actions').hidden=visible;$('revision-controls').hidden=visible;$('report-form-actions').hidden=visible;$('back-to-choice').hidden=visible;
     $('workspace-title').textContent=visible?'Additional contribution':'Build your partner report';
   }
   const sortedMonths = () => [...state.selectedMonths].sort();
@@ -213,7 +205,7 @@
       const row=textNode('div','','status-row'),heading=textNode('div','','status-row-heading');heading.append(textNode('strong',title,'status-row-title'),textNode('small',`${selected} of ${total} added to this report`));row.append(heading);
       const metrics=textNode('div','','status-row-metrics');for(const [amount,label] of [[items.completed,'Complete'],[items.no_work,'No work declared'],[items.draft,'Draft / still to finish'],[Math.max(0,total-selected),'Still available']]){const metric=textNode('span','','status-metric');metric.append(textNode('b',String(amount)),textNode('span',label));metrics.append(metric);}row.append(metrics);summary.append(row);
     }
-    if(state.extras.length||state.kpis.size)summary.append(textNode('p',`${state.extras.length} voluntary contribution${state.extras.length===1?'':'s'} (${state.extras.filter(e=>e.status==='completed').length} complete) · ${state.kpis.size} KPI contribution${state.kpis.size===1?'':'s'}.`,'status-available'));
+    if(state.extras.length)summary.append(textNode('p',`${state.extras.length} voluntary contribution${state.extras.length===1?'':'s'} (${state.extras.filter(e=>e.status==='completed').length} complete).`,'status-available'));
     if(outside.length)summary.append(textNode('p',`${outside.length} selected Task is outside these months.`,'status-warning'));
     for (const wp of config.workPackages) {
       const wpTasks = eligible.filter(t => t.wp === wp.id);
@@ -311,104 +303,9 @@
   function kpiDefinition(id){return kpiCatalogue.find(item=>item.id===id);}
   function knownActivities(){const data=window.AISHA_EMBEDDED_DATA?.snapshot||{};return [...(data.project_events||[]),...(data.shared_activities||[])].filter(item=>item.id&&item.title);}
   function renderActivityOptions(){const host=$('shared-activity-options');host.replaceChildren();for(const item of knownActivities()){const option=document.createElement('option');option.value=item.id;option.label=`${item.title} · ${item.start_date||''}`;host.append(option);}}
-  function reportPassages(){
-    const passages=[];
-    const add=(source,text,taskId='')=>{if(String(text||'').trim())passages.push({source,text,taskId});};
-    if(state.reportType==='tasks'){
-      for(const [id,row] of state.selected)if(row.status!=='no_work')for(const key of ['activities_carried_out','results_achieved','additional_comments'])add(id,row[key],id);
-      for(const [id,row] of state.wpUpdates)if(row.status!=='no_work'){for(const key of ['progress','coordination'])add(id,row[key]);for(const [taskId,update] of Object.entries(row.task_updates||{}))add(`${id} · ${taskId}`,update.progress,taskId);}
-      for(const row of state.extras)for(const key of ['description','results'])add(`${row.id} additional contribution`,row[key],row.kind==='task'?row.id:'');
-    }else if(state.reportType==='communication'){
-      for(const el of $('comm-events-list').children)add('Communication event',el.querySelector('.event-description')?.value);
-      for(const id of ['comm-media-details','comm-article-details','comm-social-details','comm-email-details','comm-other'])add('Communication check-in',$(id).value);
-    }
-    return passages;
-  }
-  function renderKpiSuggestions(){
-    const host=$('kpi-suggestions');host.replaceChildren();
-    const passages=reportPassages();if(!passages.length){host.append(textNode('p','Add activities or results to your report, then try again.','kpi-empty'));return;}
-    const items=kpiSuggestions.suggest(passages,kpiCatalogue,{partnerCode:state.partner?.code,limit:10}).filter(row=>!dismissedKpiSuggestions.has(row.id));
-    if(!items.length){host.append(textNode('p','No clear KPI match was found. You can still browse every indicator below. Social post counts belong in the Communication & Dissemination check-in.','kpi-empty'));return;}
-    host.append(textNode('p',`${items.length} possible indicator${items.length===1?'':'s'} found. These are prompts for review, not report entries.`,'kpi-suggestion-count'));
-    for(const row of items){const item=kpiDefinition(row.id),card=textNode('article','','kpi-suggestion-card'),copy=textNode('div','','kpi-suggestion-copy');copy.append(textNode('strong',item.name),textNode('small',`${row.source}${row.proposedValue!==null?` · Possible value: ${row.proposedValue}`:''}`),textNode('blockquote',row.quote));const actions=textNode('div','','kpi-suggestion-actions'),review=textNode('button','Review indicator','button button-secondary'),dismiss=textNode('button','Dismiss','button button-quiet');review.type='button';dismiss.type='button';review.onclick=()=>{selectKpi(item.id);if(row.proposedValue!==null&&kpiType(item)==='count')$('kpi-value').value=String(row.proposedValue);$('kpi-suggestion-note').textContent=`Suggested from ${row.source}: “${row.quote}” Check the measurement, reporting period, shared activity and evidence before saving.`;$('kpi-suggestion-note').hidden=false;};dismiss.onclick=()=>{dismissedKpiSuggestions.add(row.id);renderKpiSuggestions();};actions.append(review,dismiss);card.append(copy,actions);host.append(card);}
-  }
-  $('scan-kpis').addEventListener('click',renderKpiSuggestions);
-  function kpiType(item){return item?kpiModel.type(item):'count';}
-  function appendKpiSources(host,item){
-    const data=window.AISHA_EMBEDDED_DATA.catalogue;host.replaceChildren();
-    host.append(textNode('p',`Proposed lead: ${item.suggested_lead||'To agree'} · ${item.suggested_partners?.length||0} suggested contributors. You can report a relevant value even if your organisation is not suggested.`,'kpi-proposal-note'));
-    const details=document.createElement('details');details.className='kpi-source-details';details.append(textNode('summary','Read exact Agreement wording and targets'));
-    for(const ref of item.source_refs||[]){const row=data.source_index?.[ref];if(!row)continue;details.append(textNode('h5',`${ref} · PDF p. ${row.source_page}`));for(const field of ['exact_text','footnote','kpi','metric','target','evidence'])if(row[field])details.append(textNode('p',row[field],'agreement-text'));}
-    host.append(details);
-    const contributors=document.createElement('details');contributors.className='kpi-source-details';contributors.append(textNode('summary','See proposed contributors'),textNode('p',(item.suggested_partners||[]).join(' · '),'agreement-text'));host.append(contributors);
-  }
-  function renderKpiContext(data){
-    const smart=$('kpi-smart-context'),call=$('kpi-call-list');smart.replaceChildren();call.replaceChildren();
-    smart.append(textNode('h4','Nine SMART objectives','kpi-context-title'));const grid=textNode('div','','kpi-context-grid');
-    for(const objective of data.smart_objectives||[]){const card=document.createElement('details');card.className='kpi-context-card';const summary=document.createElement('summary');summary.append(textNode('span',String(objective.number),'kpi-context-number'),textNode('strong',objective.title),textNode('small','Read objective and related indicators'));card.append(summary);const body=textNode('div','','kpi-context-body');body.append(textNode('p',objective.exact_text,'agreement-text'));if(objective.footnote)body.append(textNode('p',objective.footnote,'field-help'));const actions=textNode('div','','kpi-context-actions');for(const id of objective.indicator_ids||[]){const item=kpiDefinition(id);if(!item)continue;const b=textNode('button',item.name,'button button-secondary');b.type='button';b.onclick=()=>selectKpi(id);actions.append(b);}body.append(actions);card.append(body);grid.append(card);}smart.append(grid);
-    const communication=state.reportType==='communication';
-    const collections=communication?[['Communication and dissemination table',data.communication_kpis]]:[['Call KPI table',data.call_kpis],['Indicators and measurement framework (SMART)',data.measurement_indicators],['Additional Task, dissemination and impact measures',data.additional_kpi_sources]];
-    for(const [label,rows] of collections){call.append(textNode('h4',label));for(const row of rows||[]){const ids=(row.indicator_ids||[]).filter(id=>!communication||communicationKpis.has(id));if(communication&&!ids.length)continue;const card=document.createElement('details');card.className='kpi-call-row';card.append(textNode('summary',`${row.id} · ${(row.kpi||row.exact_text.split('\n')[0]).replace(/^● /,'')}`));const body=textNode('div','','kpi-call-row-body');for(const field of ['exact_text','metric','target','evidence'])if(row[field])body.append(textNode('p',row[field],'agreement-text'));body.append(textNode('small',`Source: signed Grant Agreement, PDF p. ${row.source_page}. Contributor suggestions are proposals.`));const actions=textNode('div','','kpi-context-actions');for(const id of ids){const item=kpiDefinition(id),b=textNode('button',item.name,'button button-secondary');b.type='button';b.onclick=()=>selectKpi(id);actions.append(b);}body.append(actions);card.append(body);call.append(card);}}
-    document.querySelector('.kpi-call-context > summary').textContent=communication?'Explore exact communication measures and evidence':'Explore exact KPI tables and additional measures';
-  }
-  function renderKpiResults(){
-    const host=$('kpi-catalogue-list');host.replaceChildren();
-    if(!kpiCatalogue.length){host.append(textNode('p','Indicators are unavailable.','kpi-empty'));return;}
-    const communication=state.reportType==='communication';
-    const available=kpiCatalogue.filter(item=>!communication||communicationKpis.has(item.id));
-    const query=kpiQuery.trim().toLocaleLowerCase();
-    const matches=available.filter(item=>{
-      if(kpiGroup!=='all'&&item.group!==kpiGroup)return false;
-      if(kpiView==='favorites'&&!kpiFavorites.has(item.id))return false;
-      if(kpiView==='suggested'&&!query&&!item.suggested_partners?.includes(state.partner?.code))return false;
-      const sourceText=(item.source_refs||[]).map(ref=>window.AISHA_EMBEDDED_DATA.catalogue.source_index?.[ref]).filter(Boolean).flatMap(row=>[row.kpi,row.metric,row.target,row.exact_text]);
-      const searchable=[item.name,item.group,item.unit,item.id,...(item.source_refs||[]),...sourceText].filter(Boolean).join(' ').toLocaleLowerCase();
-      return !query||query.split(/\s+/).every(term=>searchable.includes(term));
-    }).sort((a,b)=>{
-      const rank=item=>query&&item.name.toLocaleLowerCase().includes(query)?2:query&&query.split(/\s+/).every(term=>item.name.toLocaleLowerCase().includes(term))?1:0;
-      const taskFit=item=>(item.related_tasks||[]).filter(id=>config.tasks.some(task=>task.id===id&&model.assigned(task,state.partner?.code,config))).length;
-      return rank(b)-rank(a)||taskFit(b)-taskFit(a)||Number(b.suggested_partners?.includes(state.partner?.code))-Number(a.suggested_partners?.includes(state.partner?.code))||a.name.localeCompare(b.name);
-    });
-    $('kpi-results-summary').textContent=`${matches.length} matching indicator${matches.length===1?'':'s'}${query&&kpiView==='suggested'?' across the full catalogue':''} · ${available.length} available in this report${kpiView==='suggested'&&!query?' · Task-related indicators first':''}`;
-    if(!matches.length){host.append(textNode('p',query&&/social\s+posts?/i.test(query)?'Social post counts and links are recorded in the Communication & Dissemination check-in. Search “social” for related measured indicators.':kpiView==='favorites'&&!query?'No favourites yet. Save an indicator with the star button, then find it here.':'No indicators match. Try fewer words or choose All indicators.','kpi-empty'));return;}
-    const visibleLimit=kpiView==='suggested'&&!query?Math.max(12,kpiLimit-6):kpiLimit;
-    for(const item of matches.slice(0,visibleLimit)){
-      const card=textNode('article','','kpi-choice-card'),copy=textNode('div','','kpi-choice-copy'),top=textNode('div','','kpi-choice-top');
-      top.append(textNode('span',item.group,'kpi-choice-group'));
-      if(item.suggested_partners?.includes(state.partner?.code))top.append(textNode('span','Suggested','kpi-choice-suggested'));
-      copy.append(top,textNode('h5',item.name),textNode('p',`${item.unit} · ${(item.source_refs||[]).join(', ')}`));
-      const count=[...state.kpis.values()].filter(entry=>entry.id===item.id).length;
-      if(count)copy.append(textNode('small',`${count} contribution${count===1?'':'s'} in this report`,'kpi-choice-recorded'));
-      const actions=textNode('div','','kpi-choice-actions'),star=textNode('button',kpiFavorites.has(item.id)?'★':'☆','kpi-star');star.type='button';star.setAttribute('aria-label',`${kpiFavorites.has(item.id)?'Remove':'Add'} ${item.name} ${kpiFavorites.has(item.id)?'from':'to'} favourites`);star.setAttribute('aria-pressed',String(kpiFavorites.has(item.id)));
-      star.onclick=()=>{kpiFavorites.has(item.id)?kpiFavorites.delete(item.id):kpiFavorites.add(item.id);saveKpiFavorites();renderKpiResults();};
-      const report=textNode('button',count?'Add another value':'Report value','button button-secondary');report.type='button';report.onclick=()=>selectKpi(item.id);
-      actions.append(star,report);card.append(copy,actions);host.append(card);
-    }
-    if(matches.length>visibleLimit){const more=textNode('button',`Show more indicators (${matches.length-visibleLimit} remaining)`,'button button-secondary kpi-show-more');more.type='button';more.onclick=()=>{kpiLimit+=18;renderKpiResults();};host.append(more);}
-  }
-  function renderKpis(){
-    if(!kpiCatalogue.length){renderKpiResults();resetKpiEditor();return;}
-    const communication=state.reportType==='communication';$('kpi-smart-context').hidden=communication;
-    renderKpiContext(window.AISHA_EMBEDDED_DATA.catalogue);
-    const heading=$('kpi-reporting').querySelector('.section-heading');heading.querySelector('h3').textContent=communication?'Communication and dissemination indicators':'Choose an indicator';
-    const groups=[...new Set(kpiCatalogue.filter(item=>!communication||communicationKpis.has(item.id)).map(item=>item.group))].sort(),groupSelect=$('kpi-group-filter');groupSelect.replaceChildren(new Option('All topics','all'),...groups.map(group=>new Option(group,group)));if(!groups.includes(kpiGroup))kpiGroup='all';groupSelect.value=kpiGroup;
-    for(const button of $('kpi-view-filters').querySelectorAll('button')){button.classList.toggle('is-active',button.dataset.view===kpiView);button.setAttribute('aria-pressed',String(button.dataset.view===kpiView));}
-    $('kpi-search').value=kpiQuery;renderKpiResults();
-    const list=$('kpi-list');list.replaceChildren();if(state.kpis.size){list.append(textNode('h4',`In this report · ${state.kpis.size}`));for(const [key,entry] of state.kpis){const card=textNode('article','','kpi-saved-card'),copy=textNode('div','','kpi-saved-copy'),actions=textNode('div','','kpi-saved-actions');copy.append(textNode('strong',entry.name),textNode('small',`${entry.value}${entry.unit==='%'?'%':entry.unit==='status'?'':` ${entry.unit}`} · ${entry.activity_id?`${entry.activity_id} · ${entry.scope||'Shared activity'}`:entry.scope||'Activity reference not specified'}`));const edit=textNode('button','Edit','button button-secondary');edit.type='button';edit.onclick=()=>selectKpi(entry.id,key);const remove=textNode('button','Remove','button button-quiet');remove.type='button';remove.onclick=()=>{state.kpis.delete(key);resetKpiEditor();renderKpis();};actions.append(edit,remove);card.append(copy,actions);list.append(card);}}
-    if(state.reportType==='tasks')renderOverview();
-  }
-  $('kpi-search').addEventListener('input',event=>{kpiQuery=event.target.value;kpiLimit=18;renderKpiResults();});
-  $('kpi-group-filter').addEventListener('change',event=>{kpiGroup=event.target.value;kpiLimit=18;renderKpiResults();});
-  $('kpi-view-filters').addEventListener('click',event=>{const button=event.target.closest('button[data-view]');if(!button)return;kpiView=button.dataset.view;kpiLimit=18;for(const item of $('kpi-view-filters').querySelectorAll('button')){item.classList.toggle('is-active',item===button);item.setAttribute('aria-pressed',String(item===button));}renderKpiResults();});
-  let requestedKpi=null;
-  window.addEventListener('aisha:kpi-requested',event=>{requestedKpi=event.detail.id;if(state.partner&&state.reportType&&!$('report-workspace').hidden&&(state.reportType==='tasks'||communicationKpis.has(requestedKpi))){selectKpi(requestedKpi);requestedKpi=null;}else scrollTo($('report-choice'));});
-  function resetKpiEditor(){for(const id of ['kpi-target','kpi-edit-key','kpi-value','kpi-status','kpi-scope','kpi-activity-id','kpi-basis','kpi-evidence','kpi-numerator','kpi-denominator'])$(id).value='';document.querySelectorAll('input[name="kpi-proof"]').forEach(input=>input.checked=false);$('kpi-editor').hidden=true;$('kpi-suggestion-note').hidden=true;$('kpi-message').hidden=true;}
-  function selectKpi(id,key){const item=kpiDefinition(id);if(!item||state.reportType==='communication'&&!communicationKpis.has(id))return;const saved=key?state.kpis.get(key):null;resetKpiEditor();$('kpi-target').value=id;$('kpi-edit-key').value=key||'';$('kpi-editor').hidden=false;$('kpi-editor-title').textContent=item.name;renderKpiInput();appendKpiSources($('kpi-source-details'),item);for(const [field,prop] of [['kpi-scope','scope'],['kpi-activity-id','activity_id'],['kpi-basis','basis'],['kpi-evidence','evidence'],['kpi-numerator','numerator'],['kpi-denominator','denominator']])$(field).value=saved?.[prop]??'';$('kpi-value').value=typeof saved?.value==='number'?saved.value:'';$('kpi-status').value=typeof saved?.value==='string'?saved.value:'';document.querySelectorAll('input[name="kpi-proof"]').forEach(input=>input.checked=input.value===saved?.proof_status);scrollTo($('kpi-editor'));}
-  function closeKpiEditor(){resetKpiEditor();scrollTo($('kpi-catalogue-list'));}
-  $('close-kpi-editor').addEventListener('click',closeKpiEditor);$('cancel-kpi-editor').addEventListener('click',closeKpiEditor);
-  function renderKpiInput(){const item=kpiDefinition(value('kpi-target')),type=kpiType(item),pairLabel=item?.requires_pair?'required':'optional';$('kpi-numeric-field').hidden=type==='status';$('kpi-status-field').hidden=type!=='status';$('kpi-basis-field').hidden=!(type==='percent'||item?.requires_basis);$('kpi-ratio-fields').hidden=type!=='percent';$('kpi-numerator-label').textContent=item?.rate_mode==='growth'?`Current measurement (${pairLabel})`:`Numerator (${pairLabel})`;$('kpi-denominator-label').textContent=item?.rate_mode==='growth'?`Baseline measurement (${pairLabel})`:`Denominator (${pairLabel})`;$('kpi-unit-note').textContent=`Unit: ${item?.unit||''}`;$('kpi-guidance').textContent=item?.breakdown||'';$('kpi-value').step=type==='count'?'1':'0.01';$('kpi-value').min=item?.allow_negative?'-1000000000000':'0';$('kpi-value').max=Object.hasOwn(item||{},'max_value')?(item.max_value??''):type==='percent'?'100':'';$('kpi-value').placeholder=type==='count'?'Enter a whole number':'Enter your measured value';}
-  $('add-kpi').addEventListener('click',()=>{try{const item=kpiDefinition(value('kpi-target'));if(!item)throw new Error('Choose an indicator.');if(state.reportType==='communication'&&!communicationKpis.has(item.id))throw new Error('This indicator belongs in the Task report.');const raw=value('kpi-value'),scope=value('kpi-scope'),type=kpiType(item);if(type!=='status'&&raw==='')throw new Error('Enter a measured value.');if(item.requires_scope&&!scope)throw new Error('Name the programme, cohort, campaign or output measured.');const input={id:item.id,name:item.name,unit:item.unit,group:item.group,value:type==='status'?value('kpi-status'):Number(raw),scope,activity_id:value('kpi-activity-id'),basis:value('kpi-basis'),evidence:value('kpi-evidence'),proof_status:document.querySelector('input[name="kpi-proof"]:checked')?.value};for(const [field,prop] of [['kpi-numerator','numerator'],['kpi-denominator','denominator']])if(value(field)!=='')input[prop]=Number(value(field));const entry=kpiModel.validate(input,item),key=kpiKey(entry),old=value('kpi-edit-key');if(state.kpis.has(key)&&key!==old)throw new Error('This activity already has a value for this indicator. Edit that contribution or use a different activity reference.');if(old)state.kpis.delete(old);state.kpis.set(key,entry);resetKpiEditor();renderKpis();$('kpi-message').textContent=`${item.name} saved for coordinator review.`;$('kpi-message').hidden=false;}catch(error){$('kpi-message').textContent=error.message;$('kpi-message').hidden=false;}});
-  try{const data=window.AISHA_EMBEDDED_DATA?.catalogue;if(!Array.isArray(data?.kpis))throw new Error('Indicator catalogue unavailable');kpiCatalogue=data.kpis;for(const item of kpiCatalogue)if(item.report_contexts?.includes('communication'))communicationKpis.add(item.id);renderActivityOptions();renderKpis();}catch(error){$('kpi-message').textContent=`Could not load indicators: ${error.message}`;}
+  kpiCatalogue=window.AISHA_EMBEDDED_DATA?.catalogue?.kpis || [];
+  for(const item of kpiCatalogue)if(item.report_contexts?.includes('communication'))communicationKpis.add(item.id);
+  renderActivityOptions();
   function emptyWp() { return { status:'draft', progress:'', coordination:'', difficulties:'', next:'', support:'', task_updates:{} }; }
   function hasWpContribution(entry) { return ['progress','coordination','difficulties','next','support'].some(k => String(entry[k] || '').trim()) || Object.values(entry.task_updates || {}).some(row => ['status','progress','blocker','next'].some(k => String(row[k] || '').trim())); }
   function renderWpLeadership(p) {
@@ -588,18 +485,17 @@
     reconcileSelectedCoverage(oldPeriod,period());
     renderOverview();
   });
-  window.addEventListener('aisha:contributor-ready', event => { if (state.partner && state.partner.code !== event.detail.partner.code) { resetKpiEditor(); dismissedKpiSuggestions=new Set(); $('kpi-suggestions').replaceChildren(); state.selected = new Map(); state.wpUpdates=new Map(); state.extras=[];state.extraEditing=null;state.kpisByType={tasks:new Map(),communication:new Map()}; state.kpis=new Map(); state.selectedMonths = new Set(); state.lastPeriod = null; state.reportType = null; state.revision = 1; state.reviewed = null; state.editing = null; state.wpEditing = null; $('report-revision').value = '1'; $('report-start').value = ''; $('report-end').value = ''; commForm.reset(); $('comm-events-list').replaceChildren(); $('comm-reach-unknown').checked = false; $('comm-enrolments-unknown').checked = false; updateConditions(); for (const url of state.urls) URL.revokeObjectURL(url); state.urls = []; if (state.taskPdfUrl) URL.revokeObjectURL(state.taskPdfUrl); state.taskPdfUrl = null; for (const dialog of document.querySelectorAll('dialog[open]')) dialog.close(); } state.partner = event.detail.partner; state.contributor = event.detail.contributor; $('report-workspace').hidden = true; $('review-section').hidden = true; $('submission-section').hidden = true; });
+  window.addEventListener('aisha:contributor-ready', event => { if (state.partner && state.partner.code !== event.detail.partner.code) { state.selected = new Map(); state.wpUpdates=new Map(); state.extras=[];state.extraEditing=null;state.kpisByType={tasks:new Map(),communication:new Map()}; state.kpis=new Map(); state.selectedMonths = new Set(); state.lastPeriod = null; state.reportType = null; state.revision = 1; state.reviewed = null; state.editing = null; state.wpEditing = null; $('report-revision').value = '1'; $('report-start').value = ''; $('report-end').value = ''; commForm.reset(); $('comm-events-list').replaceChildren(); $('comm-reach-unknown').checked = false; $('comm-enrolments-unknown').checked = false; updateConditions(); for (const url of state.urls) URL.revokeObjectURL(url); state.urls = []; if (state.taskPdfUrl) URL.revokeObjectURL(state.taskPdfUrl); state.taskPdfUrl = null; for (const dialog of document.querySelectorAll('dialog[open]')) dialog.close(); } state.partner = event.detail.partner; state.contributor = event.detail.contributor; $('report-workspace').hidden = true; $('review-section').hidden = true; $('submission-section').hidden = true; });
   window.addEventListener('aisha:edit-details', () => { $('report-workspace').hidden = true; $('review-section').hidden = true; $('submission-section').hidden = true; });
   window.addEventListener('aisha:report-selected', event => {
     const chosenType = event.detail.reportType === 'task' ? 'tasks' : 'communication';
-    if (state.reportType !== chosenType) { resetKpiEditor(); dismissedKpiSuggestions=new Set(); $('kpi-suggestions').replaceChildren(); state.revision = 1; $('report-revision').value = '1';state.kpis=state.kpisByType[chosenType]; }
+    if (state.reportType !== chosenType) { state.revision = 1; $('report-revision').value = '1';state.kpis=state.kpisByType[chosenType]; }
     state.reportType = chosenType; state.editing = null; state.reviewed = null;
     $('report-workspace').hidden = false; $('review-section').hidden = true; $('submission-section').hidden = true;
     clearError(); message('');
     const tasks = state.reportType === 'tasks';
     $('overview-import').hidden = !tasks;
     $('selected-task-summary').hidden = !tasks;
-    $('kpi-reporting').hidden = false;
     $('task-picker').hidden = !tasks; taskForm.hidden = true; $('wp-leader-form').hidden = true; $('extra-editor').hidden=true;commForm.hidden = tasks; $('back-to-choice').hidden=false;
     $('draft-actions').hidden = false; $('revision-controls').hidden = false; $('report-form-actions').hidden = false;
     $('workspace-title').textContent = tasks ? 'Build your partner report' : 'Communication & Dissemination';
@@ -609,9 +505,7 @@
       $('report-end').min = config.project.startDate; $('report-end').max = projectEnd();
       renderOverview();
     }
-    renderKpis();
     scrollTo($('report-workspace')); $('workspace-title').focus({ preventScroll: true });
-    if(requestedKpi&&(state.reportType==='tasks'||communicationKpis.has(requestedKpi))){selectKpi(requestedKpi);requestedKpi=null;}
   });
   $('back-to-choice').addEventListener('click', () => { $('report-workspace').hidden = true; $('review-section').hidden = true; $('submission-section').hidden = true; scrollTo($('report-choice')); });
   $('report-revision').addEventListener('change', () => { state.revision = Number(value('report-revision')); });
@@ -624,7 +518,7 @@
       const p = period();
       if (!p) return fail('Choose valid reporting dates and selected months within the project.', $('report-start'));
       const eligible = new Set(selectedInRange().map(t => t.id));
-      if (!state.selected.size && !state.wpUpdates.size && !state.extras.length && !state.kpis.size) return fail('Add a Task, Work Package, additional or KPI contribution.');
+      if (!state.selected.size && !state.wpUpdates.size && !state.extras.length && !state.kpis.size) return fail('Add a Task, Work Package update or additional contribution.');
       if ([...state.selected.keys()].some(id => !eligible.has(id))) return fail('Remove selected Tasks outside the report dates, or change the dates.');
       for (const [id, answer] of state.selected) {
         const allowed = model.taskCoverage(config, taskById(id), p.start, p.end, p.selected_months);
@@ -820,7 +714,7 @@
     try{await kpiReady;if(file.size>(file.name.toLowerCase().endsWith('.pdf')?10_000_000:5_000_000))throw new Error('The file is too large.');const raw=file.name.toLowerCase().endsWith('.pdf')?await window.AISHA_PDF.readEmbeddedReport(file):JSON.parse(await file.text());prepareWholeImport(raw);$('overview-import-message').hidden=true;}
     catch(error){$('overview-import-message').textContent=`Could not read report: ${error.message}`;$('overview-import-message').hidden=false;}
   });
-  $('comm-import-file').addEventListener('change',async event=>{const file=event.target.files?.[0];event.target.value='';if(!file)return;try{if(file.size>10000000)throw new Error('The file is too large.');let raw=file.name.toLowerCase().endsWith('.pdf')?await window.AISHA_PDF.readEmbeddedReport(file):JSON.parse(await file.text());if(raw.project!=='AISHA'||raw.report_type!=='communication'||raw.partner?.code!==state.partner.code)throw new Error('Choose a communication report for the selected partner.');if(raw.document_kind==='submission'){const a=raw.answers;if(!a)throw new Error('The report has no communication answers.');const fields={period_start:raw.reporting_period.start,period_end:raw.reporting_period.end};fields.website_article_urls=(a.website_articles||[]).map(e=>e.url).join('\n');fields.website_article_details=[...new Set((a.website_articles||[]).map(e=>e.details||'').filter(Boolean))].join('\n');for(const control of commForm.querySelectorAll('[name]')){const v=a[control.name];if(v!==undefined)fields[control.name]=typeof v==='boolean'?(v?'yes':'no'):Array.isArray(v)?v.join('\n'):v===null?'':String(v);}raw={...raw,document_kind:'draft',form_state:{fields,events:(a.events||[]).map(e=>({description:e.description,participants:e.participants===null?'':String(e.participants),activity_id:e.activity_id||''})),reach_unknown:a.estimated_people_reached===null,enrolments_unknown:a.preregistrations_or_enrolments===null}};}if(!await confirmAction('Replace this communication report?', 'Importing replaces this communication check-in and its KPI contributions. Download your current draft first if you need to keep a separate copy.', 'Import report'))return;restore(raw);$('comm-import-message').textContent='Communication report restored. Review the dates, answers and KPI values.';}catch(error){$('comm-import-message').textContent=`Could not import report: ${error.message}`;}$('comm-import-message').hidden=false;});
+  $('comm-import-file').addEventListener('change',async event=>{const file=event.target.files?.[0];event.target.value='';if(!file)return;try{if(file.size>10000000)throw new Error('The file is too large.');let raw=file.name.toLowerCase().endsWith('.pdf')?await window.AISHA_PDF.readEmbeddedReport(file):JSON.parse(await file.text());if(raw.project!=='AISHA'||raw.report_type!=='communication'||raw.partner?.code!==state.partner.code)throw new Error('Choose a communication report for the selected partner.');if(raw.document_kind==='submission'){const a=raw.answers;if(!a)throw new Error('The report has no communication answers.');const fields={period_start:raw.reporting_period.start,period_end:raw.reporting_period.end};fields.website_article_urls=(a.website_articles||[]).map(e=>e.url).join('\n');fields.website_article_details=[...new Set((a.website_articles||[]).map(e=>e.details||'').filter(Boolean))].join('\n');for(const control of commForm.querySelectorAll('[name]')){const v=a[control.name];if(v!==undefined)fields[control.name]=typeof v==='boolean'?(v?'yes':'no'):Array.isArray(v)?v.join('\n'):v===null?'':String(v);}raw={...raw,document_kind:'draft',form_state:{fields,events:(a.events||[]).map(e=>({description:e.description,participants:e.participants===null?'':String(e.participants),activity_id:e.activity_id||''})),reach_unknown:a.estimated_people_reached===null,enrolments_unknown:a.preregistrations_or_enrolments===null}};}if(!await confirmAction('Replace this communication report?', 'Importing replaces this communication check-in. Download your current draft first if you need to keep a separate copy.', 'Import report'))return;restore(raw);$('comm-import-message').textContent='Communication report restored. Review the dates and answers.';}catch(error){$('comm-import-message').textContent=`Could not import report: ${error.message}`;}$('comm-import-message').hidden=false;});
   $('cancel-whole-import').addEventListener('click',()=>{$('whole-import-dialog').close();pendingWholeImport=null;});
   $('confirm-whole-import').addEventListener('click',()=>{
     if(!pendingWholeImport)return;
@@ -887,7 +781,7 @@
       $('comm-events-list').replaceChildren(); for (const e of (r.form_state.events || []).slice(0,100)) addEvent(String(e.description || ''),String(e.participants ?? ''),String(e.activity_id||''));
       $('comm-reach-unknown').checked = !!r.form_state.reach_unknown; $('comm-enrolments-unknown').checked = !!r.form_state.enrolments_unknown; updateConditions();
     }
-    resetKpiEditor();state.kpis=importedKpis;state.kpisByType[state.reportType]=state.kpis;renderKpis();
+    state.kpis=importedKpis;state.kpisByType[state.reportType]=state.kpis;if(state.reportType==='tasks')renderOverview();
     state.contributor = { ...r.contributor }; $('contributor-name').value = r.contributor.name; $('contributor-role').value = r.contributor.role; $('contributor-email').value = r.contributor.email; $('contributor-summary').textContent = `${state.partner.name} · ${r.contributor.name}`;
     state.revision = Number.isInteger(r.revision) && r.revision >= 1 && r.revision <= 99 ? r.revision : 1; $('report-revision').value = String(state.revision);
     message('Whole-report draft loaded. Review the dates, selected Tasks and answers.'); scrollTo(state.reportType === 'tasks' ? $('task-picker') : commForm);
@@ -921,7 +815,7 @@
       const [pdf,json] = await Promise.all([window.AISHA_PDF.createPdf(r),Promise.resolve(new Blob([JSON.stringify(r,null,2)],{type:'application/json'}))]);
       for (const url of state.urls) URL.revokeObjectURL(url); state.urls = [];
       const base = filename(r,false); $('download-pdf').href = urlFor(pdf); $('download-pdf').download = `${base}.pdf`; $('download-json').href = urlFor(json); $('download-json').download = `${base}.json`;
-      $('submission-summary').textContent = `${r.partner.code} · ${r.report_type === 'tasks' ? `${r.tasks.length} ${r.tasks.length === 1 ? 'Task' : 'Tasks'} · ${r.work_package_leadership.length} Work Package ${r.work_package_leadership.length === 1 ? 'update' : 'updates'} · ${(r.additional_contributions||[]).length} additional contribution${(r.additional_contributions||[]).length===1?'':'s'}` : 'Communication & Dissemination'} · ${(r.kpi_contributions||[]).length} direct KPI contribution${(r.kpi_contributions||[]).length===1?'':'s'} · ${r.reporting_period.start} to ${r.reporting_period.end}`;
+      $('submission-summary').textContent = `${r.partner.code} · ${r.report_type === 'tasks' ? `${r.tasks.length} ${r.tasks.length === 1 ? 'Task' : 'Tasks'} · ${r.work_package_leadership.length} Work Package ${r.work_package_leadership.length === 1 ? 'update' : 'updates'} · ${(r.additional_contributions||[]).length} additional contribution${(r.additional_contributions||[]).length===1?'':'s'}` : 'Communication & Dissemination'}${r.kpi_contributions?.length?` · ${r.kpi_contributions.length} previously reported KPI value${r.kpi_contributions.length===1?'':'s'}`:''} · ${r.reporting_period.start} to ${r.reporting_period.end}`;
       $('review-section').hidden = true; $('submission-section').hidden = false; scrollTo($('submission-section')); $('submission-title').focus({preventScroll:true});
     } catch (error) { $('generation-error').textContent = `Could not generate files: ${error.message}`; $('generation-error').hidden = false; }
     finally { button.textContent = 'Generate report files'; button.disabled = !$('confirm-ready').checked; }

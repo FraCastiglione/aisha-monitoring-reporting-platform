@@ -395,59 +395,65 @@
     }
     section.append(grid);return section;
   }
+  function agreementPages(row){
+    return row.id==='TARGET-85-2'?[85,86]:[row.source_page].filter(Number.isInteger);
+  }
+  function agreementPageLabel(page){
+    if(page>=107&&page<=143)return `Grant Agreement PDF p. ${page} · Part B p. ${page-106}`;
+    if(page>=63&&page<=105)return `Grant Agreement PDF p. ${page} · Part A p. ${page-61}`;
+    return `Grant Agreement PDF p. ${page}`;
+  }
+  function agreementText(host,text){if(!text)return;const p=el('p','dash-kpi-verbatim',text),parts=text.split(/(?=\n[●▪])/g);if(parts.length>1)p.replaceChildren(...parts.map(part=>el('span','',part)));host.append(p);}
   function kpiLinks(host,row){
-    host.append(el('small','',`Source: signed Grant Agreement, PDF p. ${row.source_page}.`));
-    const contributors=el('details','dash-kpi-contributors');contributors.append(el('summary','','Proposed contributors'),el('p','',`Proposed lead: ${Array.isArray(row.suggested_lead)?row.suggested_lead.join(', '):row.suggested_lead||'To agree'}`),el('p','',(row.suggested_partners||[]).map(code=>`${code} · ${partnerName(code)}`).join('; ')),el('small','',row.proposal_basis||'Proposals for coordinator approval. Every partner may report a relevant contribution.'));host.append(contributors);
-    const tags=el('div','dash-objective-indicators');for(const id of row.indicator_ids||[]){const item=catalogue.kpis.find(k=>k.id===id);if(!item)continue;const b=el('button','button button-secondary',item.name);b.type='button';b.onclick=()=>{view.kpiLens='indicators';view.kpiGroup='all';view.kpiSearch='';view.kpiOnlyFavorites=false;view.kpiFocus=id;render();requestAnimationFrame(()=>document.getElementById(`dash-kpi-${id}`)?.scrollIntoView({block:'center',behavior:'smooth'}));};tags.append(b);}host.append(tags);
-    const tasks=el('div','dash-objective-indicators');for(const id of row.related_tasks||[]){const task=config.tasks.find(t=>t.id===id);if(!task)continue;const b=el('button','button button-secondary',id);b.type='button';b.onclick=()=>{view.selectedWp=task.wp;view.tab='workpackages';render();const target=document.getElementById(`dash-task-${id}`);if(target){target.open=true;target.scrollIntoView({block:'start',behavior:'smooth'});target.focus({preventScroll:true});}};tasks.append(b);}if(tasks.childNodes.length){host.append(el('strong','','Related Tasks'),tasks);}
+    for(const page of agreementPages(row))host.append(el('small','dash-kpi-page',agreementPageLabel(page)));
+    const tasks=el('div','dash-kpi-task-links');
+    for(const id of row.related_tasks||[]){const task=config.tasks.find(t=>t.id===id);if(!task)continue;const b=el('button','button button-secondary',id);b.type='button';b.setAttribute('aria-label',`Open ${id}: ${task.title}`);b.onclick=()=>{view.selectedWp=task.wp;view.tab='workpackages';render();const target=document.getElementById(`dash-task-${id}`);if(target){target.open=true;target.scrollIntoView({block:'start',behavior:'smooth'});target.focus({preventScroll:true});}};tasks.append(b);}
+    if(tasks.childNodes.length){host.append(el('strong','dash-kpi-meta-label','Related Tasks'),tasks);}
+    if(row.suggested_lead){const contributors=el('details','dash-kpi-table-contributors');contributors.append(el('summary','','Proposed contributors'),el('p','',`Proposed lead: ${Array.isArray(row.suggested_lead)?row.suggested_lead.join(', '):row.suggested_lead}`),el('p','',(row.suggested_partners||[]).map(code=>`${code} · ${partnerName(code)}`).join('; ')));host.append(contributors);}
+    if(row.indicator_ids?.length){const tags=el('div','dash-objective-indicators');for(const id of row.indicator_ids){const item=catalogue.kpis.find(k=>k.id===id);if(!item)continue;const b=el('button','button button-secondary',item.name);b.type='button';b.onclick=()=>{view.kpiLens='indicators';view.kpiGroup='all';view.kpiSearch='';view.kpiOnlyFavorites=false;view.kpiFocus=id;render();requestAnimationFrame(()=>document.getElementById(`dash-kpi-${id}`)?.scrollIntoView({block:'center',behavior:'smooth'}));};tags.append(b);}host.append(el('strong','dash-kpi-meta-label','Indicator index'),tags);}
+  }
+  function kpiTable(headers,className,caption){
+    const wrap=el('div','dash-kpi-table-wrap');wrap.tabIndex=0;wrap.setAttribute('role','region');wrap.setAttribute('aria-label',caption);
+    const table=el('table',`dash-kpi-reference-table ${className}`);table.append(el('caption','',caption));const head=el('thead'),tr=el('tr');
+    for(const title of headers){const th=el('th','',title);th.setAttribute('scope','col');tr.append(th);}head.append(tr);const body=el('tbody');table.append(head,body);wrap.append(table);return {wrap,body};
   }
   function kpisSection(){
-    const section=el('section','dash-section');section.append(header('Project indicators','Read the Agreement’s objectives, measurement tables and targets. Each partner records attributable values and supporting evidence; actuals appear after coordinator review.'));
-    if(catalogue.source_conflicts?.length){
-      const conflicts=el('details','dash-kpi-source-conflicts');conflicts.append(el('summary','',`${catalogue.source_conflicts.length} Agreement passages need a coordinator interpretation`));
-      conflicts.append(el('p','','The original passages remain separate. No target or deadline is changed until the coordinator records a decision.'));
-      const list=el('div','dash-source-differences');
-      for(const row of catalogue.source_conflicts){
-        const item=el('details','dash-source-difference');item.append(el('summary','',row.topic));
-        const body=el('div','dash-source-difference-body');body.append(el('p','',row.note),pill('Interpretation pending','watch'));
-        for(const ref of row.references||[]){const source=catalogue.source_index?.[ref];const block=el('div','dash-source-excerpt');block.append(el('strong','',`${ref}${source?.source_page?` · Agreement PDF p. ${source.source_page}`:''}`));if(source)for(const field of ['exact_text','footnote','kpi','metric','target','evidence'])if(source[field])block.append(el('p','agreement-text',source[field]));body.append(block);}
-        item.append(body);list.append(item);
-      }
-      conflicts.append(list);section.append(conflicts);
-    }
-    const lenses=el('div','dash-kpi-lenses');const sources={objectives:catalogue.smart_objectives,call:catalogue.call_kpis,communication:catalogue.communication_kpis,framework:catalogue.measurement_indicators,additional:catalogue.additional_kpi_sources};
-    for(const [key,label,count] of [['objectives','SMART objectives',sources.objectives?.length||0],['call','Call KPI table',sources.call?.length||0],['communication','Communication table',sources.communication?.length||0],['framework','SMART measurement framework',sources.framework?.length||0],['additional','Additional measures',sources.additional?.length||0],['indicators','Reportable indicators',catalogue.kpis.length]]){const b=el('button',view.kpiLens===key?'is-selected':'',`${label} · ${count}`);b.type='button';b.setAttribute('aria-pressed',String(view.kpiLens===key));b.onclick=()=>{view.kpiLens=key;view.kpiFocus=null;render();};lenses.append(b);}section.append(lenses);
+    const section=el('section','dash-section dash-kpi-reference');section.append(header('Project indicators','Browse the SMART objectives, KPI tables and measures in the Grant Agreement. The full Agreement wording is visible in each table, with source pages and related Tasks.'));
+    const sources={objectives:catalogue.smart_objectives,call:catalogue.call_kpis,communication:catalogue.communication_kpis,framework:catalogue.measurement_indicators,additional:catalogue.additional_kpi_sources};
+    const labels={objectives:'SMART objectives',call:'Call KPI table',communication:'Communication table',framework:'SMART measurement framework',additional:'Additional measures',indicators:'Indicator collection'};
+    const lenses=el('div','dash-kpi-lenses');for(const key of Object.keys(labels)){const count=key==='indicators'?catalogue.kpis.length:sources[key]?.length||0,b=el('button',view.kpiLens===key?'is-selected':'',`${labels[key]} · ${count}`);b.type='button';b.setAttribute('aria-pressed',String(view.kpiLens===key));b.onclick=()=>{view.kpiLens=key;view.kpiFocus=null;render();};lenses.append(b);}section.append(lenses);
+    const rows=view.kpiLens==='indicators'?Object.values(catalogue.source_index||{}):sources[view.kpiLens]||[],pages=[...new Set(rows.flatMap(agreementPages))].sort((a,b)=>a-b),intro=el('div','dash-kpi-table-intro');intro.append(el('h3','',labels[view.kpiLens]));
+    const pageRanges=[];for(const page of pages){const range=pageRanges.at(-1);if(range&&page===range.at(-1)+1)range.push(page);else pageRanges.push([page]);}
+    intro.append(el('p','dash-kpi-category-pages',pageRanges.map(range=>range.length===1?agreementPageLabel(range[0]):`Grant Agreement PDF pp. ${range[0]}–${range.at(-1)} · Part ${range[0]>=107?'B':'A'} pp. ${range[0]-(range[0]>=107?106:61)}–${range.at(-1)-(range[0]>=107?106:61)}`).join('; ')));section.append(intro);
     if(view.kpiLens!=='indicators'){
-      const list=el('div','dash-call-kpi-list');for(const row of sources[view.kpiLens]||[]){const card=el('details','dash-call-kpi'),summary=el('summary','');summary.append(el('span','dash-call-id',row.id),el('strong','',row.title||row.kpi||(row.exact_text||'').split('\n')[0].replace(/^● /,'')));card.append(summary);const body=el('div','dash-call-body');if(row.exact_text)body.append(el('p','agreement-text',row.exact_text));if(row.footnote)body.append(el('p','agreement-text',row.footnote));for(const [field,label] of [['metric','Proposed metric (how we measure it)'],['target','Target value by project end (48 months)'],['evidence','Evidence of achievement']])if(row[field])body.append(el('strong','',label),el('p','agreement-text',row[field]));kpiLinks(body,row);card.append(body);list.append(card);}section.append(list);
-      return section;
+      const isObjective=view.kpiLens==='objectives',isCall=view.kpiLens==='call',isCommunication=view.kpiLens==='communication';
+      const headers=isObjective?['Code','Objective and commitment','KPIs','Source and related Tasks']:isCall?['Code','KPI (from the Call)','Proposed metric (how we measure it)','Target value by project end (48 months)','Source and related Tasks']:isCommunication?['Code','KPI list and metrics','Target value by project’s end (48 months)','Evidence of achievement','Source and related Tasks']:['Code','Exact Agreement wording','Source and related Tasks'];
+      const {wrap,body}=kpiTable(headers,isObjective?'is-objectives':isCall||isCommunication?'is-source-table':'is-passages',labels[view.kpiLens]);
+      for(const row of rows){const tr=el('tr');tr.id=`dash-source-${row.id}`;const code=el('th','dash-kpi-code',row.id);code.setAttribute('scope','row');tr.append(code);
+        if(isObjective){const content=el('td');content.append(el('strong','dash-kpi-objective-title',`${row.number}. ${row.title}`));agreementText(content,row.commitment);agreementText(content,row.footnote);const measures=el('td');agreementText(measures,row.measures);tr.append(content,measures);}
+        else if(isCall||isCommunication){for(const field of isCall?['kpi','metric','target']:['kpi','target','evidence']){const cell=el('td');agreementText(cell,row[field]);tr.append(cell);}}
+        else{const content=el('td');agreementText(content,row.exact_text);agreementText(content,row.footnote);tr.append(content);}
+        const related=el('td','dash-kpi-links-cell');kpiLinks(related,row);tr.append(related);body.append(tr);
+      }section.append(wrap);return section;
     }
-    const groups=[...new Set(catalogue.kpis.map(k=>k.group))],controls=el('div','dash-controls');
-    controls.append(select('Indicator group',[['all','All indicators'],...groups.map(g=>[g,g])],view.kpiGroup,value=>{view.kpiGroup=value;view.kpiFocus=null;render();}));
+    const groups=[...new Set(catalogue.kpis.map(k=>k.group))],controls=el('div','dash-controls');controls.append(select('Indicator group',[['all','All indicators'],...groups.map(g=>[g,g])],view.kpiGroup,value=>{view.kpiGroup=value;view.kpiFocus=null;render();}));
     const search=el('label','dash-control dash-search');search.append(el('span','','Find indicator'));const searchInput=el('input');searchInput.type='search';searchInput.placeholder='Name, topic or source code';searchInput.value=view.kpiSearch;search.append(searchInput);controls.append(search);
     const favoritesOnly=el('button',`dash-kpi-favorites-filter ${view.kpiOnlyFavorites?'is-active':''}`,view.kpiOnlyFavorites?'★ Saved favourites':'☆ Saved favourites');favoritesOnly.type='button';favoritesOnly.setAttribute('aria-pressed',String(view.kpiOnlyFavorites));controls.append(favoritesOnly);section.append(controls);
     const resultCount=el('p','dash-kpi-results'),list=el('div','dash-kpi-list');section.append(resultCount,list);
     const renderItems=()=>{
       list.replaceChildren();const favorites=readKpiFavorites(),query=view.kpiSearch.trim().toLocaleLowerCase(),terms=query.split(/\s+/).filter(Boolean);
-      const matches=catalogue.kpis.filter(kpi=>{
-        if(view.kpiGroup!=='all'&&kpi.group!==view.kpiGroup)return false;
-        if(view.kpiOnlyFavorites&&!favorites.has(kpi.id))return false;
-        const sources=(kpi.source_refs||[]).map(ref=>catalogue.source_index?.[ref]).filter(Boolean).flatMap(row=>[row.kpi,row.metric,row.target,row.exact_text]);
-        const searchable=[kpi.name,kpi.id,kpi.group,kpi.unit,...(kpi.source_refs||[]),...sources].filter(Boolean).join(' ').toLocaleLowerCase();
-        return terms.every(term=>searchable.includes(term));
-      }).sort((a,b)=>{const rank=kpi=>query&&kpi.name.toLocaleLowerCase().includes(query)?2:query&&terms.every(term=>kpi.name.toLocaleLowerCase().includes(term))?1:0;return Number(b.id===view.kpiFocus)-Number(a.id===view.kpiFocus)||rank(b)-rank(a)||a.name.localeCompare(b.name);});
+      const matches=catalogue.kpis.filter(kpi=>{if(view.kpiGroup!=='all'&&kpi.group!==view.kpiGroup)return false;if(view.kpiOnlyFavorites&&!favorites.has(kpi.id))return false;const passages=(kpi.source_refs||[]).map(ref=>catalogue.source_index?.[ref]).filter(Boolean).flatMap(row=>[row.kpi,row.metric,row.target,row.exact_text]);return terms.every(term=>[kpi.name,kpi.id,kpi.group,...(kpi.source_refs||[]),...passages].filter(Boolean).join(' ').toLocaleLowerCase().includes(term));}).sort((a,b)=>{const rank=kpi=>query&&kpi.name.toLocaleLowerCase().includes(query)?2:query&&terms.every(term=>kpi.name.toLocaleLowerCase().includes(term))?1:0;return Number(b.id===view.kpiFocus)-Number(a.id===view.kpiFocus)||rank(b)-rank(a)||a.name.localeCompare(b.name);});
       resultCount.textContent=`${matches.length} indicator${matches.length===1?'':'s'} shown · ${catalogue.kpis.length} available`;
       if(!matches.length){list.append(empty(view.kpiOnlyFavorites?'No saved indicators match these filters.':'No indicators match. Try a different term or topic.'));return;}
-      for(const kpi of matches.slice(0,view.kpiLimit)){const actual=(snapshot.kpi_values||[]).find(k=>k.id===kpi.id),card=el('details','dash-kpi-row');card.id=`dash-kpi-${kpi.id}`;card.open=view.kpiFocus===kpi.id;const summary=el('summary',''),identity=el('div','dash-kpi-identity'),figures=el('div','dash-kpi-figures');identity.append(el('span','dash-kpi-group',kpi.group),el('strong','',kpi.name),el('small','',`Unit: ${kpi.unit} · ${(kpi.source_refs||[]).join(', ')}`));figures.append(el('small','','Reviewed actual'),el('strong','',actual?.actual===null||actual?.actual===undefined?'Pending':`${actual.actual} ${kpi.unit}`));summary.append(identity,figures);card.append(summary);const body=el('div','dash-kpi-breakdown');
-        if(actual?.partners?.length)for(const partner of actual.partners)body.append(el('p','',`${partner.code} · ${partnerName(partner.code)}: ${partner.value} ${kpi.unit}`));else body.append(empty('No reviewed partner values yet.'));
-        body.append(el('p','dash-kpi-method',kpi.breakdown));for(const ref of kpi.source_refs||[]){const row=catalogue.source_index?.[ref];if(!row)continue;const source=el('details','dash-kpi-source');source.append(el('summary','',`${ref} · Exact Agreement wording · PDF p. ${row.source_page}`));for(const field of ['exact_text','footnote','kpi','metric','target','evidence'])if(row[field])source.append(el('p','agreement-text',row[field]));body.append(source);}kpiLinks(body,kpi);
-        const report=el('button','button button-primary','Report this indicator');report.type='button';report.onclick=()=>{location.hash='reporting';window.dispatchEvent(new CustomEvent('aisha:kpi-requested',{detail:{id:kpi.id}}));};body.append(report);card.append(body);
-        const star=el('button','dash-kpi-star',favorites.has(kpi.id)?'★':'☆');star.type='button';star.setAttribute('aria-label',`${favorites.has(kpi.id)?'Remove':'Add'} ${kpi.name} ${favorites.has(kpi.id)?'from':'to'} favourites`);star.setAttribute('aria-pressed',String(favorites.has(kpi.id)));star.onclick=()=>{favorites.has(kpi.id)?favorites.delete(kpi.id):favorites.add(kpi.id);saveKpiFavorites(favorites);renderItems();};card.append(star);list.append(card);
-      }
-      if(matches.length>view.kpiLimit){const more=el('button','button button-secondary dash-kpi-more',`Show more indicators (${matches.length-view.kpiLimit} remaining)`);more.type='button';more.onclick=()=>{view.kpiLimit+=24;renderItems();};list.append(more);}
+      const {wrap,body}=kpiTable(['Indicator and topic','Exact Agreement wording','Reviewed actual','Source and related Tasks'],'is-indicator-index','Indicator collection');
+      for(const kpi of matches){const actual=(snapshot.kpi_values||[]).find(k=>k.id===kpi.id),tr=el('tr');tr.id=`dash-kpi-${kpi.id}`;if(kpi.id===view.kpiFocus)tr.className='is-focused';const identity=el('th','dash-kpi-index-identity');identity.setAttribute('scope','row');identity.append(el('span','dash-kpi-group',kpi.group),el('strong','',kpi.name));
+        const star=el('button','dash-kpi-table-star',favorites.has(kpi.id)?'★ Saved':'☆ Save');star.type='button';star.setAttribute('aria-label',`${favorites.has(kpi.id)?'Remove':'Add'} ${kpi.name} ${favorites.has(kpi.id)?'from':'to'} favourites`);star.setAttribute('aria-pressed',String(favorites.has(kpi.id)));star.onclick=()=>{favorites.has(kpi.id)?favorites.delete(kpi.id):favorites.add(kpi.id);saveKpiFavorites(favorites);renderItems();};identity.append(star);tr.append(identity);
+        const content=el('td');for(const ref of kpi.source_refs||[]){const row=catalogue.source_index?.[ref];if(!row)continue;const block=el('div','dash-kpi-index-source');block.append(el('strong','dash-kpi-source-code',ref));for(const [field,label] of [['exact_text',''],['footnote',''],['kpi','KPI'],['metric','Proposed metric (how we measure it)'],['target','Target value by project end (48 months)'],['evidence','Evidence of achievement']])if(row[field]){if(label)block.append(el('strong','dash-kpi-field-label',label));agreementText(block,row[field]);}for(const page of agreementPages(row))block.append(el('small','dash-kpi-page',agreementPageLabel(page)));content.append(block);}tr.append(content);
+        const figures=el('td','dash-kpi-actual');figures.append(el('strong','',actual?.actual===null||actual?.actual===undefined?'Pending':`${actual.actual} ${kpi.unit}`));if(actual?.partners?.length)for(const partner of actual.partners)figures.append(el('p','',`${partner.code} · ${partnerName(partner.code)}: ${partner.value} ${kpi.unit}`));tr.append(figures);
+        const related=el('td','dash-kpi-links-cell');kpiLinks(related,{...kpi,source_page:null});tr.append(related);body.append(tr);
+      }list.append(wrap);
     };
-    searchInput.addEventListener('input',()=>{view.kpiSearch=searchInput.value;view.kpiLimit=24;renderItems();});
-    favoritesOnly.addEventListener('click',()=>{view.kpiOnlyFavorites=!view.kpiOnlyFavorites;view.kpiLimit=24;favoritesOnly.classList.toggle('is-active',view.kpiOnlyFavorites);favoritesOnly.textContent=view.kpiOnlyFavorites?'★ Saved favourites':'☆ Saved favourites';favoritesOnly.setAttribute('aria-pressed',String(view.kpiOnlyFavorites));renderItems();});
-    renderItems();return section;
+    searchInput.addEventListener('input',()=>{view.kpiSearch=searchInput.value;renderItems();});favoritesOnly.addEventListener('click',()=>{view.kpiOnlyFavorites=!view.kpiOnlyFavorites;favoritesOnly.classList.toggle('is-active',view.kpiOnlyFavorites);favoritesOnly.textContent=view.kpiOnlyFavorites?'★ Saved favourites':'☆ Saved favourites';favoritesOnly.setAttribute('aria-pressed',String(view.kpiOnlyFavorites));renderItems();});renderItems();return section;
   }
   function messageBoard() {
     const section=el('section','dash-section dash-message-board');section.append(header('Message board','Project updates shared by the coordination team and partners. Messages appear after the coordination team publishes them.'));

@@ -17,3 +17,12 @@ const elements=new Map();function node(){return {children:[],dataset:{},append(.
 ctx.$=id=>{if(!elements.has(id))elements.set(id,node());return elements.get(id)};ctx.document={createElement:node};ctx.textNode=(tag,text)=>({...node(),textContent:text});ctx.pendingWholeImport=null;
 vm.runInContext(extract('prepareWholeImport'),ctx);ctx.prepareWholeImport(blank);assert(ctx.pendingWholeImport.samePeriod);assert.equal(elements.get('whole-import-entries').children[0].children[0].dataset.kind,'contributor');assert.equal(elements.get('whole-import-dialog').open,true);
 console.log('Draft saved before timeline selection exposes contributor-only restoration: PASS');
+// Removing the editor must not leave startup references to removed controls.
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8'),ids=new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]));
+assert(!ids.has('kpi-reporting'));assert(!source.includes('aisha:kpi-requested'));assert(!source.includes('selectKpi('));
+for(const match of source.matchAll(/\$\('([^']+)'\)/g))assert(ids.has(match[1])||match[1]==='review-revision-display',`Missing reporting control ${match[1]}`);
+vm.runInContext(read('kpi-model.js'),ctx);ctx.kpiModel=ctx.window.AISHA_KPI_MODEL;ctx.kpiKey=ctx.kpiModel.key;const catalogue=JSON.parse(fs.readFileSync(path.join(root,'assets/dashboard-catalogue.json'),'utf8'));ctx.kpiDefinition=id=>catalogue.kpis.find(k=>k.id===id);ctx.communicationKpis=new Set(catalogue.kpis.filter(k=>k.report_contexts?.includes('communication')).map(k=>k.id));vm.runInContext(extract('validatedKpiEntries'),ctx);
+const legacy={id:'unique_visitors',name:'Website unique visitors',group:'Reach',unit:'visitors',value:1240,scope:'September analytics',activity_id:'CAM-2026-01',basis:'',evidence:'AUDIT TEST evidence',proof_status:'uploaded'};legacy.unit=ctx.kpiDefinition(legacy.id).unit;
+ctx.state.reportType='tasks';ctx.state.kpis=ctx.validatedKpiEntries([legacy]);assert.equal(ctx.state.kpis.size,1);assert.equal(ctx.record('draft').kpi_contributions[0].value,1240);
+ctx.state.reportType='communication';assert.equal(ctx.validatedKpiEntries([legacy]).size,1);assert.throws(()=>ctx.validatedKpiEntries([{...legacy,value:NaN}]),/valid/);
+console.log('Removed KPI UI controls and legacy KPI import/export compatibility: PASS');
