@@ -88,8 +88,8 @@
   function renderAgreementObjectives(host,id) {host.replaceChildren();appendAgreementBlocks(host,agreement.workPackages[id].objectives.split('\n'));}
   function dateLabel(date) { return new Intl.DateTimeFormat('en', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${date}T00:00:00Z`)); }
   function monthCodes(months) { return months.map(m => `M${String(model.projectMonth(config,m)).padStart(2,'0')}`).join(', '); }
-  function taskRole(task) { return task.lead === state.partner.code ? 'Task leader' : 'Task participant'; }
-  function taskRoleClass(task) { return task.lead === state.partner.code ? 'is-leader' : 'is-participant'; }
+  function taskRole(task) { return state.partner.kind === 'associated_partner' ? 'Task contributor' : task.lead === state.partner.code ? 'Task leader' : 'Task participant'; }
+  function taskRoleClass(task) { return state.partner.kind === 'associated_partner' ? 'is-contributor' : task.lead === state.partner.code ? 'is-leader' : 'is-participant'; }
   function selectedInRange() {
     const p = period();
     return p ? model.eligibleTasks(config, state.partner.code, p.start, p.end, p.selected_months) : [];
@@ -192,9 +192,9 @@
     const wpCount = new Set(eligible.map(t => t.wp)).size;
     const selectedCodes = p.selected_months.map(m => `M${String(model.projectMonth(config,m)).padStart(2,'0')}`);
     const labels = p.selected_months.map(m => new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${m}-01T00:00:00Z`)));
-    $('task-month-summary').textContent = `Selected months: ${labels.join(', ')} (${selectedCodes.join(', ')}). You can report on ${eligible.length} assigned ${eligible.length === 1 ? 'Task' : 'Tasks'} across ${wpCount} Work ${wpCount === 1 ? 'Package' : 'Packages'}. Only these months are covered.`;
+    $('task-month-summary').textContent = `Selected months: ${labels.join(', ')} (${selectedCodes.join(', ')}). You can report on ${eligible.length} assigned ${eligible.length === 1 ? 'Task' : 'Tasks'} across ${wpCount} Work ${wpCount === 1 ? 'Package' : 'Packages'}. Only these months are covered.${state.partner.kind==='associated_partner'&&!config.tasks.some(t=>model.assigned(t,state.partner.code,config))?' Your organisation has no assigned Tasks. Add voluntary Task or Work Package contributions below.':''}`;
     const eligibleIds = new Set(eligible.map(t => t.id));
-    const outside = [...state.selected.keys()].filter(id => !eligibleIds.has(id));
+    const outside = [...state.selected.keys()].filter(id => !eligibleIds.has(id) && !(state.partner.kind === 'associated_partner' && model.taskCoverage(config,taskById(id),p.start,p.end,p.selected_months)));
     const counts = { draft: 0, completed: 0, no_work: 0 }; for (const [id,answer] of state.selected) if(eligibleIds.has(id))counts[answer.status || 'draft']++;
     const wpEligible=new Set(config.workPackages.filter(wp=>wp.lead===state.partner.code&&activeWpMonths(wp,p).length).map(wp=>wp.id));
     const wpCounts = {draft:0,completed:0,no_work:0}; for (const [id,entry] of state.wpUpdates) if(wpEligible.has(id))wpCounts[entry.status || 'draft']++;
@@ -205,7 +205,9 @@
       const row=textNode('div','','status-row'),heading=textNode('div','','status-row-heading');heading.append(textNode('strong',title,'status-row-title'),textNode('small',`${selected} of ${total} added to this report`));row.append(heading);
       const metrics=textNode('div','','status-row-metrics');for(const [amount,label] of [[items.completed,'Complete'],[items.no_work,'No work declared'],[items.draft,'Draft / still to finish'],[Math.max(0,total-selected),'Still available']]){const metric=textNode('span','','status-metric');metric.append(textNode('b',String(amount)),textNode('span',label));metrics.append(metric);}row.append(metrics);summary.append(row);
     }
-    if(state.extras.length)summary.append(textNode('p',`${state.extras.length} voluntary contribution${state.extras.length===1?'':'s'} (${state.extras.filter(e=>e.status==='completed').length} complete).`,'status-available'));
+    const voluntaryTasks=[...state.selected].filter(([id])=>!model.assigned(taskById(id),state.partner.code,config));
+    const voluntaryCount=state.extras.length+voluntaryTasks.length;
+    if(voluntaryCount)summary.append(textNode('p',`${voluntaryCount} voluntary contribution${voluntaryCount===1?'':'s'} (${state.extras.filter(e=>e.status==='completed').length+voluntaryTasks.filter(([,a])=>a.status==='completed'||a.status==='no_work').length} complete).`,'status-available'));
     if(outside.length)summary.append(textNode('p',`${outside.length} selected Task is outside these months.`,'status-warning'));
     for (const wp of config.workPackages) {
       const wpTasks = eligible.filter(t => t.wp === wp.id);
@@ -217,6 +219,21 @@
       const objectiveText=textNode('div','','agreement-text');renderAgreementObjectives(objectiveText,wp.id);details.append(textNode('summary', 'Read full Work Package objectives'), objectiveText);
       section.append(details);
       for (const task of wpTasks) {
+        section.append(renderTaskCard(task,p));
+      }
+      list.append(section);
+    }
+    renderWpLeadership(p);
+    renderExtras(p);
+    if (outside.length) {
+      const section = textNode('section', '', 'task-package out-of-range');
+      section.append(textNode('h4', 'Selected Tasks outside these dates'));
+      for (const id of outside) { const row = textNode('div', `${id} — ${taskById(id)?.title || ''}`, 'outside-row'); const remove = textNode('button', 'Remove', 'text-button'); remove.type = 'button'; remove.addEventListener('click', () => { state.selected.delete(id); renderOverview(); }); row.append(remove); section.append(row); }
+      list.append(section);
+    }
+  }
+  function activeWpMonths(wp, p) { return p.selected_months.filter(m => model.active(wp,model.projectMonth(config,m))); }
+  function renderTaskCard(task,p) {
         const coverage = model.taskCoverage(config, task, p.start, p.end, p.selected_months);
         const selected = state.selected.has(task.id);
         const chosenCoverage = selected ? state.selected.get(task.id) : null;
@@ -245,22 +262,11 @@
           if (chosenCoverage.status !== 'no_work') { const noWork = textNode('button', 'Declare no work carried out', 'button button-quiet'); noWork.type = 'button'; noWork.addEventListener('click', () => setNoWork(task)); actions.append(noWork); }
           const remove = textNode('button', 'Remove Task', 'button button-quiet'); remove.type = 'button'; remove.addEventListener('click', () => { state.selected.delete(task.id); renderOverview(); }); actions.append(remove);
         }
-        card.append(actions); section.append(card);
-      }
-      list.append(section);
-    }
-    renderWpLeadership(p);
-    renderExtras(p);
-    if (outside.length) {
-      const section = textNode('section', '', 'task-package out-of-range');
-      section.append(textNode('h4', 'Selected Tasks outside these dates'));
-      for (const id of outside) { const row = textNode('div', `${id} — ${taskById(id)?.title || ''}`, 'outside-row'); const remove = textNode('button', 'Remove', 'text-button'); remove.type = 'button'; remove.addEventListener('click', () => { state.selected.delete(id); renderOverview(); }); row.append(remove); section.append(row); }
-      list.append(section);
-    }
+        card.append(actions); return card;
   }
-  function activeWpMonths(wp, p) { return p.selected_months.filter(m => model.active(wp,model.projectMonth(config,m))); }
   function renderExtras(p) {
     const host=$('extra-list');host.replaceChildren();
+    if(p && state.partner.kind==='associated_partner')for(const [id] of state.selected){const task=taskById(id);if(task&&!model.assigned(task,state.partner.code,config)&&model.taskCoverage(config,task,p.start,p.end,p.selected_months))host.append(renderTaskCard(task,p));}
     for(const entry of state.extras){const target=entry.kind==='task'?taskById(entry.id):wpById(entry.id),card=textNode('article','','task-card extra-report-card');card.classList.add(entry.status==='completed'?'is-completed':'is-draft');
       const head=textNode('div','','task-card-head'),title=textNode('div','','task-card-title-group');title.append(textNode('strong',`${entry.id} — ${target?.title||'Unknown item'}`),textNode('span','Voluntary contribution','role-badge is-participant'));head.append(title);card.append(head);
       card.append(textNode('p',`${entry.kind==='task'?'Task':'Work Package'} · ${monthCodes(entry.months)} · ${entry.status==='completed'?'Report complete':entry.description||entry.results?'Draft in progress':'Still to finish'}`,'task-chosen-coverage'));
@@ -270,7 +276,7 @@
     let available=0;
     for(const [kind,items,container,title] of [['task',config.tasks,$('extra-task-options'),'Extra Tasks'],['work_package',config.workPackages,$('extra-wp-options'),'Extra Work Packages']]){
       container.replaceChildren();const group=document.createElement('details');group.className='extra-pick-group';group.append(textNode('summary',title));const choices=textNode('div','','extra-pick-options');
-      for(const item of items){if(!p||!p.selected_months.some(m=>model.active(item,model.projectMonth(config,m)))||(kind==='task'?model.assigned(item,state.partner.code,config):item.lead===state.partner.code)||state.extras.some(row=>row.kind===kind&&row.id===item.id))continue;
+      for(const item of items){if(!p||!p.selected_months.some(m=>model.active(item,model.projectMonth(config,m)))||(kind==='task'?model.assigned(item,state.partner.code,config):item.lead===state.partner.code)||state.extras.some(row=>row.kind===kind&&row.id===item.id)||(kind==='task'&&state.selected.has(item.id)))continue;
         const label=textNode('label','','extra-pick-option'),input=document.createElement('input');input.type='checkbox';input.dataset.kind=kind;input.value=item.id;label.append(input,textNode('span',`${item.id} — ${item.title}`));choices.append(label);available++;}
       if(!choices.children.length)choices.append(textNode('p','No more available items in the selected months.','field-help'));
       group.append(choices);container.append(group);
@@ -519,7 +525,7 @@
       if (!p) return fail('Choose valid reporting dates and selected months within the project.', $('report-start'));
       const eligible = new Set(selectedInRange().map(t => t.id));
       if (!state.selected.size && !state.wpUpdates.size && !state.extras.length && !state.kpis.size) return fail('Add a Task, Work Package update or additional contribution.');
-      if ([...state.selected.keys()].some(id => !eligible.has(id))) return fail('Remove selected Tasks outside the report dates, or change the dates.');
+      if ([...state.selected.keys()].some(id => !eligible.has(id) && !(state.partner.kind==='associated_partner' && model.taskCoverage(config,taskById(id),p.start,p.end,p.selected_months)))) return fail('Remove selected Tasks outside the report dates, or change the dates.');
       for (const [id, answer] of state.selected) {
         const allowed = model.taskCoverage(config, taskById(id), p.start, p.end, p.selected_months);
         const taskMonths = p.selected_months.filter(m => m >= answer.coverage_start.slice(0,7) && m <= answer.coverage_end.slice(0,7));
@@ -582,7 +588,7 @@
     const key = tasks ? `${state.partner.code}:TASKS:${p.start}:${p.end}` : `${state.partner.code}:COMM:${p.start}:${p.end}`;
     const base = { schema_version: tasks ? '2.4' : '1.2', project: 'AISHA', document_kind: kind, report_type: tasks ? 'tasks' : 'communication', report_key: key, revision: state.revision, partner: { code: state.partner.code, name: state.partner.name, kind: state.partner.kind || 'beneficiary' }, contributor: { ...state.contributor }, reporting_period: p, generated_at: kind === 'submission' ? new Date().toISOString() : null, kpi_contributions:[...state.kpis.values()] };
     if (tasks) {
-      base.tasks = [...state.selected].map(([id, answers]) => { const task = taskById(id); const months = p.selected_months.filter(m => m >= answers.coverage_start.slice(0,7) && m <= answers.coverage_end.slice(0,7) && model.active(task,model.projectMonth(config,m))); return { id, title: task.title, work_package: task.wp, task_lead: task.lead, partner_role: model.role(task, state.partner.code, config), work_status: answers.status || 'draft', coverage: { start: answers.coverage_start, end: answers.coverage_end, months }, agreement_source_page: task.sourcePage, answers: kind === 'draft' ? { ...answers } : finalTaskAnswers(answers) }; });
+      base.tasks = [...state.selected].map(([id, answers]) => { const task = taskById(id); const months = p.selected_months.filter(m => m >= answers.coverage_start.slice(0,7) && m <= answers.coverage_end.slice(0,7) && model.active(task,model.projectMonth(config,m))); return { id, title: task.title, work_package: task.wp, task_lead: task.lead, partner_role: state.partner.kind==='associated_partner'?'Task contributor':model.role(task, state.partner.code, config), ...(!model.assigned(task,state.partner.code,config)?{assignment_basis:'voluntary_unlisted'}:{}), work_status: answers.status || 'draft', coverage: { start: answers.coverage_start, end: answers.coverage_end, months }, agreement_source_page: task.sourcePage, answers: kind === 'draft' ? { ...answers } : finalTaskAnswers(answers) }; });
       base.work_package_leadership=[...state.wpUpdates].map(([id,entry])=>{const wp=wpById(id);return {id,title:wp.title,leader:wp.lead,work_status:entry.status,coverage:{months:activeWpMonths(wp,p)},answers:{progress:entry.progress,coordination:entry.coordination,difficulties:entry.difficulties,next:entry.next,support:entry.support},task_updates:Object.entries(entry.task_updates).filter(([taskId])=>{const t=taskById(taskId);return t && p.selected_months.some(m=>model.active(t,model.projectMonth(config,m)));}).map(([taskId,row])=>({id:taskId,title:taskById(taskId).title,task_lead:taskById(taskId).lead,...row}))};});
       base.additional_contributions=state.extras.map(entry=>({...entry,title:(entry.kind==='task'?taskById(entry.id):wpById(entry.id)).title,assignment_basis:'voluntary_unlisted'}));
     }
@@ -654,15 +660,15 @@
     const seen=new Set(), tasks=[];
     for(const item of r.tasks){
       const task=taskById(item.id), coverage=task && model.taskCoverage(config,task,p.start,p.end,p.selected_months);
-      const expectedRole=task?model.role(task,state.partner.code,config):null,legacyRole=!['2.3','2.4'].includes(r.schema_version)&&expectedRole==='Voluntary associated partner participant'&&item.partner_role==='Named participant';
-      if(!task || !model.assigned(task,state.partner.code,config) || !coverage || seen.has(task.id) || item.title !== task.title || item.work_package !== task.wp || item.task_lead !== task.lead || (item.partner_role !== expectedRole&&!legacyRole))throw new Error('A Task does not match the partner’s listed assignment.');
+      const expectedRole=task?model.role(task,state.partner.code,config):null,associatedTask=task&&model.associatedReportTask(task,state.partner.code,config,item);
+      if(!task || (!model.assigned(task,state.partner.code,config)&&!associatedTask) || !coverage || seen.has(task.id) || item.title !== task.title || item.work_package !== task.wp || item.task_lead !== task.lead || (item.partner_role !== expectedRole&&!associatedTask))throw new Error('A Task does not match the partner’s listed assignment.');
       const start=item.coverage?.start,end=item.coverage?.end, expected=coverage.months.filter(m=>m >= start?.slice(0,7) && m <= end?.slice(0,7));
       if(!model.rangePeriod(config,start,end) || start < coverage.start || end > coverage.end || !expected.length || expected[0] !== start.slice(0,7) || expected.at(-1) !== end.slice(0,7) || (r.schema_version !== '2.0' && JSON.stringify(item.coverage.months) !== JSON.stringify(expected)))throw new Error(`Task dates or months are invalid for ${task.id}.`);
       const status=item.work_status || (r.document_kind === 'individual_task_copy' ? 'draft' : 'completed');
       if(!['draft','completed','no_work'].includes(status) || (r.document_kind === 'submission' && status === 'draft'))throw new Error(`Task state is invalid for ${task.id}.`);
       const answers=importedTaskAnswers(item.answers,status);
       if (status === 'no_work' && hasContribution(answers)) throw new Error(`No-work Task ${task.id} contains contribution answers.`);
-      tasks.push({...item,coverage:{start,end,months:expected},answers:{...emptyTask(),...answers,coverage_start:start,coverage_end:end}});seen.add(task.id);
+      tasks.push({...item,...(state.partner.kind==='associated_partner'?{partner_role:'Task contributor',...(!model.assigned(task,state.partner.code,config)?{assignment_basis:'voluntary_unlisted'}:{})}:{}),coverage:{start,end,months:expected},answers:{...emptyTask(),...answers,coverage_start:start,coverage_end:end}});seen.add(task.id);
     }
     const wpItems=[];const wpSeen=new Set();
     for(const item of (r.work_package_leadership || [])){
@@ -713,7 +719,7 @@
     $('whole-import-explanation').textContent=untimedDraft?(imported.kpi_contributions.length?'This KPI draft was saved before reporting months were chosen. Selected KPI contributions will be imported; your current timeline and other entries stay.':'This draft was saved before reporting months were chosen. Restore its contributor details; your current timeline and other entries stay.'):`File period: ${p.selected_months.map(m=>`${m} (M${String(model.projectMonth(config,m)).padStart(2,'0')})`).join(', ')}. ${samePeriod?'Selected entries will replace matching entries in this report; all other entries stay.':'These months differ from the current report. Importing will use the file’s timeline and replace the current entries. Download your current draft first if you need a separate copy.'}`;
     const host=$('whole-import-entries');host.replaceChildren();
     if(untimedDraft&&!imported.kpi_contributions.length){const label=textNode('label','');const check=document.createElement('input');check.type='checkbox';check.checked=true;check.dataset.kind='contributor';label.append(check,textNode('span','Contributor details'));host.append(label);}
-    for(const item of imported.tasks){const label=textNode('label','');const check=document.createElement('input');check.type='checkbox';check.checked=true;check.dataset.kind='task';check.value=item.id;label.append(check,textNode('span',`${item.id} — ${taskById(item.id)?.title||item.title}`));host.append(label);}
+    for(const item of imported.tasks){const label=textNode('label','');const check=document.createElement('input');check.type='checkbox';check.checked=true;check.dataset.kind='task';check.value=item.id;label.append(check,textNode('span',`${item.id} — ${taskById(item.id)?.title||item.title}${!model.assigned(taskById(item.id),state.partner.code,config)?' · voluntary contribution':''}`));host.append(label);}
     for(const item of imported.work_package_leadership){const label=textNode('label','');const check=document.createElement('input');check.type='checkbox';check.checked=true;check.dataset.kind='wp';check.value=item.id;label.append(check,textNode('span',`${item.id} — Work Package leadership update`));host.append(label);}
     for(const item of imported.additional_contributions){const label=textNode('label','');const check=document.createElement('input');check.type='checkbox';check.checked=true;check.dataset.kind='extra';check.value=`${item.kind}:${item.id}`;label.append(check,textNode('span',`${item.id} — additional voluntary contribution`));host.append(label);}
     for(const item of imported.kpi_contributions){const label=textNode('label','');const check=document.createElement('input');check.type='checkbox';check.checked=true;check.dataset.kind='kpi';check.value=kpiKey(item);label.append(check,textNode('span',`${item.name||item.id} — ${item.scope||'direct KPI contribution'}`));host.append(label);}
@@ -777,7 +783,7 @@
       const selected = new Map();
       for (const item of r.tasks) {
         const task = taskById(item.id);
-        if (!task || !model.assigned(task,state.partner.code,config) || !model.taskCoverage(config,task,p.start,p.end,p.selected_months) || selected.has(task.id)) throw new Error('Draft contains an invalid or duplicate Task.');
+        if (!task || (!model.assigned(task,state.partner.code,config)&&!model.associatedReportTask(task,state.partner.code,config,item)) || !model.taskCoverage(config,task,p.start,p.end,p.selected_months) || selected.has(task.id)) throw new Error('Draft contains an invalid or duplicate Task.');
         const answers = { ...emptyTask() };
         for (const key of Object.keys(answers)) { const input = item.answers?.[key]; if (input !== undefined) { if (typeof input !== 'string' || input.length > 100000) throw new Error('Draft contains an invalid answer.'); answers[key] = input; } }
         if (state.partner.kind === 'associated_partner' && (answers.raw_costs || answers.raw_costs_note)) throw new Error('Associated partner drafts cannot contain cost entries.');
@@ -799,6 +805,7 @@
         wpUpdates.set(wp.id,entry);
       }
       const extras=validatedExtras(r.additional_contributions||[],p);
+      if(extras.some(entry=>entry.kind==='task'&&selected.has(entry.id)))throw new Error('A Task appears in both the Task report and additional contributions.');
       state.selected = selected; state.wpUpdates=wpUpdates;state.extras=extras; state.selectedMonths = new Set(selectedMonths); $('report-start').value = p?.start || r.reporting_period?.start || ''; $('report-end').value = p?.end || r.reporting_period?.end || ''; renderOverview();
     } else {
       if (!['1.1','1.2'].includes(r.schema_version)) throw new Error('This is not a communication draft.');
@@ -825,7 +832,7 @@
     const host = $('review-content'); host.replaceChildren();
     reviewGroup(host,'Report details',[['Partner',`${r.partner.name} (${r.partner.code})`],['Contributor',`${r.contributor.name} · ${r.contributor.role} · ${r.contributor.email}`],['Period',`${r.reporting_period.start} to ${r.reporting_period.end}`],...(r.report_type === 'tasks' ? [['Selected months',r.reporting_period.selected_months.join(', ')]] : []),['Revision',`v${r.revision}`],['Report key',r.report_key]]);
     if (r.report_type === 'tasks') {
-      for (const item of r.tasks) { const a = item.answers; reviewGroup(host,`${item.id} — ${item.title}`,[['Work Package',item.work_package],['Your role',item.partner_role === 'Task lead (COO)' ? 'Task leader' : 'Task participant'],['Task leader',item.task_lead],['Work reported',item.work_status === 'no_work' ? 'No work carried out' : 'Contribution completed'],['Task coverage',`${item.coverage.start} to ${item.coverage.end}`],['Task months',item.coverage.months.join(', ')],...(item.work_status === 'no_work' ? [] : [['Activities carried out',a.activities_carried_out],['Results achieved',a.results_achieved],['Difficulties encountered',a.difficulties_encountered],...(state.partner.kind === 'associated_partner' ? [] : [['Raw costs',`${a.raw_costs_incurred.amount === null ? 'Not provided' : `${a.raw_costs_incurred.amount} EUR`}${a.raw_costs_incurred.note ? ` · ${a.raw_costs_incurred.note}` : ''}`]]),['Upcoming activities',a.upcoming_activities],['Additional comments',a.additional_comments],['Significant issue',a.significant_issue],['Severity',a.severity],['Coordinator action required',a.coordinator_action_required],['Support requested',a.coordinator_support_request]])]); }
+      for (const item of r.tasks) { const a = item.answers; reviewGroup(host,`${item.id} — ${item.title}${item.assignment_basis==='voluntary_unlisted'?' · voluntary contribution':''}`,[['Work Package',item.work_package],['Your role',state.partner.kind==='associated_partner' ? 'Task contributor' : item.partner_role === 'Task lead (COO)' ? 'Task leader' : 'Task participant'],['Task leader',item.task_lead],['Work reported',item.work_status === 'no_work' ? 'No work carried out' : 'Contribution completed'],['Task coverage',`${item.coverage.start} to ${item.coverage.end}`],['Task months',item.coverage.months.join(', ')],...(item.work_status === 'no_work' ? [] : [['Activities carried out',a.activities_carried_out],['Results achieved',a.results_achieved],['Difficulties encountered',a.difficulties_encountered],...(state.partner.kind === 'associated_partner' ? [] : [['Raw costs',`${a.raw_costs_incurred.amount === null ? 'Not provided' : `${a.raw_costs_incurred.amount} EUR`}${a.raw_costs_incurred.note ? ` · ${a.raw_costs_incurred.note}` : ''}`]]),['Upcoming activities',a.upcoming_activities],['Additional comments',a.additional_comments],['Significant issue',a.significant_issue],['Severity',a.severity],['Coordinator action required',a.coordinator_action_required],['Support requested',a.coordinator_support_request]])]); }
       for(const wp of r.work_package_leadership || []) {reviewGroup(host,`${wp.id} — ${wp.title} · leadership update`,[['Leader',wp.leader],['Selected months',wp.coverage.months.join(', ')],['Work declared',wp.work_status === 'no_work' ? 'No Work Package work carried out' : 'Leadership update completed'],...(wp.work_status === 'no_work' ? [] : [['Progress and achievements',wp.answers.progress],['Coordination and integration',wp.answers.coordination],['Difficulties and dependencies',wp.answers.difficulties],['Next priorities',wp.answers.next],['Support needed',wp.answers.support]])]);if(wp.work_status !== 'no_work')for(const row of wp.task_updates)reviewGroup(host,`${row.id} — Work Package leader assessment`,[['Status',assessmentLabel(row.status)],['Progress',row.progress],['Blocker',row.blocker],['Next action',row.next]]);}
       for(const entry of r.additional_contributions||[])reviewGroup(host,`${entry.id} — ${entry.title} · additional voluntary contribution`,[['Scope',entry.kind==='task'?'Task':'Work Package'],['Months',entry.months.join(', ')],['Activities carried out',entry.description],['Results achieved',entry.results],['Difficulties encountered',entry.difficulties],['Upcoming activities',entry.upcoming],['Evidence reference',entry.evidence]]);
     }

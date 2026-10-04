@@ -31,10 +31,10 @@
   }
 
   function assigned(task, partnerCode, config) {
-    if (task.partners.includes(partnerCode) || task.associatedPartners?.includes(partnerCode)) return true;
     const partner = config?.partners.find(item => item.code === partnerCode);
     if (!partner) return false;
-    return partner.kind === "associated_partner" ? task.allAssociatedPartners === true : task.allBeneficiaries === true;
+    if (partner.kind === "associated_partner") return task.associatedPartners?.includes(partnerCode) === true;
+    return task.partners.includes(partnerCode) || task.allBeneficiaries === true;
   }
 
   function active(task, monthNumber) {
@@ -43,11 +43,15 @@
 
   function role(task, partnerCode, config) {
     if (!assigned(task, partnerCode, config)) return null;
+    if (config?.partners.find(item => item.code === partnerCode)?.kind === "associated_partner") return "Task contributor";
     if (task.lead === partnerCode) return "Task lead (COO)";
-    if (task.partners.includes(partnerCode)) return "Named participant";
-    if (task.associatedPartners?.includes(partnerCode)) return config?.partners.find(item => item.code === partnerCode)?.kind === "associated_partner" ? "Voluntary associated partner participant" : "Named participant";
-    const partner = config?.partners.find(item => item.code === partnerCode);
-    return partner?.kind === "associated_partner" ? "All associated partners participant" : "All beneficiaries participant";
+    return task.partners.includes(partnerCode) ? "Named participant" : "All beneficiaries participant";
+  }
+
+  // Older AP reports retain every answer but route unlisted Tasks as voluntary contributions.
+  function associatedReportTask(task, partnerCode, config, entry) {
+    if (config?.partners.find(item => item.code === partnerCode)?.kind !== "associated_partner") return false;
+    return entry?.partner_role === "Task contributor" ? assigned(task, partnerCode, config) || entry.assignment_basis === "voluntary_unlisted" : ["Named participant", "Voluntary associated partner participant", "All associated partners participant"].includes(entry?.partner_role);
   }
 
   function activeTasks(config, partnerCode, monthNumber) {
@@ -110,7 +114,7 @@
     return todayMonth < first ? first : todayMonth > last ? last : todayMonth;
   }
 
-  const model = Object.freeze({ projectMonth, calendarMonth, periodForMonth, monthsBetween, assigned, active, role, activeTasks, defaultMonth, taskWindow, rangePeriod, taskCoverage, eligibleTasks });
+  const model = Object.freeze({ projectMonth, calendarMonth, periodForMonth, monthsBetween, assigned, active, role, associatedReportTask, activeTasks, defaultMonth, taskWindow, rangePeriod, taskCoverage, eligibleTasks });
   root.AISHA_MODEL = model;
   if (typeof module !== "undefined" && module.exports) module.exports = model;
 })(typeof window !== "undefined" ? window : globalThis);

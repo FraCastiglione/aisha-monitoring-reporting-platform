@@ -119,7 +119,8 @@
       pair("Tasks included", report.tasks.length);
       for (const item of report.tasks) {
         section(`${item.id} — ${item.title}`);
-        pair("Work Package and partner role", `${item.work_package} · ${item.partner_role === "Task lead (COO)" ? "Task leader" : "Task participant"}`);
+        pair("Work Package and partner role", `${item.work_package} · ${report.partner.kind === "associated_partner" ? "Task contributor" : item.partner_role === "Task lead (COO)" ? "Task leader" : "Task participant"}`);
+        if (item.assignment_basis === "voluntary_unlisted") pair("Contribution basis", "Voluntary contribution outside listed assignments");
         pair("Task leader", item.task_lead);
         pair("Task coverage in this report", `${item.coverage.start} to ${item.coverage.end}`);
         pair("Task months covered", item.coverage.months.join(", "));

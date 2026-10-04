@@ -359,7 +359,7 @@
     const reported=new Set(rows.map(row=>row.id));
     const box=el('div','dash-record-box');
     box.append(el('p','dash-record-note',`${reported.size} of ${assigned.length} assigned active Tasks have a confirmed entry in the selected months. An unrecorded Task is not automatically overdue.`));
-    if(!assigned.length)box.append(empty('No assigned Tasks match this Work Package and period.'));
+    if(!assigned.length)box.append(empty(partner.kind==='associated_partner'?'No assigned Tasks match this selection. Voluntary contributions can be added in the reporting builder.':'No assigned Tasks match this Work Package and period.'));
     else {const table=el('div','dash-record-table');for(const task of assigned){const taskEntries=taskRows(task,partner.code),line=el('div','dash-record-line'),who=el('div'),what=el('div');who.append(el('strong','',task.id),el('small','',task.title));if(taskEntries.length)for(const row of taskEntries)what.append(el('p','',recordDetail(row)));else what.append(el('span','dash-muted','No report recorded in selected months'));line.append(who,what);table.append(line);}box.append(table);}
     return reportingDetail(partner.kind==='associated_partner'?'Associated partner':'Full partner',partner.code,partner.name,reported.size,assigned.length,box);
   }
@@ -371,7 +371,7 @@
     const tasks=config.tasks.filter(task=>activeMonths(task).length && (view.wp==='all'||task.wp===view.wp) && (view.reportingMode!=='tasks'||!view.search||`${task.id} ${task.title}`.toLowerCase().includes(view.search)));
     const mode=el('div','dash-mode-switch');
     const allReportingPartners=config.partners.filter(partner=>tasks.some(task=>model.assigned(task,partner.code,config)));
-    const reportingPartners=allReportingPartners.filter(partner=>view.partnerKind==='all'||(partner.kind||'beneficiary')===view.partnerKind);
+    const reportingPartners=config.partners.filter(partner=>view.partnerKind==='all'||(partner.kind||'beneficiary')===view.partnerKind);
     const summary=el('div','dash-report-summary');for(const [value,label] of [[`${monthCode(view.from)}–${monthCode(view.through)}`,'Selected period'],[String(tasks.length),'Active Tasks'],[String(active.length),'Active Work Packages'],[String(allReportingPartners.length),'Partners assigned']]){const item=el('div','');item.append(el('strong','',value),el('span','',label));summary.append(item);}section.append(summary);
     for(const [key,label,count] of [['tasks','Tasks',tasks.length],['work_packages','Work Packages',active.length],['partners','Partners',view.reportingMode==='partners'?reportingPartners.length:allReportingPartners.length]]){const button=el('button',view.reportingMode===key?'is-selected':'',`${label}  ${count}`);button.type='button';button.setAttribute('aria-pressed',String(view.reportingMode===key));button.addEventListener('click',()=>{view.reportingMode=key;render();});mode.append(button);}section.append(mode);
     const taskPanel=el('div','dash-report-panel'),taskHead=el('h3','','Tasks');taskHead.append(el('span','',`${tasks.length} in this view`));taskPanel.append(taskHead);
@@ -379,7 +379,7 @@
     const wpPanel=el('div','dash-report-panel'),wpHead=el('h3','','Work Packages');wpHead.append(el('span','',`${active.length} active`));wpPanel.append(wpHead);
     if(active.length) active.forEach(wp=>wpPanel.append(wpBlock(wp)));else wpPanel.append(empty('No Work Package is active in the selected months.'));
     if(future.length) wpPanel.append(el('p','dash-record-note',`Outside this selection: ${future.map(wp=>`${wp.id} (${monthCode(wp.startMonth)}–${monthCode(wp.endMonth)})`).join(', ')}.`));
-    const partnerPanel=el('div','dash-report-panel'),partnerHead=el('h3','','Partners');partnerHead.append(el('span','',`${reportingPartners.length} with assigned active Tasks`));partnerPanel.append(partnerHead);
+    const partnerPanel=el('div','dash-report-panel'),partnerHead=el('h3','','Partners');partnerHead.append(el('span','',`${reportingPartners.length} organisations`));partnerPanel.append(partnerHead);
     reportingPartners.forEach(partner=>partnerPanel.append(partnerBlock(partner,tasks)));
     if(!reportingPartners.length)partnerPanel.append(empty('No partner assignments match the selected months and Work Package.'));
     section.append(view.reportingMode==='tasks'?taskPanel:view.reportingMode==='work_packages'?wpPanel:partnerPanel);return section;

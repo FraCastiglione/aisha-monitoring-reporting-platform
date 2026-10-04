@@ -1,6 +1,6 @@
 # AISHA reporting contract — Task report version 2.4
 
-The signed Grant Agreement supplies formal Work Packages, Task wording, assignments and activity windows. Attachment 6 supplies additional voluntary associated-partner Task commitments, as confirmed by the coordinator on 30 September 2026. Partners choose the selected months, included Tasks and their own answers. Selected months may contain gaps. Future project months remain available.
+The signed Grant Agreement supplies formal Work Packages, Task wording, assignments and activity windows. Attachment 6 supplies additional voluntary associated-partner Task commitments, with reporting routes corrected by the coordinator on 4 October 2026. Partners choose the selected months, included Tasks and their own answers. Selected months may contain gaps. Future project months remain available.
 
 ## Complete partner report
 
@@ -48,3 +48,7 @@ The private coordinator workflow validates complete Task report JSON, filenames 
 Generated files remain available through a direct download link after preparation. The optional saved-copy check compares the selected local file's complete bytes with that exact generated artifact; it does not import the selected file. This distinguishes a requested download from a verified saved copy.
 
 If a valid PDF has no embedded AISHA data, the report builder offers its matching JSON backup or manual reporting with the PDF as a reference. Whole-report recovery retains entry selection; single-Task recovery uses only the selected Task and the same selected months; communication recovery still asks before replacement. No scan text is guessed or automatically assigned to report fields.
+
+## Associated-partner routing (4 October 2026)
+
+For associated partners, only Attachment 6 commitments are listed in the builder. BOSCH, CEPS, EPRD and Regione Toscana (RT) have zero assigned Tasks. All associated partners can select voluntary additional Task/Work Package contributions. Assigned associated Task records export `partner_role: "Task contributor"`; beneficiary roles are unchanged. Earlier associated role strings remain importable in supported schemas. Imported associated Tasks outside the current commitment list keep their full Task answers and no-work/draft/completed status in the voluntary section, and re-export with `assignment_basis: "voluntary_unlisted"`. Individual Task PDF imports remain scoped to the selected Task. Duplicate Task entries across the main and additional arrays are rejected atomically. Formal Agreement participant text is preserved verbatim.

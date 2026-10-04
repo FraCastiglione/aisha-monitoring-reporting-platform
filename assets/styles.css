@@ -1043,3 +1043,5 @@ fieldset.field legend { margin-bottom: 8px; color: var(--ink); font-size: 13px; 
 #saved-copy-dialog::backdrop, #pdf-recovery-dialog::backdrop { background: #101b42aa; }
 #saved-copy-dialog p, #pdf-recovery-dialog p { max-width: none; overflow-wrap: anywhere; }
 #saved-copy-dialog .review-actions, #pdf-recovery-dialog .review-actions { justify-content: flex-start; }
+
+.role-badge.is-contributor { color:#424a9a; background:#eaecfb; border:1px solid #cfd4f4; }
