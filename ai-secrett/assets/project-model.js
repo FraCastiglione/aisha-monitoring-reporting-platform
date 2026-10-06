@@ -51,6 +51,11 @@
     return partner?.kind === "associated_partner" ? "All associated partners participant" : "All beneficiaries participant";
   }
 
+  function associatedReportTask(task, partnerCode, config, entry) {
+    if (config?.partners.find(item => item.code === partnerCode)?.kind !== "associated_partner") return false;
+    return entry?.partner_role === "Task contributor" && (assigned(task, partnerCode, config) || entry.assignment_basis === "voluntary_unlisted");
+  }
+
   function activeTasks(config, partnerCode, monthNumber) {
     return config.tasks.filter((task) => assigned(task, partnerCode, config) && active(task, monthNumber));
   }
@@ -111,7 +116,7 @@
     return todayMonth < first ? first : todayMonth > last ? last : todayMonth;
   }
 
-  const model = Object.freeze({ projectMonth, calendarMonth, periodForMonth, monthsBetween, assigned, active, role, activeTasks, defaultMonth, taskWindow, rangePeriod, taskCoverage, eligibleTasks });
+  const model = Object.freeze({ projectMonth, calendarMonth, periodForMonth, monthsBetween, assigned, active, role, associatedReportTask, activeTasks, defaultMonth, taskWindow, rangePeriod, taskCoverage, eligibleTasks });
   root.SECRETT_MODEL = model;
   if (typeof module !== "undefined" && module.exports) module.exports = model;
 })(typeof window !== "undefined" ? window : globalThis);

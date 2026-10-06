@@ -1,6 +1,6 @@
 # AI-SECRETT reporting preview
 
-This is the AI-SECRETT counterpart to the AISHA monitoring and reporting platform. It uses the same browser-only reporting workflow: contributor identification, Tasks or Communication reporting, Work Package leadership updates, draft saving and import, validation, PDF and JSON export, and a read-only project dashboard. The two sites have separate code, browser storage keys, report identifiers, files and URLs.
+This is the AI-SECRETT counterpart to the AISHA monitoring and reporting platform. It uses the same browser-only reporting workflow: contributor identification, Tasks or Communication reporting, Work Package leadership updates, voluntary Task and Work Package contributions, draft saving and import, validation, PDF and JSON export, and a read-only project dashboard. The two sites have separate code, browser storage keys, report identifiers, files and URLs.
 
 ## Project sources and limits
 
@@ -14,4 +14,6 @@ The site does not upload reports. Partners must download and submit the PDF and 
 
 This folder is a dedicated path in the existing GitHub Pages repository. The AISHA homepage remains at `/`, while this preview is served at `/ai-secrett/`. No build step is required.
 
-The dashboard embeds its three JSON data files in `assets/dashboard.js` so it can display without additional browser requests. After editing any dashboard JSON file, run `python3 scripts/embed-dashboard-data.py` from this folder and update the `dashboard.js` version query in `index.html` before publishing.
+The October 2026 dashboard shows M13. Its status evidence remains the user update of 26 September 2026; no October completion or submission status was inferred. The current audit is in `AUDIT-2026-10-06.md`.
+
+The dashboard embeds its three JSON data files in `assets/dashboard.js` and `assets/embedded-data.js` so it can display without additional browser requests. After editing any dashboard JSON file, run `python3 scripts/embed-dashboard-data.py` from this folder and update the script version queries in `index.html`. PDF font and logo bytes are bundled in `assets/pdf-assets.js`; regenerate them with `python3 scripts/embed-pdf-assets.py` after changing either asset. Run `node tests/platform-audit.mjs` with Node.js 24 or later before publishing.

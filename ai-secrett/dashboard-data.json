@@ -1,29 +1,61 @@
 {
   "schema_version": "2.0",
   "project": "AI-SECRETT",
-  "as_of": "2026-09-26",
+  "as_of": "2026-10-06",
   "status_as_of": "2026-09-26",
-  "snapshot_month": "2026-09",
+  "snapshot_month": "2026-10",
   "status_source": "Project status update supplied by the user on 26 September 2026: all items due through M12 delivered or achieved",
   "deliverable_status": {
-    "D1.1": {"state": "submitted"},
-    "D1.2": {"state": "submitted"},
-    "D1.3": {"state": "submitted"},
-    "D2.1": {"state": "submitted"},
-    "D2.2": {"state": "submitted"},
-    "D2.3": {"state": "submitted"},
-    "D7.1": {"state": "submitted"},
-    "D8.1": {"state": "submitted"},
-    "D8.2": {"state": "submitted"},
-    "D8.3": {"state": "submitted"}
+    "D1.1": {
+      "state": "submitted"
+    },
+    "D1.2": {
+      "state": "submitted"
+    },
+    "D1.3": {
+      "state": "submitted"
+    },
+    "D2.1": {
+      "state": "submitted"
+    },
+    "D2.2": {
+      "state": "submitted"
+    },
+    "D2.3": {
+      "state": "submitted"
+    },
+    "D7.1": {
+      "state": "submitted"
+    },
+    "D8.1": {
+      "state": "submitted"
+    },
+    "D8.2": {
+      "state": "submitted"
+    },
+    "D8.3": {
+      "state": "submitted"
+    }
   },
   "milestone_status": {
-    "MS1": {"state": "achieved"},
-    "MS2": {"state": "achieved"},
-    "MS3": {"state": "achieved"},
-    "MS4": {"state": "achieved"},
-    "MS15": {"state": "achieved"},
-    "MS17": {"state": "achieved"}
+    "MS1": {
+      "state": "achieved"
+    },
+    "MS2": {
+      "state": "achieved"
+    },
+    "MS3": {
+      "state": "achieved"
+    },
+    "MS4": {
+      "state": "achieved"
+    },
+    "MS15": {
+      "state": "achieved"
+    },
+    "MS17": {
+      "state": "achieved"
+    }
   },
   "reporting_records": [],
   "task_flags": [],
