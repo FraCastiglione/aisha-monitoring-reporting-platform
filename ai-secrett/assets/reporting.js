@@ -243,7 +243,7 @@
         if (selected && chosenCoverage.status !== 'draft') { const pdf = textNode('button', 'Download Task PDF', 'task-pdf-link'); pdf.type = 'button'; pdf.addEventListener('click', () => showIndividualTaskPdf(task.id)); tools.append(pdf); }
         head.append(tools);
         card.append(head);
-        if(task.lead!==state.partner.code)card.append(textNode('small',`Task leader: ${task.lead || 'not specified in the Agreement'}`,'task-card-role'));
+        if(task.lead!==state.partner.code)card.append(textNode('small',`Task leader: ${task.lead || '—'}`,'task-card-role'));
         if (!selected) card.append(textNode('p', `Reporting available in your selected timeline: ${monthCodes(coverage.months)}.`, 'task-coverage-short'));
         if (chosenCoverage) {
           const chosenMonths = p.selected_months.filter(m => m >= chosenCoverage.coverage_start.slice(0,7) && m <= chosenCoverage.coverage_end.slice(0,7) && model.active(task,model.projectMonth(config,m)));
@@ -307,7 +307,7 @@
   });
   function kpiDefinition(id){return kpiCatalogue.find(item=>item.id===id);}
   function knownActivities(){const data=window.SECRETT_EMBEDDED_DATA?.snapshot||{};return [...(data.project_events||[]),...(data.shared_activities||[])].filter(item=>item.id&&item.title);}
-  function renderActivityOptions(){const host=$('shared-activity-options');host.replaceChildren();for(const item of knownActivities()){const option=document.createElement('option');option.value=item.id;option.label=`${item.title} · ${item.start_date||''}`;host.append(option);}}
+  function renderActivityOptions(){const host=$('shared-activity-options');host.replaceChildren();for(const item of knownActivities()){const option=document.createElement('option');option.value=item.id;option.label=`${item.title} · ${item.start_month||item.start_date||''} · ${item.location||''}`;host.append(option);}}
   kpiCatalogue=window.SECRETT_EMBEDDED_DATA?.catalogue?.kpis || [];
   for(const item of kpiCatalogue)if(item.report_contexts?.includes('communication'))communicationKpis.add(item.id);
   renderActivityOptions();
@@ -351,7 +351,7 @@
     for (const task of config.tasks.filter(t => t.wp === wp.id)) {
       const active = p.selected_months.some(m => model.active(task,model.projectMonth(config,m)));
       const row = textNode('article','','wp-task-row'); row.dataset.taskId=task.id;
-      row.append(textNode('h5',`${task.id} — ${task.title}`)); row.append(textNode('p',`Task leader: ${task.lead || 'not specified in the Agreement'} · ${active ? 'Active in selected months' : 'Not active in selected months'}`,'wp-task-meta'));
+      row.append(textNode('h5',`${task.id} — ${task.title}`)); row.append(textNode('p',`Task leader: ${task.lead || '—'} · ${active ? 'Active in selected months' : 'Not active in selected months'}`,'wp-task-meta'));
       const desc = document.createElement('details'); desc.className='task-overview-description';const taskText=textNode('div','','agreement-text');renderAgreementTask(taskText,task.id); desc.append(textNode('summary','Read full Task description'),taskText); row.append(desc);
       if (agreement.tasks[task.id].outcomeStatement) row.append(textNode('p',agreement.tasks[task.id].outcomeStatement,'task-outcome-short'));
       if (active) {
@@ -422,7 +422,7 @@
     $('task-editor-message').hidden = true;
     showTaskAnswers(state.selected.get(task.id));
     $('task-form-title').textContent = `${task.id} — ${task.title}`;
-    $('task-work-package').textContent = `${wp.id} — ${wp.title} · Work Package leader: ${wp.lead}${task.lead === state.partner.code ? '' : ` · Task leader: ${task.lead || 'not specified in the Agreement'}`}`;
+    $('task-work-package').textContent = `${wp.id} — ${wp.title} · Work Package leader: ${wp.lead}${task.lead === state.partner.code ? '' : ` · Task leader: ${task.lead || '—'}`}`;
     $('task-role').textContent=taskRole(task);$('task-role').className=`role-badge ${taskRoleClass(task)}`;
     const outcome = agreement.tasks[task.id].outcomeStatement;
     $('task-outcome').hidden = !outcome; $('task-outcome').textContent = outcome || '';
@@ -659,14 +659,14 @@
     const seen=new Set(), tasks=[];
     for(const item of r.tasks){
       const task=taskById(item.id), coverage=task && model.taskCoverage(config,task,p.start,p.end,p.selected_months);
-      if(!task || !model.reportTaskCompatible(task,state.partner.code,config,item) || !coverage || seen.has(task.id) || item.title !== task.title || item.work_package !== task.wp || item.task_lead !== task.lead)throw new Error('A Task does not match the partner’s listed assignment.');
+      if(!task || !model.reportTaskCompatible(task,state.partner.code,config,item) || !coverage || seen.has(task.id) || item.title !== task.title || item.work_package !== task.wp || !model.reportLeadCompatible(task,item))throw new Error('A Task does not match the partner’s listed assignment.');
       const start=item.coverage?.start,end=item.coverage?.end, expected=coverage.months.filter(m=>m >= start?.slice(0,7) && m <= end?.slice(0,7));
       if(!model.rangePeriod(config,start,end) || start < coverage.start || end > coverage.end || !expected.length || expected[0] !== start.slice(0,7) || expected.at(-1) !== end.slice(0,7) || (r.schema_version !== '2.0' && JSON.stringify(item.coverage.months) !== JSON.stringify(expected)))throw new Error(`Task dates or months are invalid for ${task.id}.`);
       const status=item.work_status || (r.document_kind === 'individual_task_copy' ? 'draft' : 'completed');
       if(!['draft','completed','no_work'].includes(status) || (r.document_kind === 'submission' && status === 'draft'))throw new Error(`Task state is invalid for ${task.id}.`);
       const answers=importedTaskAnswers(item.answers,status);
       if (status === 'no_work' && hasContribution(answers)) throw new Error(`No-work Task ${task.id} contains contribution answers.`);
-      tasks.push({...item,partner_role:model.assigned(task,state.partner.code,config)?model.role(task,state.partner.code,config):'Task contributor',...(!model.assigned(task,state.partner.code,config)?{assignment_basis:'voluntary_unlisted'}:{}),coverage:{start,end,months:expected},answers:{...emptyTask(),...answers,coverage_start:start,coverage_end:end}});seen.add(task.id);
+      tasks.push({...item,task_lead:task.lead,partner_role:model.assigned(task,state.partner.code,config)?model.role(task,state.partner.code,config):'Task contributor',...(!model.assigned(task,state.partner.code,config)?{assignment_basis:'voluntary_unlisted'}:{}),coverage:{start,end,months:expected},answers:{...emptyTask(),...answers,coverage_start:start,coverage_end:end}});seen.add(task.id);
     }
     const wpItems=[];const wpSeen=new Set();
     for(const item of (r.work_package_leadership || [])){
@@ -674,8 +674,8 @@
       if(!wp || wp.lead !== state.partner.code || !active?.length || wpSeen.has(wp.id) || item.title !== wp.title || item.leader !== wp.lead || JSON.stringify(item.coverage?.months) !== JSON.stringify(active) || !['completed','no_work'].includes(item.work_status))throw new Error('A Work Package update is invalid.');
       if(!item.answers || ['progress','coordination','difficulties','next','support'].some(k=>typeof item.answers[k] !== 'string' || item.answers[k].length > 100000) || !Array.isArray(item.task_updates))throw new Error('A Work Package answer is invalid.');
       if(item.work_status === 'no_work' && (['progress','coordination','difficulties','next','support'].some(k=>item.answers[k].trim()) || item.task_updates.length))throw new Error(`No-work Work Package ${wp.id} contains update answers.`);
-      const rowSeen=new Set();for(const row of item.task_updates){const task=taskById(row.id);if(!task || task.wp !== wp.id || rowSeen.has(row.id) || row.title !== task.title || row.task_lead !== task.lead || !['','on_track','at_risk','delayed','completed','unavailable'].includes(row.status) || ['progress','blocker','next'].some(k=>typeof row[k] !== 'string' || row[k].length > 100000))throw new Error('A Work Package Task assessment is invalid.');rowSeen.add(row.id);}
-      wpItems.push(item);wpSeen.add(wp.id);
+      const rowSeen=new Set();for(const row of item.task_updates){const task=taskById(row.id);if(!task || task.wp !== wp.id || rowSeen.has(row.id) || row.title !== task.title || !model.reportLeadCompatible(task,row) || !['','on_track','at_risk','delayed','completed','unavailable'].includes(row.status) || ['progress','blocker','next'].some(k=>typeof row[k] !== 'string' || row[k].length > 100000))throw new Error('A Work Package Task assessment is invalid.');rowSeen.add(row.id);}
+      wpItems.push({...item,task_updates:item.task_updates.map(row=>({...row,task_lead:taskById(row.id).lead}))});wpSeen.add(wp.id);
     }
     if(r.document_kind === 'individual_task_copy' && (tasks.length !== 1 || wpItems.length))throw new Error('Individual Task PDF data is invalid.');
     if(!tasks.length && !wpItems.length && !(r.additional_contributions||[]).length && !(r.kpi_contributions||[]).length)throw new Error('The report contains no contribution.');
@@ -830,7 +830,7 @@
     const host = $('review-content'); host.replaceChildren();
     reviewGroup(host,'Report details',[['Partner',`${r.partner.name} (${r.partner.code})`],['Contributor',`${r.contributor.name} · ${r.contributor.role} · ${r.contributor.email}`],['Period',`${r.reporting_period.start} to ${r.reporting_period.end}`],...(r.report_type === 'tasks' ? [['Selected months',r.reporting_period.selected_months.join(', ')]] : []),['Revision',`v${r.revision}`],['Report key',r.report_key]]);
     if (r.report_type === 'tasks') {
-      for (const item of r.tasks) { const a = item.answers; reviewGroup(host,`${item.id} — ${item.title}${item.assignment_basis==='voluntary_unlisted'?' · voluntary contribution':''}`,[['Work Package',item.work_package],['Your role',item.assignment_basis==='voluntary_unlisted' ? 'Voluntary contributor' : state.partner.kind==='associated_partner' ? 'Task contributor' : item.partner_role === 'Task responsibility to confirm' ? 'Responsibility to confirm' : item.partner_role === 'Task lead (COO)' ? 'Task leader' : 'Task participant'],['Task leader',item.task_lead || 'Not specified in the Agreement'],['Work reported',item.work_status === 'no_work' ? 'No work carried out' : 'Contribution completed'],['Task coverage',`${item.coverage.start} to ${item.coverage.end}`],['Task months',item.coverage.months.join(', ')],...(item.work_status === 'no_work' ? [] : [['Activities carried out',a.activities_carried_out],['Results achieved',a.results_achieved],['Difficulties encountered',a.difficulties_encountered],...(state.partner.kind === 'associated_partner' ? [] : [['Raw costs',`${a.raw_costs_incurred.amount === null ? 'Not provided' : `${a.raw_costs_incurred.amount} EUR`}${a.raw_costs_incurred.note ? ` · ${a.raw_costs_incurred.note}` : ''}`]]),['Upcoming activities',a.upcoming_activities],['Additional comments',a.additional_comments],['Significant issue',a.significant_issue],['Severity',a.severity],['Coordinator action required',a.coordinator_action_required],['Support requested',a.coordinator_support_request]])]); }
+      for (const item of r.tasks) { const a = item.answers; reviewGroup(host,`${item.id} — ${item.title}${item.assignment_basis==='voluntary_unlisted'?' · voluntary contribution':''}`,[['Work Package',item.work_package],['Your role',item.assignment_basis==='voluntary_unlisted' ? 'Voluntary contributor' : state.partner.kind==='associated_partner' ? 'Task contributor' : item.partner_role === 'Task responsibility to confirm' ? 'Responsibility to confirm' : item.partner_role === 'Task lead (COO)' ? 'Task leader' : 'Task participant'],['Task leader',item.task_lead || '—'],['Work reported',item.work_status === 'no_work' ? 'No work carried out' : 'Contribution completed'],['Task coverage',`${item.coverage.start} to ${item.coverage.end}`],['Task months',item.coverage.months.join(', ')],...(item.work_status === 'no_work' ? [] : [['Activities carried out',a.activities_carried_out],['Results achieved',a.results_achieved],['Difficulties encountered',a.difficulties_encountered],...(state.partner.kind === 'associated_partner' ? [] : [['Raw costs',`${a.raw_costs_incurred.amount === null ? 'Not provided' : `${a.raw_costs_incurred.amount} EUR`}${a.raw_costs_incurred.note ? ` · ${a.raw_costs_incurred.note}` : ''}`]]),['Upcoming activities',a.upcoming_activities],['Additional comments',a.additional_comments],['Significant issue',a.significant_issue],['Severity',a.severity],['Coordinator action required',a.coordinator_action_required],['Support requested',a.coordinator_support_request]])]); }
       for(const wp of r.work_package_leadership || []) {reviewGroup(host,`${wp.id} — ${wp.title} · leadership update`,[['Leader',wp.leader],['Selected months',wp.coverage.months.join(', ')],['Work declared',wp.work_status === 'no_work' ? 'No Work Package work carried out' : 'Leadership update completed'],...(wp.work_status === 'no_work' ? [] : [['Progress and achievements',wp.answers.progress],['Coordination and integration',wp.answers.coordination],['Difficulties and dependencies',wp.answers.difficulties],['Next priorities',wp.answers.next],['Support needed',wp.answers.support]])]);if(wp.work_status !== 'no_work')for(const row of wp.task_updates)reviewGroup(host,`${row.id} — Work Package leader assessment`,[['Status',assessmentLabel(row.status)],['Progress',row.progress],['Blocker',row.blocker],['Next action',row.next]]);}
       for(const entry of r.additional_contributions||[])reviewGroup(host,`${entry.id} — ${entry.title} · additional voluntary contribution`,[['Scope',entry.kind==='task'?'Task':'Work Package'],['Months',entry.months.join(', ')],['Activities carried out',entry.description],['Results achieved',entry.results],['Difficulties encountered',entry.difficulties],['Upcoming activities',entry.upcoming],['Evidence reference',entry.evidence]]);
     }

@@ -2,9 +2,9 @@
   "schema_version": "2.0",
   "project": "AI-SECRETT",
   "as_of": "2026-10-06",
-  "status_as_of": "2026-09-26",
+  "status_as_of": "2026-10-06",
   "snapshot_month": "2026-10",
-  "status_source": "Project status update supplied by the user on 26 September 2026: all items due through M12 delivered or achieved",
+  "status_source": "Coordinator update, 6 October 2026: all deliverables and milestones due through the current month have been delivered or achieved.",
   "deliverable_status": {
     "D1.1": {
       "state": "submitted"
@@ -62,8 +62,470 @@
   "task_progress": {},
   "kpi_values": [],
   "planning": {
-    "internal_draft_day": 5,
-    "note": "Suggested review checkpoint; not a Grant Agreement deadline."
+    "internal_lead_days": 30,
+    "task_report_basis": "Coordinator planning convention: each Task report is scheduled at the end of its Task window; internal draft 30 calendar days earlier.",
+    "official_month_basis": "Agreement due months are shown at calendar month-end."
   },
-  "task_report_deadlines": []
+  "task_report_deadlines": [
+    {
+      "id": "T1.1",
+      "due_date": "2026-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "INESC"
+    },
+    {
+      "id": "T1.2",
+      "due_date": "2026-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T1.3",
+      "due_date": "2026-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "IF.E"
+    },
+    {
+      "id": "T1.4",
+      "due_date": "2026-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T1.5",
+      "due_date": "2026-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "LC"
+    },
+    {
+      "id": "T1.6",
+      "due_date": "2026-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "IF.E"
+    },
+    {
+      "id": "T2.1",
+      "due_date": "2026-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "CINK"
+    },
+    {
+      "id": "T2.2",
+      "due_date": "2026-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "TUV.IT"
+    },
+    {
+      "id": "T2.3",
+      "due_date": "2026-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T2.4",
+      "due_date": "2026-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "CEICE"
+    },
+    {
+      "id": "T2.5",
+      "due_date": "2026-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UMU"
+    },
+    {
+      "id": "T2.6",
+      "due_date": "2026-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T3.1",
+      "due_date": "2026-12-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T3.2",
+      "due_date": "2027-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T3.3",
+      "due_date": "2027-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T3.4",
+      "due_date": "2027-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UMU"
+    },
+    {
+      "id": "T3.5",
+      "due_date": "2027-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T3.6",
+      "due_date": "2027-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T4.1",
+      "due_date": "2027-12-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "LAUREA"
+    },
+    {
+      "id": "T4.2",
+      "due_date": "2027-12-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "Ud'A"
+    },
+    {
+      "id": "T4.3",
+      "due_date": "2027-12-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "ESAD-GV"
+    },
+    {
+      "id": "T4.4",
+      "due_date": "2028-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "CEICE"
+    },
+    {
+      "id": "T4.5",
+      "due_date": "2028-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T4.6",
+      "due_date": "2028-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UMU"
+    },
+    {
+      "id": "T5.1",
+      "due_date": "2028-06-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T5.2",
+      "due_date": "2028-06-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T5.3",
+      "due_date": "2028-06-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "TUV.IT"
+    },
+    {
+      "id": "T5.4",
+      "due_date": "2028-06-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T5.5",
+      "due_date": "2028-06-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T5.6",
+      "due_date": "2028-06-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T6.1",
+      "due_date": "2029-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "LAUREA"
+    },
+    {
+      "id": "T6.2",
+      "due_date": "2029-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "Ud'A"
+    },
+    {
+      "id": "T6.3",
+      "due_date": "2029-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "ESAD-GV"
+    },
+    {
+      "id": "T6.4",
+      "due_date": "2029-06-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "CEICE"
+    },
+    {
+      "id": "T6.5",
+      "due_date": "2029-06-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T6.6",
+      "due_date": "2029-06-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UMU"
+    },
+    {
+      "id": "T7.1",
+      "due_date": "2027-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UMU"
+    },
+    {
+      "id": "T7.2",
+      "due_date": "2027-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UMU"
+    },
+    {
+      "id": "T7.3",
+      "due_date": "2027-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "INESC"
+    },
+    {
+      "id": "T8.1",
+      "due_date": "2027-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T8.2",
+      "due_date": "2027-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T8.3",
+      "due_date": "2027-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "FIDIT"
+    },
+    {
+      "id": "T8.4",
+      "due_date": "2027-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "COGN"
+    },
+    {
+      "id": "T8.5",
+      "due_date": "2027-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "HSW"
+    },
+    {
+      "id": "T8.6",
+      "due_date": "2027-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T9.1",
+      "due_date": "2027-11-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UMU"
+    },
+    {
+      "id": "T9.2",
+      "due_date": "2028-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UMU"
+    },
+    {
+      "id": "T9.3",
+      "due_date": "2028-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "INESC"
+    },
+    {
+      "id": "T10.1",
+      "due_date": "2028-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T10.2",
+      "due_date": "2028-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T10.3",
+      "due_date": "2028-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "FIDIT"
+    },
+    {
+      "id": "T10.4",
+      "due_date": "2028-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "COGN"
+    },
+    {
+      "id": "T10.5",
+      "due_date": "2028-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "HSW"
+    },
+    {
+      "id": "T10.6",
+      "due_date": "2028-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T11.1",
+      "due_date": "2029-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UMU"
+    },
+    {
+      "id": "T11.2",
+      "due_date": "2029-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UMU"
+    },
+    {
+      "id": "T11.3",
+      "due_date": "2029-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "INESC"
+    },
+    {
+      "id": "T11.4",
+      "due_date": "2029-03-31",
+      "basis": "Task-end coordinator schedule",
+      "leader": "IF.E"
+    },
+    {
+      "id": "T11.5",
+      "due_date": "2029-06-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "LC"
+    },
+    {
+      "id": "T11.6",
+      "due_date": "2029-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T12.1",
+      "due_date": "2029-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T12.2",
+      "due_date": "2029-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    },
+    {
+      "id": "T12.3",
+      "due_date": "2029-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "FIDIT"
+    },
+    {
+      "id": "T12.4",
+      "due_date": "2029-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "COGN"
+    },
+    {
+      "id": "T12.5",
+      "due_date": "2029-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "HSW"
+    },
+    {
+      "id": "T12.6",
+      "due_date": "2029-09-30",
+      "basis": "Task-end coordinator schedule",
+      "leader": "UVEG"
+    }
+  ],
+  "project_events": [
+    {
+      "id": "kickoff-valencia",
+      "title": "Kick-off meeting",
+      "start_month": "2025-10",
+      "location": "Valencia, Spain",
+      "host": "UVEG",
+      "date_precision": "month",
+      "state": "held"
+    },
+    {
+      "id": "consortium-larissa",
+      "title": "Consortium meeting",
+      "start_month": "2026-04",
+      "location": "Larissa, Greece",
+      "host": "JOIST",
+      "date_precision": "month",
+      "state": "held"
+    },
+    {
+      "id": "consortium-las-palmas",
+      "title": "Consortium meeting",
+      "start_month": "2026-10",
+      "location": "Las Palmas de Gran Canaria, Spain",
+      "host": "LPGA",
+      "date_precision": "month",
+      "state": "scheduled"
+    }
+  ],
+  "reporting_windows": [
+    {
+      "id": "RP1",
+      "coverage": [
+        1,
+        18
+      ],
+      "preparation_months": [
+        19,
+        20
+      ]
+    },
+    {
+      "id": "RP2",
+      "coverage": [
+        19,
+        36
+      ],
+      "preparation_months": [
+        37,
+        38
+      ]
+    },
+    {
+      "id": "RP3",
+      "coverage": [
+        37,
+        48
+      ],
+      "preparation_months": [
+        49,
+        50
+      ]
+    }
+  ]
 }

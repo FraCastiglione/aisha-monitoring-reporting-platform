@@ -14,6 +14,6 @@ Source checked: signed AI-SECRETT Grant Agreement 101226207 supplied by the user
 
 ## Material content limit
 
-Updated on 6 October 2026: the Consortium Agreement §4.5.5 (PDF pp. 15–18) identifies participants for all 66 Tasks. All Task windows match the Grant Agreement. RCE follows only its nine commitments in Attachment 5 (PDF p. 61). Work Package leads remain Grant Agreement-based; Task leaders are unspecified. See AUDIT-2026-10-06.md for the current feature audit.
+Updated on 6 October 2026: the Consortium Agreement §4.5.5 (PDF pp. 15–18) identifies participants for all 66 Tasks. All Task windows match the Grant Agreement. RCE follows only its nine commitments in Attachment 5 (PDF p. 61). Work Package leads remain Grant Agreement-based; Task leaders use the first listed participant, confirmed by the coordinator on 6 October 2026. See AUDIT-2026-10-06.md for the current feature audit.
 
 On 26 September 2026 the user stated that everything due to date had been delivered and achieved. The M12 snapshot therefore records all 10 deliverables due through September 2026 as submitted, and all 6 milestones due through then as achieved. Delivery is recorded as submission, not formal acceptance. Later commitments have no recorded status. No partner report submissions, Task progress, KPI actuals or coordinator status register were supplied. The static site sends no report to a server.

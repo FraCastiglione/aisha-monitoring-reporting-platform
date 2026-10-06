@@ -468,7 +468,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 109
+      "source_page": 109,
+      "source_refs": [
+        "K0"
+      ]
     },
     {
       "id": "K1",
@@ -477,7 +480,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 109
+      "source_page": 109,
+      "source_refs": [
+        "K1"
+      ]
     },
     {
       "id": "K2",
@@ -486,7 +492,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 109
+      "source_page": 109,
+      "source_refs": [
+        "K2"
+      ]
     },
     {
       "id": "K3",
@@ -495,7 +504,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 109
+      "source_page": 109,
+      "source_refs": [
+        "K3"
+      ]
     },
     {
       "id": "K4",
@@ -504,7 +516,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 109
+      "source_page": 109,
+      "source_refs": [
+        "K4"
+      ]
     },
     {
       "id": "K5",
@@ -513,7 +528,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 109
+      "source_page": 109,
+      "source_refs": [
+        "K5"
+      ]
     },
     {
       "id": "K6",
@@ -522,7 +540,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 109
+      "source_page": 109,
+      "source_refs": [
+        "K6"
+      ]
     },
     {
       "id": "K7",
@@ -531,7 +552,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 109
+      "source_page": 109,
+      "source_refs": [
+        "K7"
+      ]
     },
     {
       "id": "K8",
@@ -540,7 +564,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 109
+      "source_page": 109,
+      "source_refs": [
+        "K8"
+      ]
     },
     {
       "id": "K9",
@@ -549,7 +576,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 109
+      "source_page": 109,
+      "source_refs": [
+        "K9"
+      ]
     },
     {
       "id": "K10",
@@ -558,7 +588,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 109
+      "source_page": 109,
+      "source_refs": [
+        "K10"
+      ]
     },
     {
       "id": "K11",
@@ -567,7 +600,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 109
+      "source_page": 109,
+      "source_refs": [
+        "K11"
+      ]
     },
     {
       "id": "K12",
@@ -576,7 +612,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 109
+      "source_page": 109,
+      "source_refs": [
+        "K12"
+      ]
     },
     {
       "id": "K13",
@@ -585,7 +624,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 109
+      "source_page": 109,
+      "source_refs": [
+        "K13"
+      ]
     },
     {
       "id": "K14",
@@ -594,7 +636,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 109
+      "source_page": 109,
+      "source_refs": [
+        "K14"
+      ]
     },
     {
       "id": "K15",
@@ -603,7 +648,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K15"
+      ]
     },
     {
       "id": "K16",
@@ -612,7 +660,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K16"
+      ]
     },
     {
       "id": "K17",
@@ -621,7 +672,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K17"
+      ]
     },
     {
       "id": "K18",
@@ -630,7 +684,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K18"
+      ]
     },
     {
       "id": "K19",
@@ -639,7 +696,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K19"
+      ]
     },
     {
       "id": "K20",
@@ -648,7 +708,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K20"
+      ]
     },
     {
       "id": "K21",
@@ -657,7 +720,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K21"
+      ]
     },
     {
       "id": "K22",
@@ -666,7 +732,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K22"
+      ]
     },
     {
       "id": "K23",
@@ -675,7 +744,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K23"
+      ]
     },
     {
       "id": "K24",
@@ -684,7 +756,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K24"
+      ]
     },
     {
       "id": "K25",
@@ -693,7 +768,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K25"
+      ]
     },
     {
       "id": "K26",
@@ -702,7 +780,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K26"
+      ]
     },
     {
       "id": "K27",
@@ -711,7 +792,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K27"
+      ]
     },
     {
       "id": "K28",
@@ -720,7 +804,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K28"
+      ]
     },
     {
       "id": "K29",
@@ -729,7 +816,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K29"
+      ]
     },
     {
       "id": "K30",
@@ -738,7 +828,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K30"
+      ]
     },
     {
       "id": "K31",
@@ -747,7 +840,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K31"
+      ]
     },
     {
       "id": "K32",
@@ -756,7 +852,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K32"
+      ]
     },
     {
       "id": "K33",
@@ -765,7 +864,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K33"
+      ]
     },
     {
       "id": "K34",
@@ -774,7 +876,10 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
-      "source_page": 110
+      "source_page": 110,
+      "source_refs": [
+        "K34"
+      ]
     },
     {
       "id": "K35",
@@ -783,7 +888,278 @@
       "unit": "",
       "group": "Project targets",
       "breakdown": "Reviewed project evidence; partner breakdown if supplied",
+      "source_page": 110,
+      "source_refs": [
+        "K35"
+      ]
+    }
+  ],
+  "commitment_links": {
+    "D2.3": [
+      {
+        "task": "T2.5",
+        "basis": "Explicit Task reference in Agreement description"
+      }
+    ],
+    "D7.1": [
+      {
+        "task": "T7.1",
+        "basis": "Explicit Task reference in Agreement description"
+      }
+    ]
+  },
+  "source_index": {
+    "K0": {
+      "id": "K0",
+      "kpi": "Early-Stage Needs Analysis",
+      "metric": "Number of reports\nNumber of report’s words",
+      "target": "1\n10.000-15.000",
+      "source_page": 109
+    },
+    "K1": {
+      "id": "K1",
+      "kpi": "Curriculum Completion",
+      "metric": "Number of full editions of the programme",
+      "target": "2",
+      "source_page": 109
+    },
+    "K2": {
+      "id": "K2",
+      "kpi": "Alignment with Digital Europe Programme’s Focus Areas",
+      "metric": "Number of key capacity areas covered by the programme",
+      "target": "4 (AI, Data Analytics, Extended Reality and Machine Learning)",
+      "source_page": 109
+    },
+    "K3": {
+      "id": "K3",
+      "kpi": "Industry Relevance",
+      "metric": "Number of vertical industries covered by the programme",
+      "target": "7 (Agriculture, Renewable Energy, Transport, Waste Management + 3 more)",
+      "source_page": 109
+    },
+    "K4": {
+      "id": "K4",
+      "kpi": "Student Enrollment",
+      "metric": "Number of participants in the master programme",
+      "target": "300\n(corresponding to twice the minimum number required on p.8 of the call text)",
+      "source_page": 109
+    },
+    "K5": {
+      "id": "K5",
+      "kpi": "Self-Training Module Participation",
+      "metric": "Number of participants in self-standing training modules and accredited extracurricular activities",
+      "target": "900\n(of which at least 150 in self-standing training modules)",
+      "source_page": 109
+    },
+    "K6": {
+      "id": "K6",
+      "kpi": "Graduation Rate",
+      "metric": "% of enrolled students who successfully complete the programme",
+      "target": "80%",
+      "source_page": 109
+    },
+    "K7": {
+      "id": "K7",
+      "kpi": "Completion Rate of Self-Training Modules",
+      "metric": "% of participants who successfully complete the self-standing training modules and accredited extracurricular activities",
+      "target": "80%",
+      "source_page": 109
+    },
+    "K8": {
+      "id": "K8",
+      "kpi": "student and Participant Satisfaction",
+      "metric": "% of respondents to satisfaction surveys who declare their being “satisfied”",
+      "target": "70%",
+      "source_page": 109
+    },
+    "K9": {
+      "id": "K9",
+      "kpi": "Curriculum Development",
+      "metric": "% of modules that embed changes between the first and second edition of the programme",
+      "target": "30%",
+      "source_page": 109
+    },
+    "K10": {
+      "id": "K10",
+      "kpi": "Enrollment Numbers",
+      "metric": "% of increase of participants between the 1st and the 2nd edition of the programme",
+      "target": "20%",
+      "source_page": 109
+    },
+    "K11": {
+      "id": "K11",
+      "kpi": "Skills Acquisition",
+      "metric": "% of participants who improve their initial scores",
+      "target": "80%",
+      "source_page": 109
+    },
+    "K12": {
+      "id": "K12",
+      "kpi": "Faculty Expertise",
+      "metric": "% of junior lecturers in the programme staff",
+      "target": "25%",
+      "source_page": 109
+    },
+    "K13": {
+      "id": "K13",
+      "kpi": "Programme Impact",
+      "metric": "Global number of respondents to satisfaction surveys",
+      "target": "600",
+      "source_page": 109
+    },
+    "K14": {
+      "id": "K14",
+      "kpi": "Interdisciplinary Curriculum Development",
+      "metric": "% of participants with interdisciplinary curricula",
+      "target": "30%",
+      "source_page": 109
+    },
+    "K15": {
+      "id": "K15",
+      "kpi": "Enrollment Diversity",
+      "metric": "% of female participants\nNumber of countries represented\n% of students from socioeconomic disadvantaged groups/minorities",
+      "target": "At least 50%\n25\n30%",
+      "source_page": 110
+    },
+    "K16": {
+      "id": "K16",
+      "kpi": "Continuous Improvement",
+      "metric": "% of changes in modules resulting from specific participant requirements",
+      "target": "30%",
+      "source_page": 110
+    },
+    "K17": {
+      "id": "K17",
+      "kpi": "Real-World Application",
+      "metric": "% of enrolled students who bring in a case study",
+      "target": "50%",
+      "source_page": 110
+    },
+    "K18": {
+      "id": "K18",
+      "kpi": "Public Sector and Industry Collaboration",
+      "metric": "% of enrolled students who accept an internship in a different sector than their own",
+      "target": "30%",
+      "source_page": 110
+    },
+    "K19": {
+      "id": "K19",
+      "kpi": "Innovative Course Delivery",
+      "metric": "% of programme participants engaged in blended learning",
+      "target": "80%",
+      "source_page": 110
+    },
+    "K20": {
+      "id": "K20",
+      "kpi": "Quadruple Helix Partnership Establishment",
+      "metric": "Number of Quadruple Helix partnerships activated by the programme",
+      "target": "30",
+      "source_page": 110
+    },
+    "K21": {
+      "id": "K21",
+      "kpi": "Joint Curriculum Development",
+      "metric": "Number of academic partners making changes in some modules between the two editions of the programme",
+      "target": "10",
+      "source_page": 110
+    },
+    "K22": {
+      "id": "K22",
+      "kpi": "Faculty and Instructor Exchanges",
+      "metric": "Global number of exchanges recorded",
+      "target": "500",
+      "source_page": 110
+    },
+    "K23": {
+      "id": "K23",
+      "kpi": "Programme Promotion and Outreach",
+      "metric": "Number of public events organised by the consortium members",
+      "target": "60",
+      "source_page": 110
+    },
+    "K24": {
+      "id": "K24",
+      "kpi": "Programme Sustainability",
+      "metric": "% increase of the external revenues (other than tuition fees) between the two editions of the programme",
+      "target": "100%",
+      "source_page": 110
+    },
+    "K25": {
+      "id": "K25",
+      "kpi": "Integrated Course Delivery",
+      "metric": "% of programme modules that are delivered by more than one institution",
+      "target": "50%",
+      "source_page": 110
+    },
+    "K26": {
+      "id": "K26",
+      "kpi": "Talent Attraction",
+      "metric": "Score corresponding to 95th percentile in proportion to the maximum score",
+      "target": "80%",
+      "source_page": 110
+    },
+    "K27": {
+      "id": "K27",
+      "kpi": "Mentorship and Support",
+      "metric": "% of enrolled students who follow a mentorship and support programme",
+      "target": "60%",
+      "source_page": 110
+    },
+    "K28": {
+      "id": "K28",
+      "kpi": "Academic Recognition",
+      "metric": "Number of self standing courses accepted by partner institutions as elective",
+      "target": "20",
+      "source_page": 110
+    },
+    "K29": {
+      "id": "K29",
+      "kpi": "Guest Lectures and Workshops",
+      "metric": "Number of guest lecturers and workshop facilitators",
+      "target": "40",
+      "source_page": 110
+    },
+    "K30": {
+      "id": "K30",
+      "kpi": "Curriculum Co-development",
+      "metric": "Number of industrial partners making changes in some modules between the two editions of the programme",
+      "target": "10",
+      "source_page": 110
+    },
+    "K31": {
+      "id": "K31",
+      "kpi": "Networking Events",
+      "metric": "% of public events promoting networking of attendees",
+      "target": "25%",
+      "source_page": 110
+    },
+    "K32": {
+      "id": "K32",
+      "kpi": "Cross-Sectoral Partnerships",
+      "metric": "Number of Quadruple Helix partnerships activated across industries",
+      "target": "10",
+      "source_page": 110
+    },
+    "K33": {
+      "id": "K33",
+      "kpi": "Best Practice Sharing",
+      "metric": "Number of resources available on the Content Delivery Platform",
+      "target": "30",
+      "source_page": 110
+    },
+    "K34": {
+      "id": "K34",
+      "kpi": "Case studies and Real-World Projects",
+      "metric": "% of shared resources being case studies and real-world projects",
+      "target": "80%",
+      "source_page": 110
+    },
+    "K35": {
+      "id": "K35",
+      "kpi": "Listening Capacity",
+      "metric": "Number of discussion threads created with enrolled students and participants",
+      "target": "500",
       "source_page": 110
     }
-  ]
+  }
 }

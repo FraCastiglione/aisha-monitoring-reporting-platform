@@ -1,4 +1,4 @@
-// AI-SECRETT Grant Agreement 101226207 and signed Consortium Agreement; named participants are not Task leaders.
+// AI-SECRETT signed agreements; Task leader is the first listed participant, as confirmed by the coordinator.
 window.SECRETT_CONFIG = Object.freeze({
   "project": {
     "id": "101226207",
@@ -121,7 +121,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "SOTA Analysis of Triple Transition and Creativity Potentials in the EU Targeted Sectors",
       "startMonth": 1,
       "endMonth": 6,
-      "lead": null,
+      "lead": "INESC",
       "partners": [
         "INESC",
         "UVEG",
@@ -134,7 +134,8 @@ window.SECRETT_CONFIG = Object.freeze({
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 67,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T1.2",
@@ -142,7 +143,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Assessment of Conditions for a Joint, Multi Country Education and Training Programme",
       "startMonth": 1,
       "endMonth": 6,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG",
         "IF.E",
@@ -158,7 +159,8 @@ window.SECRETT_CONFIG = Object.freeze({
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 67,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T1.3",
@@ -166,7 +168,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Stakeholder Mapping and Community Building at European level",
       "startMonth": 1,
       "endMonth": 6,
-      "lead": null,
+      "lead": "IF.E",
       "partners": [
         "IF.E",
         "JOIST",
@@ -179,7 +181,8 @@ window.SECRETT_CONFIG = Object.freeze({
       ],
       "assignmentUnconfirmed": false,
       "sourcePage": 67,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T1.4",
@@ -187,7 +190,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Requirement Analysis and Executive Design of the Master’s Content Delivery Platform",
       "startMonth": 1,
       "endMonth": 6,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG",
         "IF.E",
@@ -203,7 +206,8 @@ window.SECRETT_CONFIG = Object.freeze({
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 67,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T1.5",
@@ -211,7 +215,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "SOTA Analysis of STEAM Education Policies in Europe",
       "startMonth": 1,
       "endMonth": 6,
-      "lead": null,
+      "lead": "LC",
       "partners": [
         "LC",
         "CEICE",
@@ -220,7 +224,8 @@ window.SECRETT_CONFIG = Object.freeze({
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 67,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T1.6",
@@ -228,7 +233,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Liaising and Connecting with EU and Global AI Education Initiatives",
       "startMonth": 1,
       "endMonth": 6,
-      "lead": null,
+      "lead": "IF.E",
       "partners": [
         "IF.E",
         "FIDIT",
@@ -239,7 +244,8 @@ window.SECRETT_CONFIG = Object.freeze({
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 67,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T2.1",
@@ -247,7 +253,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Co-creation of Initial Educational Contents with Selected Interest Groups",
       "startMonth": 7,
       "endMonth": 12,
-      "lead": null,
+      "lead": "CINK",
       "partners": [
         "CINK",
         "C-LINK",
@@ -259,7 +265,8 @@ window.SECRETT_CONFIG = Object.freeze({
       ],
       "assignmentUnconfirmed": false,
       "sourcePage": 68,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T2.2",
@@ -267,7 +274,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Credentials Certification Framework - initial",
       "startMonth": 7,
       "endMonth": 12,
-      "lead": null,
+      "lead": "TUV.IT",
       "partners": [
         "TUV.IT",
         "COGN"
@@ -275,7 +282,8 @@ window.SECRETT_CONFIG = Object.freeze({
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 68,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T2.3",
@@ -283,7 +291,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Development and Beta Testing of the Master’s Content Delivery Platform",
       "startMonth": 7,
       "endMonth": 12,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG",
         "LAUREA"
@@ -291,7 +299,8 @@ window.SECRETT_CONFIG = Object.freeze({
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 68,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T2.4",
@@ -299,7 +308,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Launch of the AI for Creativity Community of Interest and Practice",
       "startMonth": 7,
       "endMonth": 12,
-      "lead": null,
+      "lead": "CEICE",
       "partners": [
         "CEICE",
         "UVEG",
@@ -315,7 +324,8 @@ window.SECRETT_CONFIG = Object.freeze({
       ],
       "assignmentUnconfirmed": false,
       "sourcePage": 68,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T2.5",
@@ -323,14 +333,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Communication Strategy, Corporate Image and Promotional Materials",
       "startMonth": 7,
       "endMonth": 12,
-      "lead": null,
+      "lead": "UMU",
       "partners": [
         "UMU"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 68,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T2.6",
@@ -338,7 +349,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Programme Management Structure and Delivery Organisation",
       "startMonth": 7,
       "endMonth": 12,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG",
         "UMU",
@@ -347,7 +358,8 @@ window.SECRETT_CONFIG = Object.freeze({
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 69,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T3.1",
@@ -355,7 +367,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "AI-SECRETT Syllabus and Programme – first edition",
       "startMonth": 13,
       "endMonth": 15,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG",
         "IF.E",
@@ -371,7 +383,8 @@ window.SECRETT_CONFIG = Object.freeze({
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 69,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T3.2",
@@ -379,14 +392,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Content Delivery Platform Initialisation and Population",
       "startMonth": 13,
       "endMonth": 18,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 69,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T3.3",
@@ -394,7 +408,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Cascade Funding Call – first edition – Launch and Management",
       "startMonth": 13,
       "endMonth": 18,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG",
         "UMU"
@@ -402,7 +416,8 @@ window.SECRETT_CONFIG = Object.freeze({
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 69,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T3.4",
@@ -410,14 +425,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Digital Advertising and Organisation of Local Promotion Events",
       "startMonth": 13,
       "endMonth": 18,
-      "lead": null,
+      "lead": "UMU",
       "partners": [
         "UMU"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 69,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T3.5",
@@ -425,14 +441,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Administrative and Financial Management of the Participants I",
       "startMonth": 16,
       "endMonth": 18,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 69,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T3.6",
@@ -440,7 +457,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Content Uploading and Implementation",
       "startMonth": 16,
       "endMonth": 18,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG",
         "IF.E",
@@ -456,7 +473,8 @@ window.SECRETT_CONFIG = Object.freeze({
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 70,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T4.1",
@@ -464,14 +482,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Delivery of online Master Classes – first edition",
       "startMonth": 19,
       "endMonth": 27,
-      "lead": null,
+      "lead": "LAUREA",
       "partners": [
         "LAUREA"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 70,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T4.2",
@@ -479,14 +498,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Delivery of Self-standing Training Modules – first edition",
       "startMonth": 19,
       "endMonth": 27,
-      "lead": null,
+      "lead": "Ud'A",
       "partners": [
         "Ud'A"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 70,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T4.3",
@@ -494,7 +514,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Organisation of Extracurricular Activities and Practices – first edition",
       "startMonth": 22,
       "endMonth": 27,
-      "lead": null,
+      "lead": "ESAD-GV",
       "partners": [
         "ESAD-GV"
       ],
@@ -503,7 +523,8 @@ window.SECRETT_CONFIG = Object.freeze({
       ],
       "assignmentUnconfirmed": false,
       "sourcePage": 70,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T4.4",
@@ -511,14 +532,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Extension of the AI-STEAM Community of Interest and Practice",
       "startMonth": 28,
       "endMonth": 30,
-      "lead": null,
+      "lead": "CEICE",
       "partners": [
         "CEICE"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 70,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T4.5",
@@ -526,7 +548,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Graduation of Students and Competencies Certification I",
       "startMonth": 28,
       "endMonth": 30,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG",
         "TUV.IT"
@@ -534,7 +556,8 @@ window.SECRETT_CONFIG = Object.freeze({
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 71,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T4.6",
@@ -542,14 +565,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Organisation of Public Events I",
       "startMonth": 19,
       "endMonth": 30,
-      "lead": null,
+      "lead": "UMU",
       "partners": [
         "UMU"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 71,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T5.1",
@@ -557,7 +581,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Revision of Legal Framework and Aggregation of further HEIs",
       "startMonth": 31,
       "endMonth": 33,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG",
         "IF.E",
@@ -573,7 +597,8 @@ window.SECRETT_CONFIG = Object.freeze({
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 71,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T5.2",
@@ -581,14 +606,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Update of Master’s Content Delivery Platform",
       "startMonth": 31,
       "endMonth": 33,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 71,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T5.3",
@@ -596,7 +622,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Revised Credentials Certification Framework",
       "startMonth": 31,
       "endMonth": 33,
-      "lead": null,
+      "lead": "TUV.IT",
       "partners": [
         "TUV.IT",
         "COGN"
@@ -604,7 +630,8 @@ window.SECRETT_CONFIG = Object.freeze({
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 71,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T5.4",
@@ -612,7 +639,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "AI-SECRETT Syllabus and Programme – second edition",
       "startMonth": 31,
       "endMonth": 33,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG",
         "IF.E",
@@ -628,7 +655,8 @@ window.SECRETT_CONFIG = Object.freeze({
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 71,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T5.5",
@@ -636,7 +664,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Cascade Funding Call – second edition – Launch and Management",
       "startMonth": 31,
       "endMonth": 33,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG",
         "UMU"
@@ -644,7 +672,8 @@ window.SECRETT_CONFIG = Object.freeze({
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 71,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T5.6",
@@ -652,14 +681,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Administrative and Financial Management of the Participants II",
       "startMonth": 31,
       "endMonth": 33,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 72,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T6.1",
@@ -667,14 +697,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Delivery of online Master Classes – second edition",
       "startMonth": 34,
       "endMonth": 42,
-      "lead": null,
+      "lead": "LAUREA",
       "partners": [
         "LAUREA"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 72,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T6.2",
@@ -682,14 +713,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Delivery of Self-standing Training Modules – second edition",
       "startMonth": 34,
       "endMonth": 42,
-      "lead": null,
+      "lead": "Ud'A",
       "partners": [
         "Ud'A"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 72,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T6.3",
@@ -697,7 +729,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Organisation of Extracurricular Activities and Practices – second edition",
       "startMonth": 37,
       "endMonth": 42,
-      "lead": null,
+      "lead": "ESAD-GV",
       "partners": [
         "ESAD-GV"
       ],
@@ -706,7 +738,8 @@ window.SECRETT_CONFIG = Object.freeze({
       ],
       "assignmentUnconfirmed": false,
       "sourcePage": 72,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T6.4",
@@ -714,14 +747,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Further extension of the AI-STEAM Community of Interest and Practice",
       "startMonth": 43,
       "endMonth": 45,
-      "lead": null,
+      "lead": "CEICE",
       "partners": [
         "CEICE"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 72,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T6.5",
@@ -729,7 +763,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Graduation of Students and Competencies Certification II",
       "startMonth": 43,
       "endMonth": 45,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG",
         "TUV.IT"
@@ -737,7 +771,8 @@ window.SECRETT_CONFIG = Object.freeze({
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 73,
-      "allBeneficiaries": false
+      "allBeneficiaries": false,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T6.6",
@@ -745,14 +780,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Organisation of Public Events II",
       "startMonth": 34,
       "endMonth": 45,
-      "lead": null,
+      "lead": "UMU",
       "partners": [
         "UMU"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 73,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T7.1",
@@ -760,14 +796,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Dissemination and Exploitation Management I",
       "startMonth": 1,
       "endMonth": 18,
-      "lead": null,
+      "lead": "UMU",
       "partners": [
         "UMU"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 73,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T7.2",
@@ -775,14 +812,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Activities on Social Media, Project Website & Platform Management I",
       "startMonth": 1,
       "endMonth": 18,
-      "lead": null,
+      "lead": "UMU",
       "partners": [
         "UMU"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 73,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T7.3",
@@ -790,7 +828,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Stakeholder Interaction, Community Growing & Scaling I",
       "startMonth": 7,
       "endMonth": 18,
-      "lead": null,
+      "lead": "INESC",
       "partners": [
         "INESC"
       ],
@@ -799,7 +837,8 @@ window.SECRETT_CONFIG = Object.freeze({
       ],
       "assignmentUnconfirmed": false,
       "sourcePage": 73,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T8.1",
@@ -807,14 +846,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Internal Communication and Exchange I",
       "startMonth": 1,
       "endMonth": 18,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 74,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T8.2",
@@ -822,14 +862,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Activity Monitoring and Reporting I",
       "startMonth": 1,
       "endMonth": 18,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 74,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T8.3",
@@ -837,14 +878,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Data Management I",
       "startMonth": 1,
       "endMonth": 18,
-      "lead": null,
+      "lead": "FIDIT",
       "partners": [
         "FIDIT"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 74,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T8.4",
@@ -852,14 +894,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Risk Management I",
       "startMonth": 1,
       "endMonth": 18,
-      "lead": null,
+      "lead": "COGN",
       "partners": [
         "COGN"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 74,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T8.5",
@@ -867,14 +910,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Gender Policy Management I",
       "startMonth": 1,
       "endMonth": 18,
-      "lead": null,
+      "lead": "HSW",
       "partners": [
         "HSW"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 74,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T8.6",
@@ -882,14 +926,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Financial Management I",
       "startMonth": 1,
       "endMonth": 18,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 75,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T9.1",
@@ -897,14 +942,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Dissemination and Exploitation Management II",
       "startMonth": 19,
       "endMonth": 26,
-      "lead": null,
+      "lead": "UMU",
       "partners": [
         "UMU"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 75,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T9.2",
@@ -912,14 +958,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Activities on Social Media, Project Website & Platform Management II",
       "startMonth": 19,
       "endMonth": 36,
-      "lead": null,
+      "lead": "UMU",
       "partners": [
         "UMU"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 75,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T9.3",
@@ -927,7 +974,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Stakeholder Interaction, Community Growing & Scaling II",
       "startMonth": 19,
       "endMonth": 36,
-      "lead": null,
+      "lead": "INESC",
       "partners": [
         "INESC"
       ],
@@ -936,7 +983,8 @@ window.SECRETT_CONFIG = Object.freeze({
       ],
       "assignmentUnconfirmed": false,
       "sourcePage": 75,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T10.1",
@@ -944,14 +992,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Internal Communication and Exchange II",
       "startMonth": 19,
       "endMonth": 36,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 76,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T10.2",
@@ -959,14 +1008,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Activity Monitoring and Reporting II",
       "startMonth": 19,
       "endMonth": 36,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 76,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T10.3",
@@ -974,14 +1024,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Data Management II",
       "startMonth": 19,
       "endMonth": 36,
-      "lead": null,
+      "lead": "FIDIT",
       "partners": [
         "FIDIT"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 76,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T10.4",
@@ -989,14 +1040,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Risk Management II",
       "startMonth": 19,
       "endMonth": 36,
-      "lead": null,
+      "lead": "COGN",
       "partners": [
         "COGN"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 76,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T10.5",
@@ -1004,14 +1056,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Gender Policy Management II",
       "startMonth": 19,
       "endMonth": 36,
-      "lead": null,
+      "lead": "HSW",
       "partners": [
         "HSW"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 76,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T10.6",
@@ -1019,14 +1072,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Financial Management II",
       "startMonth": 19,
       "endMonth": 36,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 76,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T11.1",
@@ -1034,14 +1088,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Dissemination and Exploitation Management III",
       "startMonth": 37,
       "endMonth": 48,
-      "lead": null,
+      "lead": "UMU",
       "partners": [
         "UMU"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 77,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T11.2",
@@ -1049,14 +1104,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Activities on Social Media, Project Website & Platform Management III",
       "startMonth": 37,
       "endMonth": 48,
-      "lead": null,
+      "lead": "UMU",
       "partners": [
         "UMU"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 77,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T11.3",
@@ -1064,7 +1120,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Stakeholder Interaction, Community Growing & Scaling III",
       "startMonth": 37,
       "endMonth": 48,
-      "lead": null,
+      "lead": "INESC",
       "partners": [
         "INESC"
       ],
@@ -1073,7 +1129,8 @@ window.SECRETT_CONFIG = Object.freeze({
       ],
       "assignmentUnconfirmed": false,
       "sourcePage": 77,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T11.4",
@@ -1081,14 +1138,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Master’s Innovation Assessment and Preliminary Exploitation Planning",
       "startMonth": 37,
       "endMonth": 42,
-      "lead": null,
+      "lead": "IF.E",
       "partners": [
         "IF.E"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 77,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T11.5",
@@ -1096,14 +1154,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Individual Partners Exploitation Plans",
       "startMonth": 40,
       "endMonth": 45,
-      "lead": null,
+      "lead": "LC",
       "partners": [
         "LC"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 77,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T11.6",
@@ -1111,7 +1170,7 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Final Programme Viability and Sustainability Assessment",
       "startMonth": 43,
       "endMonth": 48,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG"
       ],
@@ -1120,7 +1179,8 @@ window.SECRETT_CONFIG = Object.freeze({
       ],
       "assignmentUnconfirmed": false,
       "sourcePage": 77,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T12.1",
@@ -1128,14 +1188,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Internal Communication and Exchange III",
       "startMonth": 37,
       "endMonth": 48,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 78,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T12.2",
@@ -1143,14 +1204,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Activity Monitoring and Reporting III",
       "startMonth": 37,
       "endMonth": 48,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 78,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T12.3",
@@ -1158,14 +1220,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Data Management III",
       "startMonth": 37,
       "endMonth": 48,
-      "lead": null,
+      "lead": "FIDIT",
       "partners": [
         "FIDIT"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 78,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T12.4",
@@ -1173,14 +1236,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Risk Management III",
       "startMonth": 37,
       "endMonth": 48,
-      "lead": null,
+      "lead": "COGN",
       "partners": [
         "COGN"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 78,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T12.5",
@@ -1188,14 +1252,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Gender Policy Management III",
       "startMonth": 37,
       "endMonth": 48,
-      "lead": null,
+      "lead": "HSW",
       "partners": [
         "HSW"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 78,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     },
     {
       "id": "T12.6",
@@ -1203,14 +1268,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "title": "Financial Management III",
       "startMonth": 37,
       "endMonth": 48,
-      "lead": null,
+      "lead": "UVEG",
       "partners": [
         "UVEG"
       ],
       "associatedPartners": [],
       "assignmentUnconfirmed": false,
       "sourcePage": 79,
-      "allBeneficiaries": true
+      "allBeneficiaries": true,
+      "leadBasis": "First participant in Consortium Agreement §4.5.5, confirmed by coordinator on 6 October 2026"
     }
   ],
   "partners": [
@@ -1309,5 +1375,4 @@ window.SECRETT_CONFIG = Object.freeze({
     }
   ],
   "nextcloudUrl": null
-}
-);
+});

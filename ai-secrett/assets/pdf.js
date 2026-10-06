@@ -121,7 +121,7 @@
         section(`${item.id} — ${item.title}`);
         pair("Work Package and partner role", `${item.work_package} · ${report.partner.kind === "associated_partner" ? "Task contributor" : item.partner_role === "Task lead (COO)" ? "Task leader" : item.partner_role === "Task responsibility to confirm" ? "Responsibility to confirm" : "Task participant"}`);
         if (item.assignment_basis === "voluntary_unlisted") pair("Contribution basis", "Voluntary contribution outside listed assignments");
-        pair("Task leader", item.task_lead || "Not specified in the Agreement");
+        pair("Task leader", item.task_lead || "—");
         pair("Task coverage in this report", `${item.coverage.start} to ${item.coverage.end}`);
         pair("Task months covered", item.coverage.months.join(", "));
         pair("Work reported", item.work_status === "no_work" ? "No work carried out" : item.work_status === "draft" ? "Draft contribution" : "Contribution completed");

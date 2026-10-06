@@ -24,7 +24,7 @@ for(const task of config.tasks){
  assert(wps.has(task.wp),`Unknown WP ${task.id}`);
  assert(task.startMonth>=1&&task.endMonth<=48&&task.startMonth<=task.endMonth,`Window ${task.id}`);
  assert.equal(task.assignmentUnconfirmed,false,`Consortium participant list must be applied: ${task.id}`);
- assert.equal(task.lead,null,`Unverified Task leader: ${task.id}`);
+ assert.equal(task.lead,task.partners[0],`First Consortium participant is Task leader: ${task.id}`);
  assert(task.partners.length,`No named participant: ${task.id}`);
  for(const code of task.partners)assert(codes.has(code)&&code!=='RCE',`${task.id} beneficiary participant`);
  for(const code of task.associatedPartners||[])assert(codes.has(code),`${task.id} associated partner`);
@@ -63,7 +63,7 @@ const cat=JSON.parse(asset('dashboard-catalogue.json'));
 const details=JSON.parse(asset('dashboard-detail.json'));
 assert.equal(data.snapshot_month,'2026-10');
 assert.equal(data.as_of,'2026-10-06');
-assert.equal(data.status_as_of,'2026-09-26');
+assert.equal(data.status_as_of,'2026-10-06');
 assert.equal(model.projectMonth(config,data.snapshot_month),13);
 assert.equal(cat.deliverables.length,23);
 assert.equal(cat.milestones.length,17);
@@ -71,10 +71,10 @@ assert.equal(cat.risks.length,10);
 assert.equal(cat.kpis.length,36);
 assert.equal(Object.keys(data.deliverable_status).length,10);
 assert.equal(Object.keys(data.milestone_status).length,6);
-for(const item of cat.deliverables)if(data.deliverable_status[item.id])assert(item.due<=12,`${item.id} status not supported by September update`);
-for(const item of cat.milestones)if(data.milestone_status[item.id])assert(item.due<=12,`${item.id} status not supported by September update`);
+for(const item of cat.deliverables)if(data.deliverable_status[item.id])assert(item.due<=13,`${item.id} status not supported by October update`);
+for(const item of cat.milestones)if(data.milestone_status[item.id])assert(item.due<=13,`${item.id} status not supported by October update`);
 for(const n of ['dashboard.js','embedded-data.js']){
- const s=asset(n);assert(s.includes('2026-10')&&s.includes('2026-09-26'),`${n} stale snapshot`);
+ const s=asset(n);assert(s.includes('2026-10')&&s.includes('2026-10-06'),`${n} stale snapshot`);
 }
 assert(details.deliverables&&details.milestones);
 for(const match of html.matchAll(/(?:src|href)="(assets\/[^"?#]+)/g))assert(fs.existsSync(path.join(base,match[1])),`Missing ${match[1]}`);

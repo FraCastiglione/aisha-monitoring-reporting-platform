@@ -44,7 +44,7 @@
 
   function participantLabel(task) {
     const beneficiaries = task.allBeneficiaries ? `All beneficiaries (named participants: ${task.partners.join(', ')})` : task.partners.join(', ');
-    return `${beneficiaries}${task.associatedPartners?.length ? `; associated partner commitments: ${task.associatedPartners.join(', ')}` : ''}. Consortium Agreement §4.5.5, pp. 15–18; RCE Attachment 5, p. 61.`;
+    return `${beneficiaries}${task.associatedPartners?.length ? `; associated partner commitments: ${task.associatedPartners.join(', ')}` : ''}. Consortium Agreement §4.5.5, pp. 15–18${task.associatedPartners?.length ? '; RCE Attachment 5, p. 61' : ''}.`;
   }
 
   function role(task, partnerCode, config) {
@@ -67,8 +67,12 @@
     // Earlier previews used this role before the Consortium Agreement was supplied.
     // Retain those answers; unlisted work is labelled voluntary on the next export.
     if (entry?.partner_role === "Task responsibility to confirm") return true;
-    if (assigned(task, partnerCode, config)) return entry?.partner_role === role(task, partnerCode, config);
+    if (assigned(task, partnerCode, config)) return entry?.partner_role === role(task, partnerCode, config) || (entry?.task_lead == null && task.lead === partnerCode && ["Named participant", "All beneficiaries participant"].includes(entry?.partner_role));
     return entry?.partner_role === "Task contributor" && entry.assignment_basis === "voluntary_unlisted";
+  }
+
+  function reportLeadCompatible(task, entry) {
+    return entry?.task_lead === task.lead || entry?.task_lead == null;
   }
 
   function activeTasks(config, partnerCode, monthNumber) {
@@ -131,7 +135,7 @@
     return todayMonth < first ? first : todayMonth > last ? last : todayMonth;
   }
 
-  const model = Object.freeze({ projectMonth, calendarMonth, periodForMonth, monthsBetween, assigned, active, participantLabel, role, associatedReportTask, reportTaskCompatible, activeTasks, defaultMonth, taskWindow, rangePeriod, taskCoverage, eligibleTasks });
+  const model = Object.freeze({ projectMonth, calendarMonth, periodForMonth, monthsBetween, assigned, active, participantLabel, role, associatedReportTask, reportTaskCompatible, reportLeadCompatible, activeTasks, defaultMonth, taskWindow, rangePeriod, taskCoverage, eligibleTasks });
   root.SECRETT_MODEL = model;
   if (typeof module !== "undefined" && module.exports) module.exports = model;
 })(typeof window !== "undefined" ? window : globalThis);
