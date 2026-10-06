@@ -1,4 +1,4 @@
-// AI-SECRETT Grant Agreement 101226207; Task-level assignments need consortium confirmation.
+// AI-SECRETT Grant Agreement 101226207 and signed Consortium Agreement; named participants are not Task leaders.
 window.SECRETT_CONFIG = Object.freeze({
   "project": {
     "id": "101226207",
@@ -14,8 +14,8 @@ window.SECRETT_CONFIG = Object.freeze({
     ]
   },
   "partnersVerified": true,
-  "taskAssignmentsVerified": false,
-  "taskSource": "AI-SECRETT Grant Agreement 101226207, Annex 1, PDF pp. 67–79",
+  "taskAssignmentsVerified": true,
+  "taskSource": "AI-SECRETT Grant Agreement 101226207, Annex 1, PDF pp. 67–79; Consortium Agreement §4.5.5, PDF pp. 15–18; RCE Attachment 5, PDF p. 61",
   "workPackages": [
     {
       "id": "WP1",
@@ -122,10 +122,19 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 1,
       "endMonth": 6,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "INESC",
+        "UVEG",
+        "TUV.IT",
+        "JOIST",
+        "C-LINK",
+        "LC",
+        "CINK"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 67
+      "assignmentUnconfirmed": false,
+      "sourcePage": 67,
+      "allBeneficiaries": false
     },
     {
       "id": "T1.2",
@@ -134,10 +143,22 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 1,
       "endMonth": 6,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG",
+        "IF.E",
+        "FIDIT",
+        "Ud'A",
+        "UMU",
+        "HSW",
+        "LAUREA",
+        "UPV",
+        "NTNU",
+        "ESAD-GV"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 67
+      "assignmentUnconfirmed": false,
+      "sourcePage": 67,
+      "allBeneficiaries": false
     },
     {
       "id": "T1.3",
@@ -146,12 +167,19 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 1,
       "endMonth": 6,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "IF.E",
+        "JOIST",
+        "C-LINK",
+        "LC",
+        "INESC"
+      ],
       "associatedPartners": [
         "RCE"
       ],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 67
+      "assignmentUnconfirmed": false,
+      "sourcePage": 67,
+      "allBeneficiaries": true
     },
     {
       "id": "T1.4",
@@ -160,10 +188,22 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 1,
       "endMonth": 6,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG",
+        "IF.E",
+        "FIDIT",
+        "Ud'A",
+        "UMU",
+        "HSW",
+        "LAUREA",
+        "UPV",
+        "NTNU",
+        "ESAD-GV"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 67
+      "assignmentUnconfirmed": false,
+      "sourcePage": 67,
+      "allBeneficiaries": false
     },
     {
       "id": "T1.5",
@@ -172,10 +212,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 1,
       "endMonth": 6,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "LC",
+        "CEICE",
+        "KEA"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 67
+      "assignmentUnconfirmed": false,
+      "sourcePage": 67,
+      "allBeneficiaries": false
     },
     {
       "id": "T1.6",
@@ -184,10 +229,17 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 1,
       "endMonth": 6,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "IF.E",
+        "FIDIT",
+        "UMU",
+        "UPV",
+        "NTNU"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 67
+      "assignmentUnconfirmed": false,
+      "sourcePage": 67,
+      "allBeneficiaries": false
     },
     {
       "id": "T2.1",
@@ -196,12 +248,18 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 7,
       "endMonth": 12,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "CINK",
+        "C-LINK",
+        "UMU",
+        "LAUREA"
+      ],
       "associatedPartners": [
         "RCE"
       ],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 68
+      "assignmentUnconfirmed": false,
+      "sourcePage": 68,
+      "allBeneficiaries": true
     },
     {
       "id": "T2.2",
@@ -210,10 +268,14 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 7,
       "endMonth": 12,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "TUV.IT",
+        "COGN"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 68
+      "assignmentUnconfirmed": false,
+      "sourcePage": 68,
+      "allBeneficiaries": false
     },
     {
       "id": "T2.3",
@@ -222,10 +284,14 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 7,
       "endMonth": 12,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG",
+        "LAUREA"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 68
+      "assignmentUnconfirmed": false,
+      "sourcePage": 68,
+      "allBeneficiaries": false
     },
     {
       "id": "T2.4",
@@ -234,12 +300,22 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 7,
       "endMonth": 12,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "CEICE",
+        "UVEG",
+        "UMU",
+        "LPGA",
+        "VARM",
+        "LC",
+        "PREDA",
+        "INESC"
+      ],
       "associatedPartners": [
         "RCE"
       ],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 68
+      "assignmentUnconfirmed": false,
+      "sourcePage": 68,
+      "allBeneficiaries": false
     },
     {
       "id": "T2.5",
@@ -248,10 +324,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 7,
       "endMonth": 12,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UMU"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 68
+      "assignmentUnconfirmed": false,
+      "sourcePage": 68,
+      "allBeneficiaries": true
     },
     {
       "id": "T2.6",
@@ -260,10 +339,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 7,
       "endMonth": 12,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG",
+        "UMU",
+        "LAUREA"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 69
+      "assignmentUnconfirmed": false,
+      "sourcePage": 69,
+      "allBeneficiaries": false
     },
     {
       "id": "T3.1",
@@ -272,10 +356,22 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 13,
       "endMonth": 15,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG",
+        "IF.E",
+        "FIDIT",
+        "Ud'A",
+        "UMU",
+        "HSW",
+        "LAUREA",
+        "UPV",
+        "NTNU",
+        "ESAD-GV"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 69
+      "assignmentUnconfirmed": false,
+      "sourcePage": 69,
+      "allBeneficiaries": false
     },
     {
       "id": "T3.2",
@@ -284,10 +380,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 13,
       "endMonth": 18,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 69
+      "assignmentUnconfirmed": false,
+      "sourcePage": 69,
+      "allBeneficiaries": true
     },
     {
       "id": "T3.3",
@@ -296,10 +395,14 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 13,
       "endMonth": 18,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG",
+        "UMU"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 69
+      "assignmentUnconfirmed": false,
+      "sourcePage": 69,
+      "allBeneficiaries": false
     },
     {
       "id": "T3.4",
@@ -308,10 +411,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 13,
       "endMonth": 18,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UMU"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 69
+      "assignmentUnconfirmed": false,
+      "sourcePage": 69,
+      "allBeneficiaries": true
     },
     {
       "id": "T3.5",
@@ -320,10 +426,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 16,
       "endMonth": 18,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 69
+      "assignmentUnconfirmed": false,
+      "sourcePage": 69,
+      "allBeneficiaries": false
     },
     {
       "id": "T3.6",
@@ -332,10 +441,22 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 16,
       "endMonth": 18,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG",
+        "IF.E",
+        "FIDIT",
+        "Ud'A",
+        "UMU",
+        "HSW",
+        "LAUREA",
+        "UPV",
+        "NTNU",
+        "ESAD-GV"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 70
+      "assignmentUnconfirmed": false,
+      "sourcePage": 70,
+      "allBeneficiaries": false
     },
     {
       "id": "T4.1",
@@ -344,10 +465,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 19,
       "endMonth": 27,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "LAUREA"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 70
+      "assignmentUnconfirmed": false,
+      "sourcePage": 70,
+      "allBeneficiaries": true
     },
     {
       "id": "T4.2",
@@ -356,10 +480,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 19,
       "endMonth": 27,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "Ud'A"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 70
+      "assignmentUnconfirmed": false,
+      "sourcePage": 70,
+      "allBeneficiaries": true
     },
     {
       "id": "T4.3",
@@ -368,12 +495,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 22,
       "endMonth": 27,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "ESAD-GV"
+      ],
       "associatedPartners": [
         "RCE"
       ],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 70
+      "assignmentUnconfirmed": false,
+      "sourcePage": 70,
+      "allBeneficiaries": true
     },
     {
       "id": "T4.4",
@@ -382,10 +512,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 28,
       "endMonth": 30,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "CEICE"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 70
+      "assignmentUnconfirmed": false,
+      "sourcePage": 70,
+      "allBeneficiaries": true
     },
     {
       "id": "T4.5",
@@ -394,10 +527,14 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 28,
       "endMonth": 30,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG",
+        "TUV.IT"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 71
+      "assignmentUnconfirmed": false,
+      "sourcePage": 71,
+      "allBeneficiaries": false
     },
     {
       "id": "T4.6",
@@ -406,10 +543,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 19,
       "endMonth": 30,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UMU"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 71
+      "assignmentUnconfirmed": false,
+      "sourcePage": 71,
+      "allBeneficiaries": true
     },
     {
       "id": "T5.1",
@@ -418,10 +558,22 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 31,
       "endMonth": 33,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG",
+        "IF.E",
+        "FIDIT",
+        "Ud'A",
+        "UMU",
+        "HSW",
+        "LAUREA",
+        "UPV",
+        "NTNU",
+        "ESAD-GV"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 71
+      "assignmentUnconfirmed": false,
+      "sourcePage": 71,
+      "allBeneficiaries": false
     },
     {
       "id": "T5.2",
@@ -430,10 +582,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 31,
       "endMonth": 33,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 71
+      "assignmentUnconfirmed": false,
+      "sourcePage": 71,
+      "allBeneficiaries": true
     },
     {
       "id": "T5.3",
@@ -442,10 +597,14 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 31,
       "endMonth": 33,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "TUV.IT",
+        "COGN"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 71
+      "assignmentUnconfirmed": false,
+      "sourcePage": 71,
+      "allBeneficiaries": false
     },
     {
       "id": "T5.4",
@@ -454,10 +613,22 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 31,
       "endMonth": 33,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG",
+        "IF.E",
+        "FIDIT",
+        "Ud'A",
+        "UMU",
+        "HSW",
+        "LAUREA",
+        "UPV",
+        "NTNU",
+        "ESAD-GV"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 71
+      "assignmentUnconfirmed": false,
+      "sourcePage": 71,
+      "allBeneficiaries": false
     },
     {
       "id": "T5.5",
@@ -466,10 +637,14 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 31,
       "endMonth": 33,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG",
+        "UMU"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 71
+      "assignmentUnconfirmed": false,
+      "sourcePage": 71,
+      "allBeneficiaries": false
     },
     {
       "id": "T5.6",
@@ -478,10 +653,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 31,
       "endMonth": 33,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 72
+      "assignmentUnconfirmed": false,
+      "sourcePage": 72,
+      "allBeneficiaries": false
     },
     {
       "id": "T6.1",
@@ -490,10 +668,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 34,
       "endMonth": 42,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "LAUREA"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 72
+      "assignmentUnconfirmed": false,
+      "sourcePage": 72,
+      "allBeneficiaries": true
     },
     {
       "id": "T6.2",
@@ -502,10 +683,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 34,
       "endMonth": 42,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "Ud'A"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 72
+      "assignmentUnconfirmed": false,
+      "sourcePage": 72,
+      "allBeneficiaries": true
     },
     {
       "id": "T6.3",
@@ -514,12 +698,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 37,
       "endMonth": 42,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "ESAD-GV"
+      ],
       "associatedPartners": [
         "RCE"
       ],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 72
+      "assignmentUnconfirmed": false,
+      "sourcePage": 72,
+      "allBeneficiaries": true
     },
     {
       "id": "T6.4",
@@ -528,10 +715,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 43,
       "endMonth": 45,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "CEICE"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 72
+      "assignmentUnconfirmed": false,
+      "sourcePage": 72,
+      "allBeneficiaries": true
     },
     {
       "id": "T6.5",
@@ -540,10 +730,14 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 43,
       "endMonth": 45,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG",
+        "TUV.IT"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 73
+      "assignmentUnconfirmed": false,
+      "sourcePage": 73,
+      "allBeneficiaries": false
     },
     {
       "id": "T6.6",
@@ -552,10 +746,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 34,
       "endMonth": 45,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UMU"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 73
+      "assignmentUnconfirmed": false,
+      "sourcePage": 73,
+      "allBeneficiaries": true
     },
     {
       "id": "T7.1",
@@ -564,10 +761,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 1,
       "endMonth": 18,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UMU"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 73
+      "assignmentUnconfirmed": false,
+      "sourcePage": 73,
+      "allBeneficiaries": true
     },
     {
       "id": "T7.2",
@@ -576,10 +776,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 1,
       "endMonth": 18,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UMU"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 73
+      "assignmentUnconfirmed": false,
+      "sourcePage": 73,
+      "allBeneficiaries": true
     },
     {
       "id": "T7.3",
@@ -588,12 +791,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 7,
       "endMonth": 18,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "INESC"
+      ],
       "associatedPartners": [
         "RCE"
       ],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 73
+      "assignmentUnconfirmed": false,
+      "sourcePage": 73,
+      "allBeneficiaries": true
     },
     {
       "id": "T8.1",
@@ -602,10 +808,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 1,
       "endMonth": 18,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 74
+      "assignmentUnconfirmed": false,
+      "sourcePage": 74,
+      "allBeneficiaries": true
     },
     {
       "id": "T8.2",
@@ -614,10 +823,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 1,
       "endMonth": 18,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 74
+      "assignmentUnconfirmed": false,
+      "sourcePage": 74,
+      "allBeneficiaries": true
     },
     {
       "id": "T8.3",
@@ -626,10 +838,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 1,
       "endMonth": 18,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "FIDIT"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 74
+      "assignmentUnconfirmed": false,
+      "sourcePage": 74,
+      "allBeneficiaries": true
     },
     {
       "id": "T8.4",
@@ -638,10 +853,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 1,
       "endMonth": 18,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "COGN"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 74
+      "assignmentUnconfirmed": false,
+      "sourcePage": 74,
+      "allBeneficiaries": true
     },
     {
       "id": "T8.5",
@@ -650,10 +868,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 1,
       "endMonth": 18,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "HSW"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 74
+      "assignmentUnconfirmed": false,
+      "sourcePage": 74,
+      "allBeneficiaries": true
     },
     {
       "id": "T8.6",
@@ -662,10 +883,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 1,
       "endMonth": 18,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 75
+      "assignmentUnconfirmed": false,
+      "sourcePage": 75,
+      "allBeneficiaries": true
     },
     {
       "id": "T9.1",
@@ -674,10 +898,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 19,
       "endMonth": 26,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UMU"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 75
+      "assignmentUnconfirmed": false,
+      "sourcePage": 75,
+      "allBeneficiaries": true
     },
     {
       "id": "T9.2",
@@ -686,10 +913,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 19,
       "endMonth": 36,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UMU"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 75
+      "assignmentUnconfirmed": false,
+      "sourcePage": 75,
+      "allBeneficiaries": true
     },
     {
       "id": "T9.3",
@@ -698,12 +928,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 19,
       "endMonth": 36,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "INESC"
+      ],
       "associatedPartners": [
         "RCE"
       ],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 75
+      "assignmentUnconfirmed": false,
+      "sourcePage": 75,
+      "allBeneficiaries": true
     },
     {
       "id": "T10.1",
@@ -712,10 +945,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 19,
       "endMonth": 36,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 76
+      "assignmentUnconfirmed": false,
+      "sourcePage": 76,
+      "allBeneficiaries": true
     },
     {
       "id": "T10.2",
@@ -724,10 +960,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 19,
       "endMonth": 36,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 76
+      "assignmentUnconfirmed": false,
+      "sourcePage": 76,
+      "allBeneficiaries": true
     },
     {
       "id": "T10.3",
@@ -736,10 +975,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 19,
       "endMonth": 36,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "FIDIT"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 76
+      "assignmentUnconfirmed": false,
+      "sourcePage": 76,
+      "allBeneficiaries": true
     },
     {
       "id": "T10.4",
@@ -748,10 +990,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 19,
       "endMonth": 36,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "COGN"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 76
+      "assignmentUnconfirmed": false,
+      "sourcePage": 76,
+      "allBeneficiaries": true
     },
     {
       "id": "T10.5",
@@ -760,10 +1005,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 19,
       "endMonth": 36,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "HSW"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 76
+      "assignmentUnconfirmed": false,
+      "sourcePage": 76,
+      "allBeneficiaries": true
     },
     {
       "id": "T10.6",
@@ -772,10 +1020,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 19,
       "endMonth": 36,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 76
+      "assignmentUnconfirmed": false,
+      "sourcePage": 76,
+      "allBeneficiaries": true
     },
     {
       "id": "T11.1",
@@ -784,10 +1035,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 37,
       "endMonth": 48,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UMU"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 77
+      "assignmentUnconfirmed": false,
+      "sourcePage": 77,
+      "allBeneficiaries": true
     },
     {
       "id": "T11.2",
@@ -796,10 +1050,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 37,
       "endMonth": 48,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UMU"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 77
+      "assignmentUnconfirmed": false,
+      "sourcePage": 77,
+      "allBeneficiaries": true
     },
     {
       "id": "T11.3",
@@ -808,12 +1065,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 37,
       "endMonth": 48,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "INESC"
+      ],
       "associatedPartners": [
         "RCE"
       ],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 77
+      "assignmentUnconfirmed": false,
+      "sourcePage": 77,
+      "allBeneficiaries": true
     },
     {
       "id": "T11.4",
@@ -822,10 +1082,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 37,
       "endMonth": 42,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "IF.E"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 77
+      "assignmentUnconfirmed": false,
+      "sourcePage": 77,
+      "allBeneficiaries": true
     },
     {
       "id": "T11.5",
@@ -834,10 +1097,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 40,
       "endMonth": 45,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "LC"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 77
+      "assignmentUnconfirmed": false,
+      "sourcePage": 77,
+      "allBeneficiaries": true
     },
     {
       "id": "T11.6",
@@ -846,12 +1112,15 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 43,
       "endMonth": 48,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG"
+      ],
       "associatedPartners": [
         "RCE"
       ],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 77
+      "assignmentUnconfirmed": false,
+      "sourcePage": 77,
+      "allBeneficiaries": true
     },
     {
       "id": "T12.1",
@@ -860,10 +1129,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 37,
       "endMonth": 48,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 78
+      "assignmentUnconfirmed": false,
+      "sourcePage": 78,
+      "allBeneficiaries": true
     },
     {
       "id": "T12.2",
@@ -872,10 +1144,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 37,
       "endMonth": 48,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 78
+      "assignmentUnconfirmed": false,
+      "sourcePage": 78,
+      "allBeneficiaries": true
     },
     {
       "id": "T12.3",
@@ -884,10 +1159,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 37,
       "endMonth": 48,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "FIDIT"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 78
+      "assignmentUnconfirmed": false,
+      "sourcePage": 78,
+      "allBeneficiaries": true
     },
     {
       "id": "T12.4",
@@ -896,10 +1174,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 37,
       "endMonth": 48,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "COGN"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 78
+      "assignmentUnconfirmed": false,
+      "sourcePage": 78,
+      "allBeneficiaries": true
     },
     {
       "id": "T12.5",
@@ -908,10 +1189,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 37,
       "endMonth": 48,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "HSW"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 78
+      "assignmentUnconfirmed": false,
+      "sourcePage": 78,
+      "allBeneficiaries": true
     },
     {
       "id": "T12.6",
@@ -920,10 +1204,13 @@ window.SECRETT_CONFIG = Object.freeze({
       "startMonth": 37,
       "endMonth": 48,
       "lead": null,
-      "partners": [],
+      "partners": [
+        "UVEG"
+      ],
       "associatedPartners": [],
-      "assignmentUnconfirmed": true,
-      "sourcePage": 79
+      "assignmentUnconfirmed": false,
+      "sourcePage": 79,
+      "allBeneficiaries": true
     }
   ],
   "partners": [
@@ -1022,4 +1309,5 @@ window.SECRETT_CONFIG = Object.freeze({
     }
   ],
   "nextcloudUrl": null
-});
+}
+);

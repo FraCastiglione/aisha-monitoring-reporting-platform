@@ -23,8 +23,10 @@ const wps=new Set(config.workPackages.map(w=>w.id));
 for(const task of config.tasks){
  assert(wps.has(task.wp),`Unknown WP ${task.id}`);
  assert(task.startMonth>=1&&task.endMonth<=48&&task.startMonth<=task.endMonth,`Window ${task.id}`);
- assert.equal(task.assignmentUnconfirmed,true,`Unconfirmed assignment must stay explicit: ${task.id}`);
+ assert.equal(task.assignmentUnconfirmed,false,`Consortium participant list must be applied: ${task.id}`);
  assert.equal(task.lead,null,`Unverified Task leader: ${task.id}`);
+ assert(task.partners.length,`No named participant: ${task.id}`);
+ for(const code of task.partners)assert(codes.has(code)&&code!=='RCE',`${task.id} beneficiary participant`);
  for(const code of task.associatedPartners||[])assert(codes.has(code),`${task.id} associated partner`);
  const start=model.calendarMonth(config,task.startMonth),end=model.calendarMonth(config,task.endMonth);
  assert.equal(model.projectMonth(config,start),task.startMonth);
@@ -33,12 +35,25 @@ for(const task of config.tasks){
  assert(p,`Period ${task.id}`);
  assert(model.taskCoverage(config,task,p.start,p.end,p.selected_months),`Coverage ${task.id}`);
 }
+const ca=JSON.parse(fs.readFileSync(path.join(base,'tests/consortium-participants.json'),'utf8'));
+assert.equal(Object.keys(ca.tasks).length,66);
+assert.equal(config.taskAssignmentsVerified,true);
+for(const task of config.tasks){const reference=ca.tasks[task.id];assert(reference,`Missing Consortium reference ${task.id}`);assert.equal(task.startMonth,reference.start);assert.equal(task.endMonth,reference.end);assert.deepEqual(JSON.parse(JSON.stringify(task.partners)),reference.partners);assert.equal(task.allBeneficiaries,reference.allBeneficiaries);}
+const rceTasks=['T1.3','T2.1','T2.4','T4.3','T6.3','T7.3','T9.3','T11.3','T11.6'];
+assert.deepEqual(Array.from(config.tasks.filter(t=>model.assigned(t,'RCE',config)),t=>t.id),rceTasks);
+assert.deepEqual(Array.from(model.activeTasks(config,'RCE',13),t=>t.id),['T7.3']);
+assert.equal(model.assigned(config.tasks.find(t=>t.id==='T3.1'),'COGN',config),false);
+assert.equal(model.assigned(config.tasks.find(t=>t.id==='T3.2'),'COGN',config),true);
+assert.equal(model.assigned(config.tasks.find(t=>t.id==='T5.1'),'ESAD-GV',config),true);
+assert.equal(model.reportTaskCompatible(config.tasks.find(t=>t.id==='T3.1'),'COGN',config,{partner_role:'Task responsibility to confirm'}),true);
+assert.equal(model.reportTaskCompatible(config.tasks.find(t=>t.id==='T3.1'),'COGN',config,{partner_role:'Task contributor',assignment_basis:'voluntary_unlisted'}),true);
+assert.equal(model.reportTaskCompatible(config.tasks.find(t=>t.id==='T3.1'),'COGN',config,{partner_role:'Named participant'}),false);
 let checked=0;
 for(const partner of config.partners){
  for(let month=1;month<=48;month++){
   const ym=model.calendarMonth(config,month),period=model.periodForMonth(config,ym);
   const eligible=model.eligibleTasks(config,partner.code,period.start,period.end,[ym]);
-  const expected=config.tasks.filter(t=>model.assigned(t,partner.code,config)&&model.active(t,month));
+  const expected=config.tasks.filter(t=>{const reference=ca.tasks[t.id];const listed=partner.kind==='associated_partner'?rceTasks.includes(t.id):reference.allBeneficiaries||reference.partners.includes(partner.code);return listed&&reference.start<=month&&month<=reference.end;});
   assert.deepEqual(eligible.map(t=>t.id),expected.map(t=>t.id),`${partner.code} M${month}`);
   checked+=eligible.length;
  }
@@ -67,7 +82,7 @@ const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
 assert.equal(new Set(ids).size,ids.length,'Duplicate HTML ids');
 for(const id of [...asset('reporting.js').matchAll(/\$\('([^']+)'\)/g)].map(m=>m[1]))assert(ids.includes(id)||id==='review-revision-display',`Missing reporting control ${id}`);
 for(const id of [...asset('app.js').matchAll(/\$\('([^']+)'\)/g)].map(m=>m[1]))assert(ids.includes(id),`Missing app control ${id}`);
-for(const n of ['reporting.js','pdf.js','report-files.js','index.html'])assert(!fs.readFileSync(path.join(base,n==='index.html'?n:'assets/'+n),'utf8').includes('AISHA'),'AISHA reference in '+n);
+for(const n of ['reporting.js','pdf.js','report-files.js','index.html']){const source=fs.readFileSync(path.join(base,n==='index.html'?n:'assets/'+n),'utf8');assert(!source.includes('AISHA'),'AISHA reference in '+n);assert(!source.includes('AI-AI-SECRETT'),'Duplicated project name in '+n);}
 const req=createRequire(import.meta.url);
 globalThis.window={PDFLib:req(path.join(base,'assets/pdf-lib.min.js')),fontkit:req(path.join(base,'assets/fontkit.umd.min.js'))};
 req(path.join(base,'assets/pdf-assets.js'));

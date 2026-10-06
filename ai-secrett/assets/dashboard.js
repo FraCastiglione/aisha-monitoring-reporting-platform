@@ -145,9 +145,9 @@
       const rows=reportRows().filter(row=>row.kind==='task'&&row.id===task.id),assigned=config.partners.filter(partner=>model.assigned(task,partner.code,config)),details=el('details','dash-wp-task'),summary=el('summary',''),body=el('div','dash-wp-task-body');
       const implementation=snapshot.task_progress?.[task.id]?.state;
       summary.append(el('strong','',`${task.id} · ${task.title}`),el('small','',`${monthCode(task.startMonth)}–${monthCode(task.endMonth)} · Task lead ${task.lead || 'not specified'} · ${new Set(rows.map(row=>row.partner)).size}/${assigned.length} partners with entries · Completion ${implementation?implementation.replaceAll('_',' '):'not assessed'}`));
-      body.append(el('p','dash-record-note',`Task leader: ${task.lead ? `${partnerName(task.lead)} (${task.lead})` : 'not identified in the Agreement'} · Source: PDF p. ${task.sourcePage}. ${task.timingBasis==='work_package'?'Task timing inherits the Work Package window.':''}`));
-      const raw=agreement.tasks[task.id]?.agreementText||'',parts=raw.split('\n'),descriptionIndex=parts.findIndex((line,i)=>i>0&&line.trim()==='Description:'),participants=descriptionIndex>=0?parts.slice(1,descriptionIndex):parts.slice(1,2);
-      body.append(el('h4','','Task participants'),el('p','dash-task-participants',joinAgreementLines(participants).replace(/^Participants:\s*/,'')),el('h4','','Agreement Task description'),agreementBlocks((descriptionIndex>=0?parts.slice(descriptionIndex+1):parts.slice(2)).join('\n')));
+      body.append(el('p','dash-record-note',`Task leader: ${task.lead ? `${partnerName(task.lead)} (${task.lead})` : 'not identified in the Agreement'} · Description: Grant Agreement PDF p. ${task.sourcePage}; participants and window: Consortium Agreement §4.5.5, pp. 15–18; RCE: Attachment 5, p. 61. ${task.timingBasis==='work_package'?'Task timing inherits the Work Package window.':''}`));
+      const raw=agreement.tasks[task.id]?.agreementText||'',parts=raw.split('\n'),descriptionIndex=parts.findIndex((line,i)=>i>0&&line.trim()==='Description:');
+      body.append(el('h4','','Task participants'),el('p','dash-task-participants',model.participantLabel(task)),el('h4','','Agreement Task description'),agreementBlocks((descriptionIndex>=0?parts.slice(descriptionIndex+1):parts.slice(2)).join('\n')));
       if(rows.length)body.append(el('p','dash-record-note',`Confirmed partner entries: ${rows.map(row=>`${row.partner} (${monthList(row.coverage.months)})`).join('; ')}.`));
       details.append(summary,body);taskColumn.append(details);
     }
@@ -271,7 +271,7 @@
   function taskBlock(task) {
     const assigned = config.partners.filter(partner => model.assigned(task, partner.code, config));
     const withReports = assigned.filter(partner => taskRows(task,partner.code).length);
-    const box=el('div','dash-record-box'); box.append(el('p','dash-record-note',`${withReports.length} of ${assigned.length} potential reporting partners have a confirmed report entry overlapping the selected months. “No report recorded” does not mean a report was due or missed.`));
+    const box=el('div','dash-record-box'); box.append(el('p','dash-record-note',`${withReports.length} of ${assigned.length} listed reporting partners have a confirmed report entry overlapping the selected months. “No report recorded” does not mean a report was due or missed.`));
     const table=el('div','dash-record-table');
     for(const partner of assigned){
       const rows=taskRows(task,partner.code), line=el('div','dash-record-line'), who=el('div');who.append(el('strong','',partner.code),el('small','',partnerName(partner.code)));
@@ -290,7 +290,7 @@
     const tasks=config.tasks.filter(task=>task.wp===wp.id && activeMonths(task).length);
     const assigned=config.partners.filter(partner=>tasks.some(task=>model.assigned(task,partner.code,config)));
     const box=el('div','dash-record-box'), wpLeader=wpRows(wp,wp.lead);
-    box.append(el('p','dash-record-note',`Work Package leader: ${wp.lead}. Leadership update: ${wpLeader.length ? wpLeader.map(recordDetail).join('; ') : 'No update recorded for these months'}. Task coverage below counts scheduled Tasks available for reporting, pending partner assignment confirmation; a leader’s assessment of another Task is not that partner’s own report.`));
+    box.append(el('p','dash-record-note',`Work Package leader: ${wp.lead}. Leadership update: ${wpLeader.length ? wpLeader.map(recordDetail).join('; ') : 'No update recorded for these months'}. Task coverage below follows participants listed in the Consortium Agreement; a leader’s assessment of another Task is not that partner’s own report.`));
     const table=el('div','dash-record-table');
     for(const partner of assigned){
       const eligible=tasks.filter(task=>model.assigned(task,partner.code,config)), rows=eligible.flatMap(task=>taskRows(task,partner.code)), reported=new Set(rows.map(row=>row.id));
@@ -303,26 +303,26 @@
     box.append(table);
     const wpRisks=catalogue.risks.filter(risk=>risk.wps.includes(wp.id));
     if(wpRisks.length)box.append(el('p','dash-record-note',`Agreement potential risks: ${wpRisks.map(risk=>`Risk ${risk.id}`).join(', ')}. See the risk register below for definitions and mitigations.`));
-    return detail(`${wp.id} · ${wp.title} · ${assigned.length} potential reporting partners`,box,'dash-wp-detail');
+    return detail(`${wp.id} · ${wp.title} · ${assigned.length} listed reporting partners`,box,'dash-wp-detail');
   }
   function partnerBlock(partner,tasks) {
     const scheduled=tasks.filter(task=>model.assigned(task,partner.code,config));
     const rows=scheduled.flatMap(task=>taskRows(task,partner.code));
     const reported=new Set(rows.map(row=>row.id));
     const box=el('div','dash-record-box');
-    box.append(el('p','dash-record-note',`${reported.size} of ${scheduled.length} ${partner.kind==='associated_partner'?'possible contributor':'scheduled'} Tasks have a confirmed report entry in the selected months. The Agreement does not provide a complete partner-by-Task assignment matrix; unrecorded Tasks are not automatically overdue.`));
+    box.append(el('p','dash-record-note',`${reported.size} of ${scheduled.length} ${partner.kind==='associated_partner'?'committed contributor':'assigned'} Tasks have a confirmed report entry in the selected months. Participants follow Consortium Agreement §4.5.5 and RCE Attachment 5; unrecorded Tasks are not automatically overdue.`));
     if(!scheduled.length)box.append(empty('No scheduled Tasks match these months and Work Package. Voluntary contributions can be added in the reporting builder.'));
     else {const table=el('div','dash-record-table');for(const task of scheduled){const entries=taskRows(task,partner.code),line=el('div','dash-record-line'),who=el('div'),what=el('div');who.append(el('strong','',task.id),el('small','',task.title));if(entries.length)for(const row of entries)what.append(el('p','',recordDetail(row)));else what.append(el('span','dash-muted','No report recorded'));line.append(who,what);table.append(line);}box.append(table);}
     return detail(`${partner.code} · ${partner.name} · ${reported.size}/${scheduled.length} Tasks with entries`,box,'dash-partner-detail');
   }
   function reportingSection() {
     const section=el('section','dash-section');section.id='dashboard-reporting';
-    section.append(header('Partner reporting coverage','See the potential reporting partners, their confirmed report entries, and the exact periods they covered.'));
-    if (!reportRows().length) { const note=el('div','dash-state-note');note.append(el('strong','','No partner files added yet'),el('p','','Each Task and Work Package shows its Agreement schedule. Partner-by-Task assignments need confirmation; recorded coverage will appear after submitted files are reviewed and imported.'));section.append(note); }
+    section.append(header('Partner reporting coverage','See the listed reporting partners, their confirmed report entries, and the exact periods they covered.'));
+    if (!reportRows().length) { const note=el('div','dash-state-note');note.append(el('strong','','No partner files added yet'),el('p','','Each Task and Work Package shows its Agreement schedule. Task participants follow the Consortium Agreement; recorded coverage will appear after submitted files are reviewed and imported.'));section.append(note); }
     section.append(reportingControls()); const eligibleWps=config.workPackages.filter(wp=>view.wp==='all'||view.wp===wp.id), active=eligibleWps.filter(wp=>activeMonths(wp).length), future=eligibleWps.filter(wp=>!activeMonths(wp).length);
     const tasks=config.tasks.filter(task=>activeMonths(task).length && (view.wp==='all'||task.wp===view.wp) && (!view.search||`${task.id} ${task.title}`.toLowerCase().includes(view.search)));
     const mode=el('div','dash-mode-switch');
-    const partners=config.partners.filter(partner=>view.partnerKind==='all'||partner.kind===view.partnerKind);
+    const partners=config.partners.filter(partner=>view.partnerKind==='all'||(partner.kind||'beneficiary')===view.partnerKind);
     for(const [key,label,count] of [['tasks','Tasks',tasks.length],['work_packages','Work Packages',active.length],['partners','Partners',partners.length]]){const button=el('button',view.reportingMode===key?'is-selected':'',`${label}  ${count}`);button.type='button';button.setAttribute('aria-pressed',String(view.reportingMode===key));button.addEventListener('click',()=>{view.reportingMode=key;render();});mode.append(button);}section.append(mode);
     const taskPanel=el('div','dash-panel dash-report-panel');taskPanel.append(el('h3','',`Tasks · ${tasks.length}`));
     if(tasks.length) tasks.forEach(task=>taskPanel.append(taskBlock(task))); else taskPanel.append(empty('No Tasks match the selected months and filter.'));

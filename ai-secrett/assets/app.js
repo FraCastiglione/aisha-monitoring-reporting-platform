@@ -56,6 +56,8 @@
   }
   if (partners.length && !config.taskAssignmentsVerified) {
     configNotice.textContent = "The participant list is from the signed Grant Agreement. Task-level partner assignments need coordinator confirmation before submission.";
+  } else if (partners.length && config.taskAssignmentsVerified) {
+    configNotice.textContent = "Task participants and windows are checked against the Consortium Agreement. RCE follows its nine commitments in Attachment 5.";
   }
 
   function invalidate(field) {

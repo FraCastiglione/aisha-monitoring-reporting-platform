@@ -6,20 +6,20 @@
     <meta name="theme-color" content="#4f2bd8">
     <meta name="description" content="Prepare AI-SECRETT partner reports and view approved project monitoring information.">
     <title>AI-SECRETT Monitoring and Reporting Platform</title>
-    <link rel="stylesheet" href="assets/styles.css?v=20261006a">
-    <script src="assets/config.js?v=20261006a" defer></script>
+    <link rel="stylesheet" href="assets/styles.css?v=20261006b">
+    <script src="assets/config.js?v=20261006b" defer></script>
     <script src="assets/agreement-content.js" defer></script>
-    <script src="assets/project-model.js?v=20261006a" defer></script>
-    <script src="assets/embedded-data.js?v=20261006a" defer></script>
+    <script src="assets/project-model.js?v=20261006b" defer></script>
+    <script src="assets/embedded-data.js?v=20261006b" defer></script>
     <script src="assets/pdf-lib.min.js" defer></script>
     <script src="assets/fontkit.umd.min.js" defer></script>
-    <script src="assets/pdf-assets.js?v=20261006a" defer></script>
-    <script src="assets/pdf.js?v=20261006a" defer></script>
-    <script src="assets/app.js?v=20261006a" defer></script>
-    <script src="assets/kpi-model.js?v=20261006a" defer></script>
-    <script src="assets/report-files.js?v=20261006a" defer></script>
-    <script src="assets/reporting.js?v=20261006a" defer></script>
-    <script src="assets/dashboard.js?v=20261006a" defer></script>
+    <script src="assets/pdf-assets.js?v=20261006b" defer></script>
+    <script src="assets/pdf.js?v=20261006b" defer></script>
+    <script src="assets/app.js?v=20261006b" defer></script>
+    <script src="assets/kpi-model.js?v=20261006b" defer></script>
+    <script src="assets/report-files.js?v=20261006b" defer></script>
+    <script src="assets/reporting.js?v=20261006b" defer></script>
+    <script src="assets/dashboard.js?v=20261006b" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to main content</a>
@@ -110,7 +110,7 @@
           <h2 id="choice-title" tabindex="-1">What would you like to report?</h2>
           <p class="section-intro">Choose the type of contribution you are preparing. You can save a browser draft or download a draft file as you work.</p>
           <div class="choice-grid">
-            <article class="choice-card"><span class="choice-mark" aria-hidden="true">01 / TASKS</span><h3>Tasks Reporting</h3><p>Choose a reporting date range, then prepare one partner report covering the scheduled Tasks you select. Confirm responsibilities with the coordinator.</p><button class="choice-button" type="button" data-report-type="task" aria-pressed="false">Choose Tasks Reporting <span aria-hidden="true">→</span></button></article>
+            <article class="choice-card"><span class="choice-mark" aria-hidden="true">01 / TASKS</span><h3>Tasks Reporting</h3><p>Choose reporting months, then prepare one partner report covering your listed Tasks and any additional contributions.</p><button class="choice-button" type="button" data-report-type="task" aria-pressed="false">Choose Tasks Reporting <span aria-hidden="true">→</span></button></article>
             <article class="choice-card"><span class="choice-mark" aria-hidden="true">02 / OUTREACH</span><h3>Communication &amp; Dissemination</h3><p>Share events, media outreach, publications, social activity, reach and support needs for a two-week period.</p><button class="choice-button" type="button" data-report-type="communication" aria-pressed="false">Choose Communication <span aria-hidden="true">→</span></button></article>
           </div>
           <p id="report-status" class="selection-message" role="status" hidden></p>
@@ -119,7 +119,7 @@
 
         <section id="report-workspace" class="container report-workspace" aria-labelledby="workspace-title" hidden>
           <div class="workspace-heading"><div><p class="overline">PREPARE YOUR REPORT</p><h2 id="workspace-title" tabindex="-1">Reporting form</h2></div><button id="back-to-choice" class="text-button" type="button">← Change report type</button></div>
-          <p class="preview-notice">This is a working preview. The Grant Agreement governs formal Work Packages, Tasks and activity windows. The complete partner-by-Task assignment matrix is not available; confirm responsibilities with the coordinator. You choose the dates and Tasks covered by this partner report; the Agreement does not prescribe this monitoring round.</p>
+          <p class="preview-notice">This is a working preview. The Grant Agreement governs formal Work Packages, Tasks and activity windows. Task participants and activity windows are checked against the Consortium Agreement; RCE commitments are listed in Attachment 5. You choose the dates and Tasks covered by this partner report; the Agreement does not prescribe this monitoring round.</p>
 
           <div id="task-picker" class="form-card" hidden>
             <h3>Build your partner report</h3>
@@ -129,7 +129,7 @@
             <p id="task-month-summary" class="selection-message" role="status">Choose project months to see scheduled Tasks available for reporting.</p><section id="overview-import" class="overview-import is-prominent"><div><strong>Resume or update a report</strong><p>Import a complete report, an editable draft file, or a PDF created by this preview. Choose which Task and Work Package entries to bring in before anything changes.</p></div><label class="button button-secondary file-label" for="import-report-file">Import report</label><input id="import-report-file" type="file" accept=".json,.pdf,application/json,application/pdf" hidden><p id="overview-import-message" class="form-message" role="alert" hidden></p></section>
             <div id="task-list" class="task-list"></div>
             <section id="wp-leader-section" class="wp-leader-section" hidden><div class="section-heading"><div><p class="overline">FOR WORK PACKAGE LEADERS</p><h3>Work Package leadership updates</h3></div><p>Report on coordination of the whole Work Package, separately from your organisation’s Task contributions.</p></div><div id="wp-leader-list"></div></section>
-            <section id="extra-contributions" class="report-extra-section"><div class="section-heading"><div><p class="overline">ADDITIONAL CONTRIBUTIONS</p><h3>Work outside your listed assignments</h3></div><p>Select all the extra Tasks and Work Packages you contributed to. They will appear below as drafts, ready to complete one at a time. These voluntary entries do not change Grant Agreement assignments.</p></div><div id="extra-picker" class="extra-picker"><div id="extra-task-options"></div><div id="extra-wp-options"></div></div><button id="add-extra" class="button button-secondary" type="button">Add selected contributions</button><p id="extra-message" class="form-message" role="status" hidden></p><div id="extra-list"></div></section>
+            <section id="extra-contributions" class="report-extra-section"><div class="section-heading"><div><p class="overline">ADDITIONAL CONTRIBUTIONS</p><h3>Work outside your listed assignments</h3></div><p>Select all the extra Tasks and Work Packages you contributed to. They will appear below as drafts, ready to complete one at a time. These voluntary entries do not change the listed project assignments.</p></div><div id="extra-picker" class="extra-picker"><div id="extra-task-options"></div><div id="extra-wp-options"></div></div><button id="add-extra" class="button button-secondary" type="button">Add selected contributions</button><p id="extra-message" class="form-message" role="status" hidden></p><div id="extra-list"></div></section>
           </div>
 
           <form id="task-form" class="form-card report-form" novalidate hidden>
@@ -222,7 +222,7 @@
           <li><span>02</span><h2>Review and download</h2><p>Check your details and answers, then retain both the readable PDF and the structured JSON file.</p></li>
           <li><span>03</span><h2>Share the report files</h2><p>Send both files through the channel specified by the AI-SECRETT coordination team and confirm receipt there. This preview does not send them.</p></li>
         </ol>
-        <div class="notice-card"><strong>About this preview</strong><p>The participant, Work Package, Task and schedule catalogue comes from the signed Grant Agreement. Possible associated-partner contributions are drawn from Part B; a full, binding Task assignment matrix is not provided. Reporting periods and the two-week communication check-in are coordinator workflow choices; the coordination team should confirm each monitoring round before official use.</p></div>
+        <div class="notice-card"><strong>About this preview</strong><p>The participant, Work Package, Task and schedule catalogue comes from the signed Grant Agreement. Task participants are listed in the Consortium Agreement §4.5.5 (PDF pp. 15–18), and RCE’s nine commitments in Attachment 5 (PDF p. 61). Task leaders are not separately identified. Reporting periods and the two-week communication check-in are coordinator workflow choices; the coordination team should confirm each monitoring round before official use.</p></div>
       </section>
     </main>
 

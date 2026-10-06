@@ -1,0 +1,622 @@
+{
+  "source": "Consortium Agreement version 1.0, 21 October 2025, §4.5.5, PDF pp. 15–18; Attachment 5 p. 61",
+  "tasks": {
+    "T1.1": {
+      "start": 1,
+      "end": 6,
+      "partners": [
+        "INESC",
+        "UVEG",
+        "TUV.IT",
+        "JOIST",
+        "C-LINK",
+        "LC",
+        "CINK"
+      ],
+      "allBeneficiaries": false
+    },
+    "T1.2": {
+      "start": 1,
+      "end": 6,
+      "partners": [
+        "UVEG",
+        "IF.E",
+        "FIDIT",
+        "Ud'A",
+        "UMU",
+        "HSW",
+        "LAUREA",
+        "UPV",
+        "NTNU",
+        "ESAD-GV"
+      ],
+      "allBeneficiaries": false
+    },
+    "T1.3": {
+      "start": 1,
+      "end": 6,
+      "partners": [
+        "IF.E",
+        "JOIST",
+        "C-LINK",
+        "LC",
+        "INESC"
+      ],
+      "allBeneficiaries": true
+    },
+    "T1.4": {
+      "start": 1,
+      "end": 6,
+      "partners": [
+        "UVEG",
+        "IF.E",
+        "FIDIT",
+        "Ud'A",
+        "UMU",
+        "HSW",
+        "LAUREA",
+        "UPV",
+        "NTNU",
+        "ESAD-GV"
+      ],
+      "allBeneficiaries": false
+    },
+    "T1.5": {
+      "start": 1,
+      "end": 6,
+      "partners": [
+        "LC",
+        "CEICE",
+        "KEA"
+      ],
+      "allBeneficiaries": false
+    },
+    "T1.6": {
+      "start": 1,
+      "end": 6,
+      "partners": [
+        "IF.E",
+        "FIDIT",
+        "UMU",
+        "UPV",
+        "NTNU"
+      ],
+      "allBeneficiaries": false
+    },
+    "T2.1": {
+      "start": 7,
+      "end": 12,
+      "partners": [
+        "CINK",
+        "C-LINK",
+        "UMU",
+        "LAUREA"
+      ],
+      "allBeneficiaries": true
+    },
+    "T2.2": {
+      "start": 7,
+      "end": 12,
+      "partners": [
+        "TUV.IT",
+        "COGN"
+      ],
+      "allBeneficiaries": false
+    },
+    "T2.3": {
+      "start": 7,
+      "end": 12,
+      "partners": [
+        "UVEG",
+        "LAUREA"
+      ],
+      "allBeneficiaries": false
+    },
+    "T2.4": {
+      "start": 7,
+      "end": 12,
+      "partners": [
+        "CEICE",
+        "UVEG",
+        "UMU",
+        "LPGA",
+        "VARM",
+        "LC",
+        "PREDA",
+        "INESC"
+      ],
+      "allBeneficiaries": false
+    },
+    "T2.5": {
+      "start": 7,
+      "end": 12,
+      "partners": [
+        "UMU"
+      ],
+      "allBeneficiaries": true
+    },
+    "T2.6": {
+      "start": 7,
+      "end": 12,
+      "partners": [
+        "UVEG",
+        "UMU",
+        "LAUREA"
+      ],
+      "allBeneficiaries": false
+    },
+    "T3.1": {
+      "start": 13,
+      "end": 15,
+      "partners": [
+        "UVEG",
+        "IF.E",
+        "FIDIT",
+        "Ud'A",
+        "UMU",
+        "HSW",
+        "LAUREA",
+        "UPV",
+        "NTNU",
+        "ESAD-GV"
+      ],
+      "allBeneficiaries": false
+    },
+    "T3.2": {
+      "start": 13,
+      "end": 18,
+      "partners": [
+        "UVEG"
+      ],
+      "allBeneficiaries": true
+    },
+    "T3.3": {
+      "start": 13,
+      "end": 18,
+      "partners": [
+        "UVEG",
+        "UMU"
+      ],
+      "allBeneficiaries": false
+    },
+    "T3.4": {
+      "start": 13,
+      "end": 18,
+      "partners": [
+        "UMU"
+      ],
+      "allBeneficiaries": true
+    },
+    "T3.5": {
+      "start": 16,
+      "end": 18,
+      "partners": [
+        "UVEG"
+      ],
+      "allBeneficiaries": false
+    },
+    "T3.6": {
+      "start": 16,
+      "end": 18,
+      "partners": [
+        "UVEG",
+        "IF.E",
+        "FIDIT",
+        "Ud'A",
+        "UMU",
+        "HSW",
+        "LAUREA",
+        "UPV",
+        "NTNU",
+        "ESAD-GV"
+      ],
+      "allBeneficiaries": false
+    },
+    "T4.1": {
+      "start": 19,
+      "end": 27,
+      "partners": [
+        "LAUREA"
+      ],
+      "allBeneficiaries": true
+    },
+    "T4.2": {
+      "start": 19,
+      "end": 27,
+      "partners": [
+        "Ud'A"
+      ],
+      "allBeneficiaries": true
+    },
+    "T4.3": {
+      "start": 22,
+      "end": 27,
+      "partners": [
+        "ESAD-GV"
+      ],
+      "allBeneficiaries": true
+    },
+    "T4.4": {
+      "start": 28,
+      "end": 30,
+      "partners": [
+        "CEICE"
+      ],
+      "allBeneficiaries": true
+    },
+    "T4.5": {
+      "start": 28,
+      "end": 30,
+      "partners": [
+        "UVEG",
+        "TUV.IT"
+      ],
+      "allBeneficiaries": false
+    },
+    "T4.6": {
+      "start": 19,
+      "end": 30,
+      "partners": [
+        "UMU"
+      ],
+      "allBeneficiaries": true
+    },
+    "T5.1": {
+      "start": 31,
+      "end": 33,
+      "partners": [
+        "UVEG",
+        "IF.E",
+        "FIDIT",
+        "Ud'A",
+        "UMU",
+        "HSW",
+        "LAUREA",
+        "UPV",
+        "NTNU",
+        "ESAD-GV"
+      ],
+      "allBeneficiaries": false
+    },
+    "T5.2": {
+      "start": 31,
+      "end": 33,
+      "partners": [
+        "UVEG"
+      ],
+      "allBeneficiaries": true
+    },
+    "T5.3": {
+      "start": 31,
+      "end": 33,
+      "partners": [
+        "TUV.IT",
+        "COGN"
+      ],
+      "allBeneficiaries": false
+    },
+    "T5.4": {
+      "start": 31,
+      "end": 33,
+      "partners": [
+        "UVEG",
+        "IF.E",
+        "FIDIT",
+        "Ud'A",
+        "UMU",
+        "HSW",
+        "LAUREA",
+        "UPV",
+        "NTNU",
+        "ESAD-GV"
+      ],
+      "allBeneficiaries": false
+    },
+    "T5.5": {
+      "start": 31,
+      "end": 33,
+      "partners": [
+        "UVEG",
+        "UMU"
+      ],
+      "allBeneficiaries": false
+    },
+    "T5.6": {
+      "start": 31,
+      "end": 33,
+      "partners": [
+        "UVEG"
+      ],
+      "allBeneficiaries": false
+    },
+    "T6.1": {
+      "start": 34,
+      "end": 42,
+      "partners": [
+        "LAUREA"
+      ],
+      "allBeneficiaries": true
+    },
+    "T6.2": {
+      "start": 34,
+      "end": 42,
+      "partners": [
+        "Ud'A"
+      ],
+      "allBeneficiaries": true
+    },
+    "T6.3": {
+      "start": 37,
+      "end": 42,
+      "partners": [
+        "ESAD-GV"
+      ],
+      "allBeneficiaries": true
+    },
+    "T6.4": {
+      "start": 43,
+      "end": 45,
+      "partners": [
+        "CEICE"
+      ],
+      "allBeneficiaries": true
+    },
+    "T6.5": {
+      "start": 43,
+      "end": 45,
+      "partners": [
+        "UVEG",
+        "TUV.IT"
+      ],
+      "allBeneficiaries": false
+    },
+    "T6.6": {
+      "start": 34,
+      "end": 45,
+      "partners": [
+        "UMU"
+      ],
+      "allBeneficiaries": true
+    },
+    "T7.1": {
+      "start": 1,
+      "end": 18,
+      "partners": [
+        "UMU"
+      ],
+      "allBeneficiaries": true
+    },
+    "T7.2": {
+      "start": 1,
+      "end": 18,
+      "partners": [
+        "UMU"
+      ],
+      "allBeneficiaries": true
+    },
+    "T7.3": {
+      "start": 7,
+      "end": 18,
+      "partners": [
+        "INESC"
+      ],
+      "allBeneficiaries": true
+    },
+    "T8.1": {
+      "start": 1,
+      "end": 18,
+      "partners": [
+        "UVEG"
+      ],
+      "allBeneficiaries": true
+    },
+    "T8.2": {
+      "start": 1,
+      "end": 18,
+      "partners": [
+        "UVEG"
+      ],
+      "allBeneficiaries": true
+    },
+    "T8.3": {
+      "start": 1,
+      "end": 18,
+      "partners": [
+        "FIDIT"
+      ],
+      "allBeneficiaries": true
+    },
+    "T8.4": {
+      "start": 1,
+      "end": 18,
+      "partners": [
+        "COGN"
+      ],
+      "allBeneficiaries": true
+    },
+    "T8.5": {
+      "start": 1,
+      "end": 18,
+      "partners": [
+        "HSW"
+      ],
+      "allBeneficiaries": true
+    },
+    "T8.6": {
+      "start": 1,
+      "end": 18,
+      "partners": [
+        "UVEG"
+      ],
+      "allBeneficiaries": true
+    },
+    "T9.1": {
+      "start": 19,
+      "end": 26,
+      "partners": [
+        "UMU"
+      ],
+      "allBeneficiaries": true
+    },
+    "T9.2": {
+      "start": 19,
+      "end": 36,
+      "partners": [
+        "UMU"
+      ],
+      "allBeneficiaries": true
+    },
+    "T9.3": {
+      "start": 19,
+      "end": 36,
+      "partners": [
+        "INESC"
+      ],
+      "allBeneficiaries": true
+    },
+    "T10.1": {
+      "start": 19,
+      "end": 36,
+      "partners": [
+        "UVEG"
+      ],
+      "allBeneficiaries": true
+    },
+    "T10.2": {
+      "start": 19,
+      "end": 36,
+      "partners": [
+        "UVEG"
+      ],
+      "allBeneficiaries": true
+    },
+    "T10.3": {
+      "start": 19,
+      "end": 36,
+      "partners": [
+        "FIDIT"
+      ],
+      "allBeneficiaries": true
+    },
+    "T10.4": {
+      "start": 19,
+      "end": 36,
+      "partners": [
+        "COGN"
+      ],
+      "allBeneficiaries": true
+    },
+    "T10.5": {
+      "start": 19,
+      "end": 36,
+      "partners": [
+        "HSW"
+      ],
+      "allBeneficiaries": true
+    },
+    "T10.6": {
+      "start": 19,
+      "end": 36,
+      "partners": [
+        "UVEG"
+      ],
+      "allBeneficiaries": true
+    },
+    "T11.1": {
+      "start": 37,
+      "end": 48,
+      "partners": [
+        "UMU"
+      ],
+      "allBeneficiaries": true
+    },
+    "T11.2": {
+      "start": 37,
+      "end": 48,
+      "partners": [
+        "UMU"
+      ],
+      "allBeneficiaries": true
+    },
+    "T11.3": {
+      "start": 37,
+      "end": 48,
+      "partners": [
+        "INESC"
+      ],
+      "allBeneficiaries": true
+    },
+    "T11.4": {
+      "start": 37,
+      "end": 42,
+      "partners": [
+        "IF.E"
+      ],
+      "allBeneficiaries": true
+    },
+    "T11.5": {
+      "start": 40,
+      "end": 45,
+      "partners": [
+        "LC"
+      ],
+      "allBeneficiaries": true
+    },
+    "T11.6": {
+      "start": 43,
+      "end": 48,
+      "partners": [
+        "UVEG"
+      ],
+      "allBeneficiaries": true
+    },
+    "T12.1": {
+      "start": 37,
+      "end": 48,
+      "partners": [
+        "UVEG"
+      ],
+      "allBeneficiaries": true
+    },
+    "T12.2": {
+      "start": 37,
+      "end": 48,
+      "partners": [
+        "UVEG"
+      ],
+      "allBeneficiaries": true
+    },
+    "T12.3": {
+      "start": 37,
+      "end": 48,
+      "partners": [
+        "FIDIT"
+      ],
+      "allBeneficiaries": true
+    },
+    "T12.4": {
+      "start": 37,
+      "end": 48,
+      "partners": [
+        "COGN"
+      ],
+      "allBeneficiaries": true
+    },
+    "T12.5": {
+      "start": 37,
+      "end": 48,
+      "partners": [
+        "HSW"
+      ],
+      "allBeneficiaries": true
+    },
+    "T12.6": {
+      "start": 37,
+      "end": 48,
+      "partners": [
+        "UVEG"
+      ],
+      "allBeneficiaries": true
+    }
+  }
+}
