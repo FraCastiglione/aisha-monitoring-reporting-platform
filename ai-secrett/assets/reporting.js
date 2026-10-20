@@ -237,6 +237,7 @@
         const selected = state.selected.has(task.id);
         const chosenCoverage = selected ? state.selected.get(task.id) : null;
         const card = textNode('article', '', `task-card${selected ? ` is-${chosenCoverage.status || 'draft'}` : ''}`);
+        card.dataset.taskId = task.id;
         const head = textNode('div','','task-card-head');const titleGroup=textNode('div','','task-card-title-group');titleGroup.append(textNode('strong', `${task.id} — ${task.title}`),textNode('span',taskRole(task),`role-badge ${taskRoleClass(task)}`));head.append(titleGroup);
         const tools=textNode('div','','task-card-tools');
         const importTask=textNode('button','Import Task PDF','button button-secondary task-import-button');importTask.type='button';importTask.addEventListener('click',()=>openTaskImport(task));tools.append(importTask);
@@ -318,7 +319,7 @@
     $('wp-leader-section').hidden = !eligible.length;
     const host = $('wp-leader-list'); host.replaceChildren();
     for (const wp of eligible) {
-      const entry = state.wpUpdates.get(wp.id), card = textNode('article','','wp-leader-card');
+      const entry = state.wpUpdates.get(wp.id), card = textNode('article','',`wp-leader-card${entry ? ` is-${entry.status}` : ''}`);
       card.append(textNode('h4',`${wp.id} — ${wp.title}`));
       card.append(textNode('p',`You are the Work Package leader · ${activeWpMonths(wp,p).map(m => `M${String(model.projectMonth(config,m)).padStart(2,'0')}`).join(', ')}`,'wp-leader-meta'));
       const details = document.createElement('details'); details.className = 'wp-objectives';const objectiveText=textNode('div','','agreement-text');renderAgreementObjectives(objectiveText,wp.id); details.append(textNode('summary','Read full Work Package objectives'),objectiveText); card.append(details);
@@ -370,6 +371,12 @@
   }
   function emptyTask() { return { status: 'draft', coverage_start: '', coverage_end: '', activities_carried_out: '', results_achieved: '', difficulties_encountered: '', raw_costs: '', raw_costs_note: '', upcoming_activities: '', additional_comments: '', significant_issue: '', severity: '', coordinator_action_required: '', coordinator_support_request: '' }; }
   function hasContribution(answer) { return ['activities_carried_out','results_achieved','difficulties_encountered','raw_costs','raw_costs_note','upcoming_activities','additional_comments','significant_issue','severity','coordinator_action_required','coordinator_support_request'].some(key => String(answer[key] || '').trim()); }
+  function taskCard(id) { return [...$('task-list').querySelectorAll('.task-card[data-task-id]')].find(card => card.dataset.taskId === id) || [...$('extra-list').querySelectorAll('.task-card[data-task-id]')].find(card => card.dataset.taskId === id); }
+  function keepTaskInView(id, previousTop = null) {
+    const card = taskCard(id); if (!card) return;
+    if (previousTop !== null) window.scrollBy({ top: card.getBoundingClientRect().top - previousTop, behavior: 'auto' });
+    else card.scrollIntoView({ block: 'center', behavior: 'auto' });
+  }
   function taskAnswerIssue(id, answer) {
     if (Object.values(answer).some(value=>typeof value==='string'&&value.length>100000)) return `Keep each answer for ${id} within 100,000 characters.`;
     if (state.partner.kind === 'associated_partner' && (answer.raw_costs || answer.raw_costs_note)) return `Remove cost information from ${id}; associated partners cannot charge costs to the action.`;
@@ -381,11 +388,12 @@
     return '';
   }
   async function setNoWork(task) {
+    const previousTop = taskCard(task.id)?.getBoundingClientRect().top ?? null;
     const existing = state.selected.get(task.id);
     if (existing && hasContribution(existing) && !await confirmAction('Declare no work carried out', `This Task will be declared as no work carried out. The contribution already entered for ${task.id} will be cleared.`, 'Declare no work')) return;
     const p = period(), coverage = model.taskCoverage(config, task, p.start, p.end, p.selected_months);
     state.selected.set(task.id, { ...emptyTask(), status: 'no_work', coverage_start: existing?.coverage_start || coverage.start, coverage_end: existing?.coverage_end || coverage.end });
-    state.editing = null; setTaskEditor(false); renderOverview(); scrollTo($('task-picker'));
+    state.editing = null; setTaskEditor(false); renderOverview(); keepTaskInView(task.id, previousTop);
   }
   function captureTask() {
     if (!state.editing) return;
@@ -462,7 +470,7 @@
     if (!hasContribution(answer) && answer.status !== 'no_work') { $('task-editor-message').textContent = 'Describe a contribution, choose “No work carried out”, or return to the overview and leave this Task unfinished.'; $('task-editor-message').hidden = false; return; }
     if (!validIndividualCoverage(state.editing.id,answer,period())) { $('task-editor-message').textContent = 'Set valid Task dates within the selected months.'; $('task-editor-message').hidden = false; return; }
     const issue = taskAnswerIssue(state.editing.id,answer); if (issue) { $('task-editor-message').textContent = issue; $('task-editor-message').hidden = false; return; }
-    answer.status = answer.status === 'no_work' ? 'no_work' : 'completed'; state.editing = null; setTaskEditor(false); renderOverview(); scrollTo($('task-picker'));
+    answer.status = answer.status === 'no_work' ? 'no_work' : 'completed'; const taskId = state.editing.id; state.editing = null; setTaskEditor(false); renderOverview(); keepTaskInView(taskId);
   });
   $('back-from-task').addEventListener('click', () => {
     captureTask(); const answer = state.selected.get(state.editing.id);

@@ -1089,3 +1089,37 @@ label,.dash-control > span,.dash-kpi-group { color:#46566b; }
 .dash-task-deadlines { padding:10px 12px; border-left:3px solid #d08c24; background:#fff7e8; color:#71461b; font-size:12px; }
 
 .dash-gantt-draft-count { display:block; margin:2px auto 0; color:#834719; font-size:9px; font-weight:800; }
+
+/* AI-SECRETT palette: violet is for navigation and selection; status colours stay distinct. */
+:root { --selection-violet:#5b25e8; --selection-violet-dark:#4b1ebc; --selection-violet-pale:#f1ebff; }
+:focus-visible { outline-color:var(--selection-violet-dark); }
+.site-nav a:hover { color:var(--selection-violet-dark); border-bottom-color:var(--selection-violet); }
+.step-pill,.guidance-icon { color:var(--selection-violet-dark); background:var(--selection-violet-pale); }
+.guidance-card,.choice-card:first-child { border-top-color:var(--selection-violet); }
+.journey-symbol,.journey-number,.privacy-icon { color:var(--selection-violet-dark); }
+.privacy-icon { background:var(--selection-violet-pale); }
+.field .partner-kind-choice label:has(input:checked),.radio-row label:has(input:checked) { border-color:#a98de9; background:var(--selection-violet-pale); }
+.field .partner-kind-choice input { accent-color:var(--selection-violet); }
+.timeline-month:hover { border-color:var(--selection-violet); }
+.timeline-month.is-in-range { color:#4b1ebc; background:var(--selection-violet-pale); border-color:#a98de9; }
+.selection-message { color:#4b1ebc; background:#f4efff; border-color:#ccb8f5; }
+.selected-summary { color:#4b1ebc; }
+.draft-actions { background:#f5f1ff; border-color:#d4c3f8; }
+.draft-actions strong { color:var(--selection-violet-dark); }
+.extra-pick-option:hover,.extra-pick-option:has(input:checked) { background:var(--selection-violet-pale); }
+.kpi-context-card[open],.dash-kpi-row[open] { border-color:#a98de9; }
+.dash-kpi-lenses button.is-selected { border-color:var(--selection-violet); background:var(--selection-violet-pale); color:var(--selection-violet-dark); }
+.dash-wp-directory-card.is-selected { border-color:#a98de9; border-left-color:var(--selection-violet); background:#f7f3ff; }
+.dash-wp-directory-card.is-selected .dash-wp-directory-metrics span { background:#ece3ff; }
+.dash-calendar-day:hover { border-color:#b9a1ef; background:#f7f3ff; }
+.dash-calendar-day.is-selected { outline-color:var(--selection-violet); background:var(--selection-violet-pale); }
+
+.task-card { background:#fff; border-color:#d6deea; }
+.task-card.is-draft,.wp-leader-card.is-draft { border-color:#b88a34; background:#fff9e9; box-shadow:inset 5px 0 #b88a34; }
+.task-card.is-no_work,.wp-leader-card.is-no_work { border-color:#677c94; background:#eaf0f6; box-shadow:inset 5px 0 #677c94; }
+.task-card.is-completed,.wp-leader-card.is-completed { border-color:#25835f; background:#e7f7ee; box-shadow:inset 5px 0 #25835f; }
+.task-state { color:#684a12; background:#fff0c8; border:1px solid #dfbd6b; }
+.task-state.is-no_work { color:#344b64; background:#d9e3ee; border-color:#9bacbd; }
+.task-state.is-completed { color:#145f43; background:#d2f0df; border-color:#8fcfae; }
+.task-card.is-no_work .task-chosen-coverage { color:#405871; }
+.task-card.is-draft .task-chosen-coverage { color:#775410; }
