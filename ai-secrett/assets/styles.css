@@ -147,8 +147,6 @@ h1, h2, h3 { color: var(--blue-deep); line-height: 1.16; }
 .task-description summary { color: var(--blue); font-weight: 750; cursor: pointer; }
 .task-description .agreement-text { margin: 18px 0; }
 .task-description small { color: var(--muted); }
-.organisation-reminder { width: 100%; max-width: none; margin: 23px 0 28px; box-shadow: none; }
-.organisation-reminder p { max-width: none; }
 .task-list { display: grid; gap: 12px; }
 .report-dates { max-width: 670px; }
 .timeline-header { display: flex; justify-content: space-between; gap: 12px; margin: 24px 0 10px; color: var(--blue-deep); font-size: 14px; }
@@ -162,7 +160,7 @@ h1, h2, h3 { color: var(--blue-deep); line-height: 1.16; }
 .timeline-month small { font-size: 9px; }
 .timeline-month:hover { border-color: #139a83; }
 .timeline-month.is-in-range { color: #12675e; background: #eaf8f4; border-color: #a9dcd0; font-weight: 750; }
-#task-month-summary { width:100%; max-width:none; }
+#task-month-summary { width:100%; max-width:none; margin:10px 0 18px; padding:10px 13px; }
 .selected-summary { margin: 10px 0 24px; color: #12675e; font-weight: 700; font-size: 13px; }
 .task-package { padding: 19px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
 .task-package h4 { margin: 0; color: var(--blue-deep); font-size: 20px; }
@@ -221,24 +219,31 @@ h1, h2, h3 { color: var(--blue-deep); line-height: 1.16; }
 .editor-top-back { margin-bottom:18px; font-size:14px; font-weight:750; }
 .editor-top-actions { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px 20px; margin-bottom:18px; }
 .editor-top-actions .editor-top-back { margin-bottom:0; }
-.task-title-row { display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; margin-bottom:8px; }
-.task-title-row h3 { margin:0; }
+.task-context-line { margin:0 0 12px; line-height:1.6; }
+.task-context-line .role-badge { margin-left:4px; vertical-align:middle; }
+#task-form-title { margin:0 0 8px; }
 .role-badge { display:inline-flex; align-items:center; width:max-content; padding:5px 10px; border-radius:99px; font-size:11px; font-weight:800; letter-spacing:.02em; white-space:nowrap; }
 .role-badge.is-leader { color:#16695f; background:#d9f3ee; border:1px solid #a7ded4; }
 .role-badge.is-participant { color:#424a9a; background:#eaecfb; border:1px solid #cfd4f4; }
 .task-description[open] + .outcome-banner { display:none; }
-.task-import-card { display:flex; align-items:center; justify-content:space-between; gap:16px; margin:19px 0 24px; padding:15px 17px; background:#edf2ff; border:1px solid #b9c9ef; border-radius:9px; }
-.task-import-card strong { color:var(--blue-deep); font-size:13px; }
-.task-import-card p { margin:4px 0 0; color:var(--muted); font-size:12px; }
-.task-import-card .button { flex:0 0 auto; }
+.task-setup-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); gap:12px; margin:14px 0 22px; }
+.task-import-card,.task-dates-inline { min-width:0; padding:15px 17px; border-radius:9px; }
+.task-import-card { display:flex; flex-direction:column; align-items:flex-start; justify-content:space-between; gap:13px; border:1px solid #d7cbea; background:#f7f4fc; }
+.task-import-card strong,.task-dates-heading strong { color:var(--ink); font-size:13px; }
+.task-import-card p { margin:5px 0 0; color:#526077; font-size:12px; line-height:1.5; }
+.task-import-card .button { min-height:38px; padding:8px 12px; font-size:12px; }
+.task-dates-inline { border:1px solid #d8cfeb; background:#faf8ff; }
+.task-dates-heading { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px 10px; margin-bottom:12px; }
+#task-coverage { display:inline-flex; padding:4px 9px; border-radius:99px; background:#eee7fb; color:#4c2c85; font-size:11px; font-weight:750; line-height:1.3; }
+.task-dates-inline .task-date-inputs { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.task-dates-inline .field { min-width:0; margin-bottom:8px; }
+.task-dates-inline .field label { margin-bottom:5px; font-size:11px; }
+.task-dates-inline .field input { min-width:0; height:40px; padding:0 8px; font-size:12px; }
+.task-months-available { margin:2px 0 7px; color:#4c2c85; font-size:11px; font-weight:700; line-height:1.4; }
+.task-dates-inline small { display:block; color:#59677b; font-size:11px; line-height:1.4; }
+#task-form .task-description { margin:14px 0; padding:12px 15px; }
 .outcome-banner { padding: 13px 15px; background: #edf5ff; border-left: 4px solid var(--blue); border-radius: 8px; font-size: 13px; }
 .coverage-banner { padding: 11px 13px; color: var(--blue-deep); background: #f4f7fd; border-radius: 7px; font-size: 13px; }
-.coverage-card { margin: 24px 0; padding: 19px 20px 3px; background: #f4f7fd; border: 1px solid var(--line); border-radius: 10px; }
-.coverage-card > strong { color: var(--blue-deep); font-size: 15px; }
-.coverage-card > p, .coverage-card > small { display: block; color: var(--muted); font-size: 12px; }
-.coverage-card .field-row { margin-top: 14px; }
-.coverage-card .field { margin-bottom: 12px; }
-.coverage-card > small { margin: 0 0 14px; }
 .task-editor-actions { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding-top: 22px; border-top: 1px solid var(--line); }
 .task-editor-actions p { max-width: 430px; margin: 0; color: var(--muted); font-size: 12px; }
 .task-editor-buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 9px; }
@@ -847,8 +852,8 @@ fieldset.field legend { margin-bottom: 8px; color: var(--ink); font-size: 13px; 
   .task-editor-actions { align-items: stretch; flex-direction: column; }
   .task-card-head { flex-direction:column; gap:3px; }
   .task-card-tools { justify-content:flex-start; }
-  .task-import-card,.task-save-tools { flex-direction:column; align-items:stretch; }
-  .task-import-card .button { width:100%; }
+  .task-setup-grid { grid-template-columns:1fr; }
+  .task-save-tools { flex-direction:column; align-items:stretch; }
   .task-save-buttons .button { flex:1 1 100%; }
   .section-heading,.overview-import { flex-direction:column; align-items:stretch; }
   .extra-form-grid { grid-template-columns:1fr; }

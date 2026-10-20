@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#4f2bd8">
     <meta name="description" content="Prepare AI-SECRETT partner reports and view approved project monitoring information.">
     <title>AI-SECRETT Monitoring and Reporting Platform</title>
-    <link rel="stylesheet" href="assets/styles.css?v=20261020g">
+    <link rel="stylesheet" href="assets/styles.css?v=20261020h">
     <script src="assets/config.js?v=20261006c" defer></script>
     <script src="assets/agreement-content.js" defer></script>
     <script src="assets/project-model.js?v=20261006c" defer></script>
@@ -18,7 +18,7 @@
     <script src="assets/app.js?v=20261006c" defer></script>
     <script src="assets/kpi-model.js?v=20261006c" defer></script>
     <script src="assets/report-files.js?v=20261006c" defer></script>
-    <script src="assets/reporting.js?v=20261020e" defer></script>
+    <script src="assets/reporting.js?v=20261020f" defer></script>
     <script src="assets/dashboard.js?v=20261020g" defer></script>
   </head>
   <body>
@@ -135,13 +135,14 @@
 
           <form id="task-form" class="form-card report-form" novalidate hidden>
             <div class="editor-top-actions"><button id="task-top-back" class="text-button editor-top-back" type="button">← Back to overview</button></div>
-            <p id="task-work-package" class="task-meta"></p>
-            <div class="task-title-row"><h3 id="task-form-title">Task report</h3><span id="task-role" class="role-badge"></span></div>
+            <p class="task-meta task-context-line"><span id="task-work-package"></span> <span id="task-role" class="role-badge"></span></p>
+            <h3 id="task-form-title">Task report</h3>
             <details class="task-description"><summary>Read full Task description</summary><div id="task-description-text" class="agreement-text"></div><small id="task-source"></small></details>
             <div id="task-outcome" class="outcome-banner" hidden></div>
-            <div class="task-import-card"><div><strong>Have a report for this Task?</strong><p>Import an individual Task PDF for the same selected months. Other Tasks and Work Package updates will stay as they are.</p></div><button id="task-import-top" class="button button-secondary" type="button">Import Task PDF</button></div>
-            <div class="notice-card organisation-reminder"><strong>Report your organisation’s contribution</strong><p>Describe your organisation’s activities for this Task during the selected dates. You may leave a section blank when it does not apply.</p></div>
-            <div class="coverage-card"><strong>Dates covered for this Task</strong><p id="task-coverage"></p><div class="field-row"><div class="field"><label for="task-cover-start">From</label><input id="task-cover-start" name="coverage_start" type="date"></div><div class="field"><label for="task-cover-end">Through</label><input id="task-cover-end" name="coverage_end" type="date"></div></div><small>Narrow these dates if some of this Task’s work was already reported. Months excluded on the project timeline stay excluded here.</small></div>
+            <div class="task-setup-grid">
+              <div class="task-import-card"><div><strong>Have a report for this Task?</strong><p>Import an individual Task PDF for the same selected months. Other Tasks and Work Package updates will stay as they are.</p></div><button id="task-import-top" class="button button-secondary" type="button">Import Task PDF</button></div>
+              <section id="task-dates-details" class="task-dates-inline" aria-labelledby="task-dates-heading"><div class="task-dates-heading"><strong id="task-dates-heading">Dates covered</strong><span id="task-coverage" role="status"></span></div><div class="field-row task-date-inputs"><div class="field"><label for="task-cover-start">From</label><input id="task-cover-start" name="coverage_start" type="date"></div><div class="field"><label for="task-cover-end">Through</label><input id="task-cover-end" name="coverage_end" type="date"></div></div><p id="task-months-available" class="task-months-available"></p><small>Narrow the dates if some work was already reported. Only selected project months count.</small></section>
+            </div>
             <div class="field guided-field"><div class="guided-label"><label for="task-activities">Activities carried out</label><span class="guidance-anchor"><button class="guidance-trigger" type="button" aria-label="Guidance for activities carried out" aria-describedby="task-activities-tip">?</button><span class="field-tooltip" id="task-activities-tip" role="tooltip">Describe the initiatives related to this task that have been started, are in progress, or have been completed during the reporting period.</span></span></div><textarea id="task-activities" name="activities_carried_out" rows="5" placeholder="Describe the initiatives related to this task that have been started, are in progress, or have been completed during the reporting period."></textarea></div>
             <div class="field guided-field"><div class="guided-label"><label for="task-results">Results achieved</label><span class="guidance-anchor"><button class="guidance-trigger" type="button" aria-label="Guidance for results achieved" aria-describedby="task-results-tip">?</button><span class="field-tooltip" id="task-results-tip" role="tooltip">Describe the main results achieved so far for this task, including concrete outputs and progress made during the reporting period.</span></span></div><textarea id="task-results" name="results_achieved" rows="5" placeholder="Describe the main results achieved so far for this task, including concrete outputs and progress made during the reporting period."></textarea></div>
             <div class="field guided-field"><div class="guided-label"><label for="task-difficulties">Difficulties encountered</label><span class="guidance-anchor"><button class="guidance-trigger" type="button" aria-label="Guidance for difficulties encountered" aria-describedby="task-difficulties-tip">?</button><span class="field-tooltip" id="task-difficulties-tip" role="tooltip">Highlight the main obstacles, constraints, or challenges faced in this task, how they affected the progress, and whether any initiatives or mitigations were taken to address them.</span></span></div><textarea id="task-difficulties" name="difficulties_encountered" rows="4" placeholder="Highlight the main obstacles, constraints, or challenges faced in this task, how they affected the progress, and whether any initiatives or mitigations were taken to address them."></textarea></div>

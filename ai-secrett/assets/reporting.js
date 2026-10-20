@@ -193,7 +193,6 @@
   }
   function paintCommunicationTimeline() {
     const timeline = $('comm-month-timeline'); timeline.replaceChildren();
-    const selected = sortedCommunicationMonths();
     for (let year = 2025; year <= 2029; year++) {
       const group = textNode('div', '', 'timeline-year');
       group.append(textNode('strong', String(year), 'timeline-year-label'));
@@ -214,9 +213,7 @@
       group.append(months); timeline.append(group);
     }
     $('comm-clear-months').disabled = state.commMonths.size === 0;
-    const selectedPeriod = communicationPeriod();
-    const labels = selected.map(month => new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${month}-01T00:00:00Z`)));
-    $('comm-month-summary').textContent = selectedPeriod ? `Selected months: ${labels.join(', ')} (${monthCodes(selected)}). Only these months are covered.` : 'Choose one or more project months for this communication report.';
+    $('comm-month-summary').hidden = !!communicationPeriod();
   }
   function renderMonitoringRounds(){
     const host=$('monitoring-rounds'),rounds=window.SECRETT_EMBEDDED_DATA?.snapshot?.monitoring_rounds||[];host.replaceChildren();host.hidden=!rounds.length;if(!rounds.length)return;
@@ -232,9 +229,8 @@
     if (rangeIssue) { $('task-month-summary').textContent = rangeIssue; $('selected-task-summary').textContent = ''; $('wp-leader-section').hidden = true; renderExtras(null); return; }
     state.lastPeriod = p;
     const wpCount = new Set(eligible.map(t => t.wp)).size;
-    const selectedCodes = p.selected_months.map(m => `M${String(model.projectMonth(config,m)).padStart(2,'0')}`);
-    const labels = p.selected_months.map(m => new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${m}-01T00:00:00Z`)));
-    $('task-month-summary').textContent = `Selected months: ${labels.join(', ')} (${selectedCodes.join(', ')}). You can report on ${eligible.length} scheduled ${eligible.length === 1 ? 'Task' : 'Tasks'} across ${wpCount} Work ${wpCount === 1 ? 'Package' : 'Packages'}. Only these months are covered.${state.partner.kind==='associated_partner'&&!config.tasks.some(t=>model.assigned(t,state.partner.code,config))?' Your organisation has no assigned Tasks. Add voluntary Task or Work Package contributions below.':''}`;
+    const availability = eligible.length ? `You can report on ${eligible.length} scheduled ${eligible.length === 1 ? 'Task' : 'Tasks'} across ${wpCount} Work ${wpCount === 1 ? 'Package' : 'Packages'}.` : 'No scheduled Tasks are available for the selected months.';
+    $('task-month-summary').textContent = `${availability} Each Task or Work Package uses only selected months within its activity window.${state.partner.kind==='associated_partner'&&!config.tasks.some(t=>model.assigned(t,state.partner.code,config))?' Your organisation has no assigned Tasks. Add voluntary Task or Work Package contributions below.':''}`;
     const eligibleIds = new Set(eligible.map(t => t.id));
     const outside = [...state.selected.keys()].filter(id => !eligibleIds.has(id) && !model.taskCoverage(config,taskById(id),p.start,p.end,p.selected_months));
     const counts = { draft: 0, completed: 0, no_work: 0 }; for (const [id,answer] of state.selected) if(eligibleIds.has(id))counts[answer.status || 'draft']++;
@@ -467,6 +463,29 @@
     if (associated) { $('task-cost').value = ''; $('task-cost-note').value = ''; }
     updateConditions();
   }
+  function updateTaskCoverageSummary() {
+    if (!state.editing) return;
+    const p = period(), coverage = p && model.taskCoverage(config,state.editing,p.start,p.end,p.selected_months);
+    if (!coverage) return;
+    const start = value('task-cover-start'), end = value('task-cover-end');
+    if (!start || !end || start > end || start < coverage.start || end > coverage.end || !p.selected_months.includes(start.slice(0,7)) || !p.selected_months.includes(end.slice(0,7))) { $('task-coverage').textContent = 'Check dates'; $('task-months-available').textContent = `Selected project months: ${compactMonthCodes(coverage.months)}.`; return; }
+    const months = coverage.months.filter(month => month >= start.slice(0,7) && month <= end.slice(0,7));
+    $('task-coverage').textContent = `${months.length} included month${months.length === 1 ? '' : 's'}`;
+    $('task-months-available').textContent = `Included project months: ${compactMonthCodes(months)}.`;
+  }
+  function compactMonthCodes(months) {
+    const numbers = months.map(month => model.projectMonth(config, month));
+    const chunks = [];
+    for (let i = 0; i < numbers.length;) {
+      let end = i;
+      while (end + 1 < numbers.length && numbers[end + 1] === numbers[end] + 1) end++;
+      const code = number => `M${String(number).padStart(2,'0')}`;
+      if (end - i >= 2) chunks.push(`${code(numbers[i])}–${code(numbers[end])}`);
+      else for (let j = i; j <= end; j++) chunks.push(code(numbers[j]));
+      i = end + 1;
+    }
+    return chunks.join(', ');
+  }
   function openTask(task, add) {
     const wp = wpById(task.wp); const p = period(); const coverage = model.taskCoverage(config, task, p.start, p.end, p.selected_months);
     if (add) state.selected.set(task.id, { ...emptyTask(), coverage_start: coverage.start, coverage_end: coverage.end });
@@ -480,8 +499,8 @@
     $('task-outcome').hidden = !outcome; $('task-outcome').textContent = outcome || '';
     renderAgreementTask($('task-description-text'),task.id);
     $('task-source').textContent = `Task description: Grant Agreement, Annex 1, PDF p. ${task.sourcePage}. Participants and window: Consortium Agreement §4.5.5, PDF pp. 15–18; RCE commitments: Attachment 5, PDF p. 61${task.timingBasis === 'work_package' ? '; activity window inherited from WP1' : ''}`;
-    $('task-coverage').textContent = `Reporting available in your selected timeline: ${monthCodes(coverage.months)}. Only these months are included.`;
     for (const id of ['task-cover-start','task-cover-end']) { $(id).min = coverage.start; $(id).max = coverage.end; }
+    updateTaskCoverageSummary();
     setTaskEditor(true); scrollTo(taskForm);
   }
   function updateConditions() {
@@ -504,8 +523,8 @@
     el.querySelector('.remove-event').addEventListener('click', () => { el.remove(); if (radio(commForm, 'events_organised') === 'yes' && !$('comm-events-list').children.length) addEvent(); });
     $('comm-events-list').append(el);
   }
-  taskForm.addEventListener('input', () => { captureTask(); clearError(); $('task-editor-message').hidden = true; });
-  taskForm.addEventListener('change', () => { updateConditions(); captureTask(); clearError(); $('task-editor-message').hidden = true; });
+  taskForm.addEventListener('input', event => { captureTask(); if (event.target.matches('#task-cover-start,#task-cover-end')) updateTaskCoverageSummary(); clearError(); $('task-editor-message').hidden = true; });
+  taskForm.addEventListener('change', event => { updateConditions(); captureTask(); if (event.target.matches('#task-cover-start,#task-cover-end')) updateTaskCoverageSummary(); clearError(); $('task-editor-message').hidden = true; });
   commForm.addEventListener('input', clearError);
   commForm.addEventListener('change', updateConditions);
   $('add-event').addEventListener('click', () => addEvent());
@@ -514,7 +533,7 @@
   $('done-task').addEventListener('click', () => {
     captureTask(); const answer = state.selected.get(state.editing.id);
     if (!hasContribution(answer) && answer.status !== 'no_work') { $('task-editor-message').textContent = 'Describe a contribution, choose “No work carried out”, or return to the overview and leave this Task unfinished.'; $('task-editor-message').hidden = false; return; }
-    if (!validIndividualCoverage(state.editing.id,answer,period())) { $('task-editor-message').textContent = 'Set valid Task dates within the selected months.'; $('task-editor-message').hidden = false; return; }
+    if (!validIndividualCoverage(state.editing.id,answer,period())) { $('task-editor-message').textContent = 'Set valid Task dates within the selected months.'; $('task-editor-message').hidden = false; scrollTo($('task-dates-details')); return; }
     const issue = taskAnswerIssue(state.editing.id,answer); if (issue) { $('task-editor-message').textContent = issue; $('task-editor-message').hidden = false; return; }
     answer.status = answer.status === 'no_work' ? 'no_work' : 'completed'; const taskId = state.editing.id; state.editing = null; setTaskEditor(false); renderOverview(); keepTaskInView(taskId);
   });
@@ -663,7 +682,7 @@
   }
   async function showIndividualTaskPdf(id) {
     const answer = state.selected.get(id), p = period();
-    if (!answer || !validIndividualCoverage(id,answer,p)) { if (state.editing) { $('task-editor-message').textContent = 'Set valid Task dates within the selected months before downloading a PDF.'; $('task-editor-message').hidden = false; } else message('Set valid Task dates before downloading its PDF.'); return; }
+    if (!answer || !validIndividualCoverage(id,answer,p)) { if (state.editing) { $('task-editor-message').textContent = 'Set valid Task dates within the selected months before downloading a PDF.'; $('task-editor-message').hidden = false; scrollTo($('task-dates-details')); } else message('Set valid Task dates before downloading its PDF.'); return; }
     if (answer.status === 'draft' && !hasContribution(answer)) { $('task-editor-message').textContent = 'Enter a contribution or mark no work carried out before downloading this Task PDF.'; $('task-editor-message').hidden = false; return; }
     const issue = answer.status === 'no_work' ? (hasContribution(answer) ? `Clear the contribution for ${id} before declaring no work.` : '') : taskAnswerIssue(id,answer);
     if (issue) { if (state.editing) { $('task-editor-message').textContent = issue; $('task-editor-message').hidden = false; } else message(issue); return; }
