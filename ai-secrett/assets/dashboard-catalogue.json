@@ -1161,5 +1161,88 @@
       "target": "500",
       "source_page": 110
     }
-  }
+  },
+  "communication_kpis": [
+    {
+      "id": "C1",
+      "kpi": "Number of people reached by the project activities",
+      "target": "1,500+",
+      "evidence": "Mailing list and newsletter subscribers; attendee lists of public events (offline and online); registered participants in social media groups; applicants to the FSTP open calls",
+      "source_page": 148
+    },
+    {
+      "id": "C2",
+      "kpi": "Number of unique visitors to the AI-SECRETT official website",
+      "target": "6,000+",
+      "evidence": "Official website analytics",
+      "source_page": 148,
+      "source_pages": [
+        148,
+        149
+      ]
+    },
+    {
+      "id": "C3",
+      "kpi": "Number of articles posted to social media groups and website news feed",
+      "target": "150+",
+      "evidence": "Official website and social media analytics (Twitter, Facebook, LinkedIn, SlideShare, Instagram)",
+      "source_page": 149
+    },
+    {
+      "id": "C4",
+      "kpi": "Number of individual followers on social media",
+      "target": "600+",
+      "evidence": "Social media analytics (Twitter, Facebook, LinkedIn, SlideShare, Instagram)",
+      "source_page": 149
+    },
+    {
+      "id": "C5",
+      "kpi": "Number of press launches / online news publications / local media appearances in the native languages of participant countries",
+      "target": "40+",
+      "evidence": "Individual partner reports",
+      "source_page": 149
+    },
+    {
+      "id": "C6",
+      "kpi": "Local public events directly organised by the project teams",
+      "target": "30+",
+      "evidence": "Individual partner reports",
+      "source_page": 149
+    },
+    {
+      "id": "C7",
+      "kpi": "Project presentations at third party events, conferences etc.",
+      "target": "20+",
+      "evidence": "Individual partner reports; slides or posters presented",
+      "source_page": 149
+    },
+    {
+      "id": "C8",
+      "kpi": "Paper submissions to thematic journals (on AI, government, education etc.) citing the project",
+      "target": "6+",
+      "evidence": "Preprints of the submitted papers",
+      "source_page": 149
+    },
+    {
+      "id": "C9",
+      "kpi": "Issues of the project newsletter",
+      "target": "8+",
+      "evidence": "Reports of distribution via e.g. Mailchimp",
+      "source_page": 149
+    },
+    {
+      "id": "C10",
+      "kpi": "Received applications to the open call 1",
+      "target": "120+",
+      "evidence": "Official proceedings",
+      "source_page": 149
+    },
+    {
+      "id": "C11",
+      "kpi": "Received applications to the open call 2",
+      "target": "180+",
+      "evidence": "Official proceedings",
+      "source_page": 149
+    }
+  ]
 }

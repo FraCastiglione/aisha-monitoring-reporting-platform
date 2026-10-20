@@ -6,20 +6,20 @@
     <meta name="theme-color" content="#4f2bd8">
     <meta name="description" content="Prepare AI-SECRETT partner reports and view approved project monitoring information.">
     <title>AI-SECRETT Monitoring and Reporting Platform</title>
-    <link rel="stylesheet" href="assets/styles.css?v=20261020a">
+    <link rel="stylesheet" href="assets/styles.css?v=20261020g">
     <script src="assets/config.js?v=20261006c" defer></script>
     <script src="assets/agreement-content.js" defer></script>
     <script src="assets/project-model.js?v=20261006c" defer></script>
-    <script src="assets/embedded-data.js?v=20261006c" defer></script>
+    <script src="assets/embedded-data.js?v=20261020f" defer></script>
     <script src="assets/pdf-lib.min.js" defer></script>
     <script src="assets/fontkit.umd.min.js" defer></script>
     <script src="assets/pdf-assets.js?v=20261006c" defer></script>
-    <script src="assets/pdf.js?v=20261006c" defer></script>
+    <script src="assets/pdf.js?v=20261020b" defer></script>
     <script src="assets/app.js?v=20261006c" defer></script>
     <script src="assets/kpi-model.js?v=20261006c" defer></script>
     <script src="assets/report-files.js?v=20261006c" defer></script>
-    <script src="assets/reporting.js?v=20261020a" defer></script>
-    <script src="assets/dashboard.js?v=20261006c" defer></script>
+    <script src="assets/reporting.js?v=20261020e" defer></script>
+    <script src="assets/dashboard.js?v=20261020g" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to main content</a>
@@ -112,7 +112,7 @@
           <p class="section-intro">Choose the type of contribution you are preparing. You can save a browser draft or download a draft file as you work.</p>
           <div class="choice-grid">
             <article class="choice-card"><span class="choice-mark" aria-hidden="true">01 / TASKS</span><h3>Tasks Reporting</h3><p>Choose reporting months, then prepare one partner report covering your listed Tasks and any additional contributions.</p><button class="choice-button" type="button" data-report-type="task" aria-pressed="false">Choose Tasks Reporting <span aria-hidden="true">→</span></button></article>
-            <article class="choice-card"><span class="choice-mark" aria-hidden="true">02 / OUTREACH</span><h3>Communication &amp; Dissemination</h3><p>Share events, media outreach, publications, social activity, reach and support needs for a two-week period.</p><button class="choice-button" type="button" data-report-type="communication" aria-pressed="false">Choose Communication <span aria-hidden="true">→</span></button></article>
+            <article class="choice-card"><span class="choice-mark" aria-hidden="true">02 / OUTREACH</span><h3>Communication &amp; Dissemination</h3><p>Share events, media outreach, publications, social activity, reach and support needs for your selected project months.</p><button class="choice-button" type="button" data-report-type="communication" aria-pressed="false">Choose Communication <span aria-hidden="true">→</span></button></article>
           </div>
           <p id="report-status" class="selection-message" role="status" hidden></p>
           <button id="edit-details" class="text-button" type="button">← Edit contributor details</button>
@@ -120,13 +120,13 @@
 
         <section id="report-workspace" class="container report-workspace" aria-labelledby="workspace-title" hidden>
           <div class="workspace-heading"><div><p class="overline">PREPARE YOUR REPORT</p><h2 id="workspace-title" tabindex="-1">Reporting form</h2></div><button id="back-to-choice" class="text-button" type="button">← Change report type</button></div>
-          <p class="preview-notice">Report your organisation’s work for the months you select. Add work outside your listed assignments as additional contributions.</p>
+          <p id="workspace-intro" class="preview-notice">Report your organisation’s work for the months you select. Add work outside your listed assignments as additional contributions.</p>
 
           <div id="task-picker" class="form-card" hidden>
             <h3>Build your partner report</h3>
-            <p>Drag across months to add them to your report. Drag again to add another period, even after a gap. Click a month to remove or restore it. Only highlighted months are covered.</p>
+            <p>Drag across months to add them to your report. Drag across highlighted months to remove a range. Click a month to toggle it. Only highlighted months are covered.</p>
             <input id="report-start" type="hidden"><input id="report-end" type="hidden">
-            <div class="timeline-header"><strong>Project timeline</strong><span>Drag to add · click to toggle · October 2025 = M01</span></div><div id="project-timeline" class="project-timeline" aria-label="Project months"></div><div id="monitoring-rounds" class="monitoring-rounds" hidden></div>
+            <div class="timeline-header"><strong>Project timeline</strong><span>Drag to add or remove · click to toggle · October 2025 = M01</span></div><div id="project-timeline" class="project-timeline" aria-label="Project months"></div><button id="task-clear-months" class="timeline-clear" type="button" disabled>Clear selected months</button><div id="monitoring-rounds" class="monitoring-rounds" hidden></div>
             <p id="task-month-summary" class="selection-message" role="status">Choose project months to see scheduled Tasks available for reporting.</p><section id="overview-import" class="overview-import is-prominent"><div><strong>Resume or update a report</strong><p>Import a complete report, an editable draft file, or a PDF created by this preview. Choose which Task and Work Package entries to bring in before anything changes.</p></div><label class="button button-secondary file-label" for="import-report-file">Import report</label><input id="import-report-file" type="file" accept=".json,.pdf,application/json,application/pdf" hidden><p id="overview-import-message" class="form-message" role="alert" hidden></p></section>
             <div id="task-list" class="task-list"></div>
             <section id="wp-leader-section" class="wp-leader-section" hidden><div class="section-heading"><div><p class="overline">FOR WORK PACKAGE LEADERS</p><h3>Work Package leadership updates</h3></div><p>Report on coordination of the whole Work Package, separately from your organisation’s Task contributions.</p></div><div id="wp-leader-list"></div></section>
@@ -164,9 +164,12 @@
           <form id="wp-leader-form" class="form-card report-form" novalidate hidden><div class="editor-top-actions"><button id="wp-top-back" class="text-button editor-top-back" type="button">← Back to overview</button><button id="wp-download-draft" class="text-button" type="button">Download full draft PDF</button></div><p class="overline">WORK PACKAGE LEADERSHIP UPDATE</p><h3 id="wp-form-title"></h3><p id="wp-form-period" class="task-meta"></p><details class="wp-objectives"><summary>Read full Work Package objectives</summary><div id="wp-form-objectives" class="agreement-text"></div></details><p class="leadership-note">This is your assessment as Work Package leader. It does not certify another partner’s submission or work.</p><div class="field"><label for="wp-progress">Overall progress and achievements</label><textarea id="wp-progress" rows="4" maxlength="100000"></textarea></div><div class="field"><label for="wp-coordination">Coordination and integration work</label><textarea id="wp-coordination" rows="4" maxlength="100000"></textarea></div><div class="field"><label for="wp-difficulties">Difficulties and dependencies</label><textarea id="wp-difficulties" rows="4" maxlength="100000"></textarea></div><div class="field"><label for="wp-next">Next priorities</label><textarea id="wp-next" rows="4" maxlength="100000"></textarea></div><div class="field"><label for="wp-support">Coordinator decisions or support needed</label><textarea id="wp-support" rows="3" maxlength="100000"></textarea></div><h4>Tasks in this Work Package</h4><p class="field-help">Give a status only where you have information. Task descriptions and stated outcomes are copied from the Grant Agreement.</p><div id="wp-task-updates"></div><p id="wp-editor-message" class="form-message" role="alert" hidden></p><div class="task-editor-actions"><p>Your Work Package update will appear in the same full partner report as your Task contributions.</p><div class="task-editor-buttons"><button id="wp-back" class="button button-secondary" type="button">← Back to overview</button><button id="wp-no-work" class="button button-secondary" type="button">Declare no Work Package work</button><button id="wp-done" class="button button-primary" type="button">Done with Work Package</button></div></div></form>
 
           <form id="communication-form" class="form-card report-form" novalidate hidden>
-            <p class="overline">COMMUNICATION &amp; DISSEMINATION</p><h3>Two-week check-in</h3><div class="overview-import comm-import"><div><h4>Resume or update a communication report</h4><p>Import an AI-SECRETT draft or report for this partner to continue the check-in.</p></div><label class="button button-secondary" for="comm-import-file">Import communication report</label><input id="comm-import-file" type="file" accept=".json,.pdf,application/json,application/pdf" hidden><p id="comm-import-message" class="form-message" role="status" hidden></p></div>
-            <p>The coordination team's current reporting workflow requests a check-in every two weeks. This is a monitoring practice, not a deadline stated in the Grant Agreement. There is no expectation to report a high number of activities; the form records what happened and what is planned.</p>
-            <div class="field-row"><div class="field"><label for="comm-start">Period start *</label><input id="comm-start" name="period_start" type="date" required></div><div class="field"><label for="comm-end">Period end *</label><input id="comm-end" name="period_end" type="date" required><p class="field-help">Use a 14-day period, including both dates.</p></div></div>
+            <p class="overline">COMMUNICATION &amp; DISSEMINATION</p><h3>Monthly communication report</h3><div class="overview-import comm-import"><div><h4>Resume or update a communication report</h4><p>Import an AI-SECRETT draft or report for this partner to continue the monthly report.</p></div><label class="button button-secondary" for="comm-import-file">Import communication report</label><input id="comm-import-file" type="file" accept=".json,.pdf,application/json,application/pdf" hidden><p id="comm-import-message" class="form-message" role="status" hidden></p></div>
+            <p>Select the project months this report covers, then record your organisation’s activities and support needs for those months. Only highlighted months are included.</p>
+            <div class="timeline-header"><strong id="comm-month-label">Reporting months *</strong><span>Drag to add or remove · click to toggle · October 2025 = M01</span></div>
+            <div id="comm-month-timeline" class="project-timeline" role="group" aria-labelledby="comm-month-label"></div>
+            <button id="comm-clear-months" class="timeline-clear" type="button" disabled>Clear selected months</button>
+            <p id="comm-month-summary" class="selection-message" role="status">Choose one or more project months for this communication report.</p>
             <fieldset class="field"><legend>Did you organise one or more events? *</legend><div class="radio-row"><label><input type="radio" name="events_organised" value="yes"> Yes</label><label><input type="radio" name="events_organised" value="no"> No</label></div></fieldset>
             <div id="comm-events-wrap" class="conditional" hidden><div id="comm-events-list"></div><button id="add-event" class="button button-secondary" type="button">+ Add another event</button></div>
             <fieldset class="field"><legend>Did you carry out media outreach? *</legend><div class="radio-row"><label><input type="radio" name="media_outreach" value="yes"> Yes</label><label><input type="radio" name="media_outreach" value="no"> No</label></div></fieldset>
@@ -180,7 +183,7 @@
             <div id="comm-email-wrap" class="conditional" hidden><div class="field"><label for="comm-recipients">Estimated recipients *</label><input id="comm-recipients" name="estimated_recipients" type="number" min="0" step="1" inputmode="numeric"></div><div class="field"><label for="comm-email-details">Relevant information</label><textarea id="comm-email-details" name="email_details" rows="3" maxlength="100000"></textarea></div></div>
             <div class="field"><label for="comm-other">Other activities completed or materials to share</label><textarea id="comm-other" name="other_activities_or_materials" rows="4" maxlength="100000"></textarea></div>
             <div class="field-row"><div class="field"><label for="comm-reach">Total estimated people reached *</label><input id="comm-reach" name="estimated_people_reached" type="number" min="0" step="1" inputmode="numeric"><label class="check-label"><input id="comm-reach-unknown" type="checkbox"> Unknown</label></div><div class="field"><label for="comm-enrolments">Pre-registrations or enrolments attributable to your activities *</label><input id="comm-enrolments" name="preregistrations_or_enrolments" type="number" min="0" step="1" inputmode="numeric"><label class="check-label"><input id="comm-enrolments-unknown" type="checkbox"> Unknown</label></div></div>
-            <fieldset class="field"><legend>Do you need support from the coordination team? *</legend><div class="radio-row"><label><input type="radio" name="coordinator_support_required" value="yes"> Yes</label><label><input type="radio" name="coordinator_support_required" value="no"> No</label></div></fieldset>
+            <fieldset class="field"><legend>Do you need support from the coordination or communication team? *</legend><div class="radio-row"><label><input type="radio" name="coordinator_support_required" value="yes"> Yes</label><label><input type="radio" name="coordinator_support_required" value="no"> No</label></div></fieldset>
             <div id="comm-support-wrap" class="field conditional" hidden><label for="comm-support">Support required *</label><textarea id="comm-support" name="coordinator_support_request" rows="4" maxlength="100000"></textarea></div>
           </form>
 
@@ -223,7 +226,7 @@
           <li><span>02</span><h2>Review and download</h2><p>Check your details and answers, then retain both the readable PDF and the structured JSON file.</p></li>
           <li><span>03</span><h2>Share the report files</h2><p>Send both files through the channel specified by the AI-SECRETT coordination team and confirm receipt there. This preview does not send them.</p></li>
         </ol>
-        <div class="notice-card"><strong>About this preview</strong><p>The participant, Work Package, Task and schedule catalogue comes from the signed Grant Agreement. Task participants are listed in the Consortium Agreement §4.5.5 (PDF pp. 15–18), and RCE’s nine commitments in Attachment 5 (PDF p. 61). The first participant listed for each Task is its leader. Formal reporting periods cover M1–M18, M19–M36 and M37–M48, with report preparation in M19–20, M37–38 and M49–50. Internal drafts are scheduled 30 days before deadlines. Task-end report dates and the two-week communication check-in are coordinator planning conventions.</p></div>
+        <div class="notice-card"><strong>About this preview</strong><p>The participant, Work Package, Task and schedule catalogue comes from the signed Grant Agreement. Task participants are listed in the Consortium Agreement §4.5.5 (PDF pp. 15–18), and RCE’s nine commitments in Attachment 5 (PDF p. 61). The first participant listed for each Task is its leader. Formal reporting periods cover M1–M18, M19–M36 and M37–M48, with report preparation in M19–20, M37–38 and M49–50. Internal drafts are scheduled 30 days before deadlines. Task-end report dates and the monthly communication report are coordinator planning conventions.</p></div>
       </section>
     </main>
 
