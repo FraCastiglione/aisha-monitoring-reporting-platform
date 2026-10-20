@@ -224,7 +224,7 @@
   }
 
   async function readEmbeddedReport(file) {
-    if (!window.PDFLib || file.size > 10_000_000) throw new Error("Choose an AI-SECRETT PDF under 10 MB.");
+    if (!window.PDFLib) throw new Error("The local PDF components did not load.");
     const P = window.PDFLib, pdf = await P.PDFDocument.load(await file.arrayBuffer());
     const namesRef = pdf.catalog.get(P.PDFName.of("Names"));
     const names = namesRef && pdf.context.lookup(namesRef, P.PDFDict);
@@ -237,7 +237,6 @@
       if (entries.lookup(i)?.decodeText() !== "AI-SECRETT-report-data.json") continue;
       const spec = entries.lookup(i + 1, P.PDFDict), ef = pdf.context.lookup(spec.get(P.PDFName.of("EF")), P.PDFDict), stream = pdf.context.lookup(ef.get(P.PDFName.of("F")), P.PDFRawStream);
       const bytes = P.decodePDFRawStream(stream).decode();
-      if (bytes.length > 5_000_000) throw new Error("Embedded report data exceeds 5 MB.");
       return JSON.parse(new TextDecoder().decode(bytes));
     }
     throw Object.assign(new Error("This PDF has no AI-SECRETT report data. Import its matching JSON file instead."), { code: "NO_SECRETT_DATA" });

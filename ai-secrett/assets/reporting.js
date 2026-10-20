@@ -412,6 +412,7 @@
     if (existing && hasWpContribution(existing) && !await confirmAction('Declare no Work Package work', `The leadership update for ${wp.id} will be declared as no work carried out. Existing entries for this Work Package will be cleared.`, 'Declare no work')) return;
     state.wpUpdates.set(wp.id,{...emptyWp(),status:'no_work'});state.wpEditing=null;setWpEditor(false);renderOverview();scrollTo($('wp-leader-section'));
   }
+  const taskNarrativeFields = new Set(['activities_carried_out','results_achieved','difficulties_encountered','raw_costs_note','upcoming_activities','additional_comments']);
   function emptyTask() { return { status: 'draft', coverage_start: '', coverage_end: '', activities_carried_out: '', results_achieved: '', difficulties_encountered: '', raw_costs: '', raw_costs_note: '', upcoming_activities: '', additional_comments: '', significant_issue: '', severity: '', coordinator_action_required: '', coordinator_support_request: '' }; }
   function hasContribution(answer) { return ['activities_carried_out','results_achieved','difficulties_encountered','raw_costs','raw_costs_note','upcoming_activities','additional_comments','significant_issue','severity','coordinator_action_required','coordinator_support_request'].some(key => String(answer[key] || '').trim()); }
   function taskCard(id) { return [...$('task-list').querySelectorAll('.task-card[data-task-id]')].find(card => card.dataset.taskId === id) || [...$('extra-list').querySelectorAll('.task-card[data-task-id]')].find(card => card.dataset.taskId === id); }
@@ -421,7 +422,7 @@
     else card.scrollIntoView({ block: 'center', behavior: 'auto' });
   }
   function taskAnswerIssue(id, answer) {
-    if (Object.values(answer).some(value=>typeof value==='string'&&value.length>100000)) return `Keep each answer for ${id} within 100,000 characters.`;
+    if (Object.entries(answer).some(([key,value])=>typeof value==='string'&&value.length>100000&&!taskNarrativeFields.has(key))) return `Keep the other answers for ${id} within 100,000 characters.`;
     if (state.partner.kind === 'associated_partner' && (answer.raw_costs || answer.raw_costs_note)) return `Remove cost information from ${id}; associated partners cannot charge costs to the action.`;
     if (answer.raw_costs !== '' && (!/^\d+(\.\d{1,2})?$/.test(answer.raw_costs) || !Number.isSafeInteger(Math.round(Number(answer.raw_costs) * 100)))) return `Enter a valid non-negative EUR amount for ${id}, or leave it blank.`;
     if (!['','yes','no'].includes(answer.significant_issue)) return `Check the significant-issue answer for ${id}.`;
@@ -644,9 +645,9 @@
     }
     else base.answers = communicationAnswers();
     if (kind === 'draft') { base.saved_at = new Date().toISOString(); if (!tasks) base.form_state = commSnapshot(); }
-    const checkText = object => { for (const entry of Object.values(object || {})) { if (typeof entry === 'string' && entry.length > 100000) throw new Error('Keep each report answer within 100,000 characters.'); if (entry && typeof entry === 'object') checkText(entry); } };
+    const checkText = object => { for (const [key,entry] of Object.entries(object || {})) { if (typeof entry === 'string' && entry.length > 100000 && !(tasks && (taskNarrativeFields.has(key) || (key === 'note' && object.currency === 'EUR')))) throw new Error('Keep other report answers within 100,000 characters.'); if (entry && typeof entry === 'object') checkText(entry); } };
     checkText(base);
-    if (new TextEncoder().encode(JSON.stringify(base)).length > 5_000_000) throw new Error('This report exceeds the 5 MB editable-file limit. Shorten long answers or split the reporting period before downloading.');
+    if (!tasks && new TextEncoder().encode(JSON.stringify(base)).length > 5_000_000) throw new Error('This report exceeds the 5 MB editable-file limit. Shorten long answers or split the reporting period before downloading.');
     return base;
   }
   const safe = x => String(x).toUpperCase().replace(/[^A-Z0-9.]+/g,'-').replace(/^-|-$/g,'');
@@ -692,9 +693,9 @@
   $('delete-browser-draft').addEventListener('click', () => { try { if (!localStorage.getItem(draftKey())) { $('browser-draft-dialog').close();return message('No browser draft was found for this partner and report type.'); } localStorage.removeItem(draftKey());$('browser-draft-dialog').close();message('Browser draft deleted.'); } catch { $('browser-draft-dialog').close();message('Browser storage is unavailable.'); } });
 
   function importedTaskAnswers(a, status) {
-    if (!a || ['activities_carried_out','results_achieved','difficulties_encountered','upcoming_activities','additional_comments'].some(k=>typeof a[k] !== 'string' || a[k].length > 100000)) throw new Error('A Task answer is invalid.');
+    if (!a || ['activities_carried_out','results_achieved','difficulties_encountered','upcoming_activities','additional_comments'].some(k=>typeof a[k] !== 'string')) throw new Error('A Task answer is invalid.');
     const cost=a.raw_costs_incurred;
-    if (!cost || cost.currency !== 'EUR' || !(cost.amount === null || (/^\d+\.\d{2}$/.test(cost.amount) && Number.isSafeInteger(Math.round(Number(cost.amount) * 100)))) || typeof cost.note !== 'string' || cost.note.length > 500) throw new Error('A Task cost entry is invalid.');
+    if (!cost || cost.currency !== 'EUR' || !(cost.amount === null || (/^\d+\.\d{2}$/.test(cost.amount) && Number.isSafeInteger(Math.round(Number(cost.amount) * 100)))) || typeof cost.note !== 'string') throw new Error('A Task cost entry is invalid.');
     if (state.partner.kind === 'associated_partner' && (cost.amount !== null || cost.note)) throw new Error('Associated partner reports cannot contain cost entries.');
     if (![null,true,false].includes(a.significant_issue) || ![null,true,false].includes(a.coordinator_action_required) || (a.significant_issue === true && !['Low','Medium','High','Critical'].includes(a.severity))) throw new Error('A Task issue entry is invalid.');
     if (a.coordinator_action_required === true && (typeof a.coordinator_support_request !== 'string' || !a.coordinator_support_request.trim())) throw new Error('A Task support request is invalid.');
@@ -742,7 +743,7 @@
   async function importTaskFile(file,matchingJson=false){
     if(!file||!taskImportTarget)return;
     try{
-      if(file.size>(matchingJson?5_000_000:10_000_000)||!file.name.toLowerCase().endsWith(matchingJson?'.json':'.pdf'))throw new Error(matchingJson?'Choose the matching AI-SECRETT JSON file under 5 MB.':'Choose an individual AI-SECRETT Task PDF under 10 MB.');
+      if(!file.name.toLowerCase().endsWith(matchingJson?'.json':'.pdf'))throw new Error(matchingJson?'Choose the matching AI-SECRETT JSON file.':'Choose an individual AI-SECRETT Task PDF.');
       const raw=matchingJson?JSON.parse(await file.text()):await window.SECRETT_PDF.readEmbeddedReport(file);
       if(!matchingJson&&raw.document_kind!=='individual_task_copy')throw new Error('This is a whole-report PDF. Use “Import report” below the project timeline.');
       if(raw.project!=='AI-SECRETT'||raw.report_type!=='tasks'||raw.partner?.code!==state.partner.code||raw.partner?.name!==state.partner.name||!['2.0','2.1','2.2','2.3','2.4'].includes(raw.schema_version))throw new Error('Choose an AI-SECRETT Task report for this partner.');
@@ -776,7 +777,7 @@
   }
   async function importWholeFile(file){
     if(!file)return;
-    try{await kpiReady;if(file.size>(file.name.toLowerCase().endsWith('.pdf')?10_000_000:5_000_000))throw new Error('The file is too large.');const raw=file.name.toLowerCase().endsWith('.pdf')?await window.SECRETT_PDF.readEmbeddedReport(file):JSON.parse(await file.text());prepareWholeImport(raw);$('overview-import-message').hidden=true;}
+    try{await kpiReady;const raw=file.name.toLowerCase().endsWith('.pdf')?await window.SECRETT_PDF.readEmbeddedReport(file):JSON.parse(await file.text());prepareWholeImport(raw);$('overview-import-message').hidden=true;}
     catch(error){$('overview-import-message').textContent=`Could not read report: ${error.message}`;$('overview-import-message').hidden=false;if(error.code==='NO_SECRETT_DATA')window.SECRETT_FILES.recover(file,importWholeFile,null,'Choose which Task and Work Package entries to import from the matching JSON. Nothing changes until you confirm.');}
   }
   $('import-report-file').addEventListener('change',event=>{const file=event.target.files?.[0];event.target.value='';if(file)importWholeFile(file);});
@@ -838,7 +839,7 @@
         const task = taskById(item.id);
         if (!task || (!model.assigned(task,state.partner.code,config)&&!model.reportTaskCompatible(task,state.partner.code,config,item)) || !model.taskCoverage(config,task,p.start,p.end,p.selected_months) || selected.has(task.id)) throw new Error('Draft contains an invalid or duplicate Task.');
         const answers = { ...emptyTask() };
-        for (const key of Object.keys(answers)) { const input = item.answers?.[key]; if (input !== undefined) { if (typeof input !== 'string' || input.length > 100000) throw new Error('Draft contains an invalid answer.'); answers[key] = input; } }
+        for (const key of Object.keys(answers)) { const input = item.answers?.[key]; if (input !== undefined) { if (typeof input !== 'string' || (!taskNarrativeFields.has(key) && input.length > 100000)) throw new Error('Draft contains an invalid answer.'); answers[key] = input; } }
         if (state.partner.kind === 'associated_partner' && (answers.raw_costs || answers.raw_costs_note)) throw new Error('Associated partner drafts cannot contain cost entries.');
         if (!['draft','completed','no_work'].includes(answers.status)) throw new Error('Draft has an invalid Task status.');
         if (answers.status === 'no_work' && hasContribution(answers)) throw new Error(`No-work Task ${task.id} contains contribution answers.`);

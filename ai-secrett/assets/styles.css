@@ -1222,6 +1222,21 @@ label,.dash-control > span,.dash-kpi-group { color:#46566b; }
 .dash-kpi-index-source + .dash-kpi-index-source { border-top-color:#e7e1ee; }
 .dash-kpi-field-label { color:#4b1ebc; font-weight:800; }
 
+/* Task writing guidance stays available beside each question-mark button. */
+.guided-field { position:relative; }
+.guided-label { display:flex; align-items:center; gap:7px; margin-bottom:9px; }
+.guided-label label { margin:0; }
+.guidance-anchor { position:relative; display:inline-grid; place-items:center; }
+.guidance-trigger { display:inline-grid; place-items:center; width:20px; height:20px; padding:0; border:1px solid #c7b8e8; border-radius:50%; background:#f4efff; color:#4b1ebc; font-size:12px; font-weight:800; line-height:1; cursor:help; }
+.guidance-trigger:hover,.guidance-trigger:focus-visible { border-color:#7650c7; background:#e9dfff; }
+.guided-field textarea::placeholder { color:#68758a; opacity:1; }
+.guided-field textarea { min-height:110px; padding-bottom:24px; font-family:inherit; line-height:1.5; }
+.guided-field::after { content:'↘ Drag corner to expand'; display:block; margin-top:4px; color:#647187; font-size:11px; text-align:right; }
+.field-tooltip { position:absolute; z-index:12; left:-10px; bottom:calc(100% + 8px); width:min(350px,calc(100vw - 40px)); padding:10px 12px; border:1px solid #cdbdec; border-radius:9px; background:#fff; color:#3d3456; box-shadow:0 8px 24px #2f1e571f; font-size:12px; font-weight:400; line-height:1.45; visibility:hidden; opacity:0; pointer-events:none; }
+.field-row .field-tooltip { left:auto; right:-10px; }
+.guided-field:has(textarea:not(:placeholder-shown)):hover:not(:focus-within) .field-tooltip,.guidance-anchor:hover .field-tooltip,.guidance-anchor:focus-within .field-tooltip { visibility:visible; opacity:1; }
+@media(max-width:700px) { .field-tooltip,.field-row .field-tooltip { width:min(210px,calc(100vw - 36px)); left:auto; right:-4px; } }
+
 @media(max-width:780px) {
   .dash-kpi-table-wrap { overflow:visible; border:0; background:transparent; box-shadow:none; }
   .dash-kpi-reference-table,.dash-kpi-reference-table.is-project-table,.dash-kpi-reference-table.is-communication-table,.dash-kpi-reference-table.is-indicator-index { display:block; width:100%; min-width:0; }
