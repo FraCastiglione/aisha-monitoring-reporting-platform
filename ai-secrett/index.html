@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#4f2bd8">
     <meta name="description" content="Prepare AI-SECRETT partner reports and view approved project monitoring information.">
     <title>AI-SECRETT Monitoring and Reporting Platform</title>
-    <link rel="stylesheet" href="assets/styles.css?v=20261020h">
+    <link rel="stylesheet" href="assets/styles.css?v=20261021-kpi-measurement">
     <script src="assets/config.js?v=20261006c" defer></script>
     <script src="assets/agreement-content.js" defer></script>
     <script src="assets/project-model.js?v=20261006c" defer></script>
@@ -17,9 +17,10 @@
     <script src="assets/pdf.js?v=20261020b" defer></script>
     <script src="assets/app.js?v=20261006c" defer></script>
     <script src="assets/kpi-model.js?v=20261006c" defer></script>
+    <script src="assets/report-identity.js?v=20261021-kpi-measurement" defer></script>
     <script src="assets/report-files.js?v=20261006c" defer></script>
-    <script src="assets/reporting.js?v=20261020f" defer></script>
-    <script src="assets/dashboard.js?v=20261020g" defer></script>
+    <script src="assets/reporting.js?v=20261021-kpi-preview" defer></script>
+    <script src="assets/dashboard.js?v=20261021-kpi-result" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to main content</a>
@@ -196,7 +197,7 @@
           <template id="event-template"><div class="event-entry"><div class="event-entry-top"><strong>Event</strong><button type="button" class="text-button remove-event">Remove</button></div><div class="field"><label>Event description *</label><textarea class="event-description" rows="3" maxlength="100000"></textarea></div><div class="field"><label>Participants *</label><input class="event-participants" type="number" min="0" step="1" inputmode="numeric"></div><div class="field"><label>Shared event code (if known)</label><input class="event-activity-id" type="text" maxlength="80" list="shared-activity-options" placeholder="Coordinator-issued code"></div></div></template>
 
           <div id="draft-actions" class="draft-actions" hidden><div class="draft-intro"><strong>Save your progress</strong><p>Download a portable copy whenever you pause. Browser storage can be cleared by your device or browser.</p></div><div class="draft-buttons"><div class="draft-choice"><button id="open-draft-downloads" class="button button-primary" type="button">Download draft</button><small>Keep a PDF, an editable JSON file, or both.</small></div><div class="draft-choice"><button id="save-draft" class="button button-secondary" type="button">Save in this browser</button><small>One current draft on this device. Browser data may be cleared, so also download a copy.</small></div><div class="draft-choice"><button id="open-browser-draft" class="button button-secondary" type="button">Restore browser draft</button><small>Bring back the last draft saved in this browser.</small></div></div><p id="draft-message" class="action-message" role="status"></p></div>
-          <div id="report-form-actions" class="form-actions" hidden><div class="review-readiness"><div id="selected-task-summary" class="status-grid" role="status"></div><small>Review is the next step. Your report will be generated only after you review and confirm it.</small></div><div id="revision-controls" class="revision-card" hidden><div class="field"><label for="report-revision">Report revision *</label><input id="report-revision" type="number" min="1" max="99" step="1" value="1"><p class="field-help">Use 1 for your first version. For an updated or corrected report, enter the next revision number.</p></div></div><p id="report-form-error" class="form-message" role="alert" hidden></p><button id="review-report" class="button button-primary" type="button">Review full report before submission <span aria-hidden="true">→</span></button></div>
+          <div id="report-form-actions" class="form-actions" hidden><div class="review-readiness"><div id="selected-task-summary" class="status-grid" role="status"></div><small>Review is the next step. Your report will be generated only after you review and confirm it.</small></div><div id="revision-controls" class="revision-card" hidden><div class="field"><label for="report-revision">Report revision *</label><input id="report-revision" type="number" min="1" max="99" step="1" value="1"><p class="field-help">Use 1 for your first version. For an updated or corrected report, enter the next revision number.</p></div><p class="field-help">Report code: <strong id="report-code-preview"></strong><br>The code stays the same when you revise this report. Each revision has its own number.</p></div><p id="report-form-error" class="form-message" role="alert" hidden></p><button id="review-report" class="button button-primary" type="button">Review full report before submission <span aria-hidden="true">→</span></button></div>
         </section>
 
         <dialog id="confirm-action-dialog" aria-labelledby="confirm-action-title" aria-describedby="confirm-action-description"><div class="individual-pdf-content"><h2 id="confirm-action-title"></h2><p id="confirm-action-description"></p><div class="review-actions"><button id="confirm-action-cancel" class="button button-secondary" type="button">Cancel</button><button id="confirm-action-accept" class="button button-primary" type="button">Confirm</button></div></div></dialog>

@@ -111,7 +111,8 @@
     pair("Contributor", `${report.contributor.name} · ${report.contributor.role} · ${report.contributor.email}`);
     pair("Reporting period", report.reporting_period.start && report.reporting_period.end ? `${report.reporting_period.code ? `${report.reporting_period.code} · ` : ""}${report.reporting_period.start} to ${report.reporting_period.end}` : "Reporting period not yet selected");
     if (report.reporting_period.selected_months) pair("Selected months", report.reporting_period.selected_months.join(", "));
-    pair("Report key and revision", `${report.report_key} · v${report.revision}`);
+    if(report.report_code)pair("Report code", `${report.report_code} · v${report.revision}`);
+    pair("Report key", report.report_key);
     pair("Generated", generatedLabel(report.generated_at));
 
     const a = report.answers;

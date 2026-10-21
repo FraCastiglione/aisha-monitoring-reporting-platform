@@ -58,6 +58,8 @@
     }
   },
   "reporting_records": [],
+  "report_registry": [],
+  "partner_kpi_contributions": [],
   "task_flags": [],
   "task_progress": {},
   "kpi_values": [],

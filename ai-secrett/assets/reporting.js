@@ -6,11 +6,19 @@
   const $ = id => document.getElementById(id);
   const taskForm = $('task-form');
   const commForm = $('communication-form');
-  const state = { partner: null, contributor: null, reportType: null, selected: new Map(), wpUpdates: new Map(), extras: [], kpis: new Map(), kpisByType:{tasks:new Map(),communication:new Map()}, selectedMonths: new Set(), commMonths: new Set(), lastPeriod: null, editing: null, wpEditing: null, extraEditing: null, editWasNew: false, revision: 1, reviewed: null, urls: [], taskPdfUrl: null };
+  const state = { partner: null, contributor: null, reportType: null, reportCodes:{tasks:null,communication:null}, generatedSignatures:{tasks:null,communication:null}, revisionsByType:{tasks:1,communication:1}, selected: new Map(), wpUpdates: new Map(), extras: [], kpis: new Map(), kpisByType:{tasks:new Map(),communication:new Map()}, selectedMonths: new Set(), commMonths: new Set(), lastPeriod: null, editing: null, wpEditing: null, extraEditing: null, editWasNew: false, revision: 1, reviewed: null, urls: [], taskPdfUrl: null };
   let kpiCatalogue=[];
   const communicationKpis=new Set();
   const kpiModel=window.SECRETT_KPI_MODEL;
   const kpiKey=kpiModel.key;
+  const reportIdentity=window.SECRETT_REPORT_IDENTITY;
+  const periodSignature=p=>p?.selected_months?.length?JSON.stringify([p.start,p.end,p.selected_months]):null;
+  function reportCode(){
+    const type=state.reportType,p=type==='tasks'?period():communicationPeriod(),signature=periodSignature(p);
+    if(state.generatedSignatures[type]&&signature&&signature!==state.generatedSignatures[type]){state.reportCodes[type]=null;state.generatedSignatures[type]=null;state.revisionsByType[type]=1;state.revision=1;$('report-revision').value='1';}
+    const code=state.reportCodes[type] ||= reportIdentity.make(state.partner.code,type);
+    $('report-code-preview').textContent=code;return code;
+  }
   let kpiReady=Promise.resolve();
   const value = id => $(id).value.trim();
   const radio = (form, name) => form.querySelector(`input[name="${name}"]:checked`)?.value || '';
@@ -214,6 +222,7 @@
     }
     $('comm-clear-months').disabled = state.commMonths.size === 0;
     $('comm-month-summary').hidden = !!communicationPeriod();
+    if(state.reportType==='communication'&&state.partner)reportCode();
   }
   function renderMonitoringRounds(){
     const host=$('monitoring-rounds'),rounds=window.SECRETT_EMBEDDED_DATA?.snapshot?.monitoring_rounds||[];host.replaceChildren();host.hidden=!rounds.length;if(!rounds.length)return;
@@ -223,6 +232,7 @@
   function renderOverview() {
     if (!state.partner || state.reportType !== 'tasks') return;
     paintTimeline();renderMonitoringRounds();
+    reportCode();
     const list = $('task-list'); list.replaceChildren();
     const p = period(); const rangeIssue = !p ? 'Select one or more project months on the timeline.' : '';
     const eligible = rangeIssue ? [] : selectedInRange();
@@ -563,12 +573,13 @@
     reconcileSelectedCoverage(oldPeriod,period());
     renderOverview();
   });
-  window.addEventListener('secrett:contributor-ready', event => { if (state.partner && state.partner.code !== event.detail.partner.code) { state.selected = new Map(); state.wpUpdates=new Map(); state.extras=[];state.extraEditing=null;state.kpisByType={tasks:new Map(),communication:new Map()}; state.kpis=new Map(); state.selectedMonths = new Set(); state.commMonths = new Set(); state.lastPeriod = null; state.reportType = null; state.revision = 1; state.reviewed = null; state.editing = null; state.wpEditing = null; $('report-revision').value = '1'; $('report-start').value = ''; $('report-end').value = ''; commForm.reset(); state.commArticles=[]; state.commArticleNote=''; $('comm-events-list').replaceChildren(); $('comm-reach-unknown').checked = false; $('comm-enrolments-unknown').checked = false; updateConditions(); for (const url of state.urls) URL.revokeObjectURL(url); state.urls = []; if (state.taskPdfUrl) URL.revokeObjectURL(state.taskPdfUrl); state.taskPdfUrl = null; for (const dialog of document.querySelectorAll('dialog[open]')) dialog.close(); } state.partner = event.detail.partner; state.contributor = event.detail.contributor; $('report-workspace').hidden = true; $('review-section').hidden = true; $('submission-section').hidden = true; });
+  window.addEventListener('secrett:contributor-ready', event => { if (state.partner && state.partner.code !== event.detail.partner.code) { state.selected = new Map(); state.wpUpdates=new Map(); state.extras=[];state.extraEditing=null;state.reportCodes={tasks:null,communication:null};state.generatedSignatures={tasks:null,communication:null};state.revisionsByType={tasks:1,communication:1};state.kpisByType={tasks:new Map(),communication:new Map()}; state.kpis=new Map(); state.selectedMonths = new Set(); state.commMonths = new Set(); state.lastPeriod = null; state.reportType = null; state.revision = 1; state.reviewed = null; state.editing = null; state.wpEditing = null; $('report-revision').value = '1'; $('report-start').value = ''; $('report-end').value = ''; commForm.reset(); state.commArticles=[]; state.commArticleNote=''; $('comm-events-list').replaceChildren(); $('comm-reach-unknown').checked = false; $('comm-enrolments-unknown').checked = false; updateConditions(); for (const url of state.urls) URL.revokeObjectURL(url); state.urls = []; if (state.taskPdfUrl) URL.revokeObjectURL(state.taskPdfUrl); state.taskPdfUrl = null; for (const dialog of document.querySelectorAll('dialog[open]')) dialog.close(); } state.partner = event.detail.partner; state.contributor = event.detail.contributor; $('report-workspace').hidden = true; $('review-section').hidden = true; $('submission-section').hidden = true; });
   window.addEventListener('secrett:edit-details', () => { $('report-workspace').hidden = true; $('review-section').hidden = true; $('submission-section').hidden = true; });
   window.addEventListener('secrett:report-selected', event => {
     const chosenType = event.detail.reportType === 'task' ? 'tasks' : 'communication';
-    if (state.reportType !== chosenType) { state.revision = 1; $('report-revision').value = '1';state.kpis=state.kpisByType[chosenType]; }
+    if (state.reportType !== chosenType) {if(state.reportType)state.revisionsByType[state.reportType]=state.revision;state.revision=state.revisionsByType[chosenType];$('report-revision').value=String(state.revision);state.kpis=state.kpisByType[chosenType];}
     state.reportType = chosenType; state.editing = null; state.reviewed = null;
+    $('report-code-preview').textContent=reportCode();
     $('report-workspace').hidden = false; $('review-section').hidden = true; $('submission-section').hidden = true;
     clearError(); message('');
     const tasks = state.reportType === 'tasks';
@@ -587,12 +598,12 @@
     scrollTo($('report-workspace')); $('workspace-title').focus({ preventScroll: true });
   });
   $('back-to-choice').addEventListener('click', () => { $('report-workspace').hidden = true; $('review-section').hidden = true; $('submission-section').hidden = true; scrollTo($('report-choice')); });
-  $('report-revision').addEventListener('change', () => { state.revision = Number(value('report-revision')); });
+  $('report-revision').addEventListener('change', () => { state.revision = Number(value('report-revision'));state.revisionsByType[state.reportType]=state.revision; });
   function validate() {
     clearError();
     const rev = Number(value('report-revision'));
     if (!Number.isInteger(rev) || rev < 1 || rev > 99) return fail('Enter a revision from 1 to 99.', $('report-revision'));
-    state.revision = rev;
+    state.revision = rev;state.revisionsByType[state.reportType]=rev;
     if (state.reportType === 'tasks') {
       const p = period();
       if (!p) return fail('Choose valid reporting dates and selected months within the project.', $('report-start'));
@@ -656,7 +667,7 @@
     const tasks = state.reportType === 'tasks';
     const p = tasks ? (period() || { start: value('report-start'), end: value('report-end'), start_project_month: null, end_project_month: null, start_code: null, end_code: null, selected_months: sortedMonths() }) : (communicationPeriod() || { start: '', end: '', start_project_month: null, end_project_month: null, start_code: null, end_code: null, selected_months: [] });
     const key = tasks ? `${state.partner.code}:TASKS:${p.start}:${p.end}` : `${state.partner.code}:COMM:${p.start}:${p.end}:${p.selected_months.join(',')}`;
-    const base = { schema_version: tasks ? '2.4' : '1.4', project: 'AI-SECRETT', document_kind: kind, report_type: tasks ? 'tasks' : 'communication', report_key: key, revision: state.revision, partner: { code: state.partner.code, name: state.partner.name, kind: state.partner.kind || 'beneficiary' }, contributor: { ...state.contributor }, reporting_period: p, generated_at: kind === 'submission' ? new Date().toISOString() : null, kpi_contributions:[...state.kpis.values()] };
+    const base = { schema_version: tasks ? '2.4' : '1.4', project: 'AI-SECRETT', document_kind: kind, report_type: tasks ? 'tasks' : 'communication', report_key: key, report_code:reportCode(), revision: state.revision, partner: { code: state.partner.code, name: state.partner.name, kind: state.partner.kind || 'beneficiary' }, contributor: { ...state.contributor }, reporting_period: p, generated_at: kind === 'submission' ? new Date().toISOString() : null, kpi_contributions:[...state.kpis.values()] };
     if (tasks) {
       base.tasks = [...state.selected].map(([id, answers]) => { const task = taskById(id); const months = p.selected_months.filter(m => m >= answers.coverage_start.slice(0,7) && m <= answers.coverage_end.slice(0,7) && model.active(task,model.projectMonth(config,m))); return { id, title: task.title, work_package: task.wp, task_lead: task.lead, partner_role: !model.assigned(task,state.partner.code,config)||state.partner.kind==='associated_partner'?'Task contributor':model.role(task, state.partner.code, config), ...(!model.assigned(task,state.partner.code,config)?{assignment_basis:'voluntary_unlisted'}:{}), work_status: answers.status || 'draft', coverage: { start: answers.coverage_start, end: answers.coverage_end, months }, agreement_source_page: task.sourcePage, answers: kind === 'draft' ? { ...answers } : finalTaskAnswers(answers) }; });
       base.work_package_leadership=[...state.wpUpdates].map(([id,entry])=>{const wp=wpById(id);return {id,title:wp.title,leader:wp.lead,work_status:entry.status,coverage:{months:activeWpMonths(wp,p)},answers:{progress:entry.progress,coordination:entry.coordination,difficulties:entry.difficulties,next:entry.next,support:entry.support},task_updates:Object.entries(entry.task_updates).filter(([taskId])=>{const t=taskById(taskId);return t && p.selected_months.some(m=>model.active(t,model.projectMonth(config,m)));}).map(([taskId,row])=>({id:taskId,title:taskById(taskId).title,task_lead:taskById(taskId).lead,...row}))};});
@@ -670,7 +681,7 @@
     return base;
   }
   const safe = x => String(x).toUpperCase().replace(/[^A-Z0-9.]+/g,'-').replace(/^-|-$/g,'');
-  function filename(r, draft) { const months=r.reporting_period.selected_months||[],codes=months.map(month=>`M${String(model.projectMonth(config,month)).padStart(2,'0')}`),hash=months.reduce((value,month)=>[...month].reduce((n,char)=>(n*31+char.charCodeAt(0))>>>0,value),0).toString(36),monthSuffix=codes.length>12?`${codes.length}months-${hash}`:codes.join('-');const base = r.report_type === 'tasks' ? `AI-SECRETT_${safe(r.partner.code)}_TASKS_${r.reporting_period.start || 'START'}_${r.reporting_period.end || 'END'}` : `AI-SECRETT_${safe(r.partner.code)}_COMM_${r.reporting_period.start || 'START'}_${r.reporting_period.end || 'END'}${monthSuffix?`_${monthSuffix}`:''}`; return draft ? `${base}_DRAFT` : `${base}_v${r.revision}`; }
+  function filename(r, draft) { const months=r.reporting_period.selected_months||[],codes=months.map(month=>`M${String(model.projectMonth(config,month)).padStart(2,'0')}`),hash=months.reduce((value,month)=>[...month].reduce((n,char)=>(n*31+char.charCodeAt(0))>>>0,value),0).toString(36),monthSuffix=codes.length>12?`${codes.length}months-${hash}`:codes.join('-');const base = r.report_type === 'tasks' ? `AI-SECRETT_${safe(r.partner.code)}_TASKS_${r.reporting_period.start || 'START'}_${r.reporting_period.end || 'END'}` : `AI-SECRETT_${safe(r.partner.code)}_COMM_${r.reporting_period.start || 'START'}_${r.reporting_period.end || 'END'}${monthSuffix?`_${monthSuffix}`:''}`;const code=r.report_code?`_${r.report_code.slice(-8)}`:''; return draft ? `${base}${code}_DRAFT` : `${base}${code}_v${r.revision}`; }
   const draftKey = () => `secrett:draft:${state.partner.code}:${state.reportType}`;
   function download(blob, name) { window.SECRETT_FILES.download(blob,name); }
   function urlFor(blob) { const url = URL.createObjectURL(blob); state.urls.push(url); return url; }
@@ -900,7 +911,10 @@
     }
     state.kpis=importedKpis;state.kpisByType[state.reportType]=state.kpis;if(state.reportType==='tasks')renderOverview();
     state.contributor = { ...r.contributor }; $('contributor-name').value = r.contributor.name; $('contributor-role').value = r.contributor.role; $('contributor-email').value = r.contributor.email; $('contributor-summary').textContent = `${state.partner.name} · ${r.contributor.name}`;
-    state.revision = Number.isInteger(r.revision) && r.revision >= 1 && r.revision <= 99 ? r.revision : 1; $('report-revision').value = String(state.revision);
+    state.reportCodes[state.reportType]=reportIdentity.valid(r.report_code)&&r.report_code.startsWith(`AISECRETT-${reportIdentity.partnerToken(state.partner.code)}-${state.reportType==='communication'?'COMM':'TASKS'}-`)?r.report_code:reportIdentity.make(state.partner.code,state.reportType);
+    state.generatedSignatures[state.reportType]=null;
+    $('report-code-preview').textContent=state.reportCodes[state.reportType];
+    state.revision = Number.isInteger(r.revision) && r.revision >= 1 && r.revision <= 99 ? r.revision : 1;state.revisionsByType[state.reportType]=state.revision;$('report-revision').value = String(state.revision);
     message(state.reportType==='tasks'?'Whole-report draft loaded. Review the dates, selected Tasks and answers.':['1.1','1.2'].includes(r.schema_version)?'Older communication draft loaded. Review the activities and choose the correct months before generating a new report.':'Communication draft loaded. Review the selected months and answers.'); scrollTo(state.reportType === 'tasks' ? $('task-picker') : commForm);
   }
   function reviewItem(label, content) { const el = textNode('div','','review-item');const dd=textNode('dd',content === null || content === undefined || content === '' ? 'Not provided' : typeof content === 'boolean' ? (content ? 'Yes' : 'No') : Array.isArray(content) ? (content.length ? content.join('\n') : 'None') : String(content));if(label==='Revision')dd.id='review-revision-display';el.append(textNode('dt',label),dd); return el; }
@@ -908,7 +922,7 @@
   const assessmentLabel = status => ({ on_track:'On track', at_risk:'At risk', delayed:'Delayed', completed:'Completed', unavailable:'Update unavailable' })[status] || 'No assessment';
   function showReview(r) {
     const host = $('review-content'); host.replaceChildren();
-    reviewGroup(host,'Report details',[['Partner',`${r.partner.name} (${r.partner.code})`],['Contributor',`${r.contributor.name} · ${r.contributor.role} · ${r.contributor.email}`],['Period',`${r.reporting_period.start} to ${r.reporting_period.end}`],['Selected months',r.reporting_period.selected_months.join(', ')],['Revision',`v${r.revision}`],['Report key',r.report_key]]);
+    reviewGroup(host,'Report details',[['Partner',`${r.partner.name} (${r.partner.code})`],['Contributor',`${r.contributor.name} · ${r.contributor.role} · ${r.contributor.email}`],['Period',`${r.reporting_period.start} to ${r.reporting_period.end}`],['Selected months',r.reporting_period.selected_months.join(', ')],['Report code',r.report_code],['Revision',`v${r.revision}`],['Report key',r.report_key]]);
     if (r.report_type === 'tasks') {
       for (const item of r.tasks) { const a = item.answers; reviewGroup(host,`${item.id} — ${item.title}${item.assignment_basis==='voluntary_unlisted'?' · voluntary contribution':''}`,[['Work Package',item.work_package],['Your role',item.assignment_basis==='voluntary_unlisted' ? 'Voluntary contributor' : state.partner.kind==='associated_partner' ? 'Task contributor' : item.partner_role === 'Task responsibility to confirm' ? 'Responsibility to confirm' : item.partner_role === 'Task lead (COO)' ? 'Task leader' : 'Task participant'],['Task leader',item.task_lead || '—'],['Work reported',item.work_status === 'no_work' ? 'No work carried out' : 'Contribution completed'],['Task coverage',`${item.coverage.start} to ${item.coverage.end}`],['Task months',item.coverage.months.join(', ')],...(item.work_status === 'no_work' ? [] : [['Activities carried out',a.activities_carried_out],['Results achieved',a.results_achieved],['Difficulties encountered',a.difficulties_encountered],...(state.partner.kind === 'associated_partner' ? [] : [['Raw costs',`${a.raw_costs_incurred.amount === null ? 'Not provided' : `${a.raw_costs_incurred.amount} EUR`}${a.raw_costs_incurred.note ? ` · ${a.raw_costs_incurred.note}` : ''}`]]),['Upcoming activities',a.upcoming_activities],['Additional comments',a.additional_comments],['Significant issue',a.significant_issue],['Severity',a.severity],['Coordinator action required',a.coordinator_action_required],['Support requested',a.coordinator_support_request]])]); }
       for(const wp of r.work_package_leadership || []) {reviewGroup(host,`${wp.id} — ${wp.title} · leadership update`,[['Leader',wp.leader],['Selected months',wp.coverage.months.join(', ')],['Work declared',wp.work_status === 'no_work' ? 'No Work Package work carried out' : 'Leadership update completed'],...(wp.work_status === 'no_work' ? [] : [['Progress and achievements',wp.answers.progress],['Coordination and integration',wp.answers.coordination],['Difficulties and dependencies',wp.answers.difficulties],['Next priorities',wp.answers.next],['Support needed',wp.answers.support]])]);if(wp.work_status !== 'no_work')for(const row of wp.task_updates)reviewGroup(host,`${row.id} — Work Package leader assessment`,[['Status',assessmentLabel(row.status)],['Progress',row.progress],['Blocker',row.blocker],['Next action',row.next]]);}
@@ -921,7 +935,7 @@
   }
   $('review-report').addEventListener('click', () => { try { if (!validate()) return; state.reviewed = record('submission'); showReview(state.reviewed); } catch (error) { fail(error.message); } });
   function reviewRevisionValid(){const n=Number(value('review-revision'));return Number.isInteger(n)&&n>=1&&n<=99;}
-  $('review-revision').addEventListener('input',()=>{if(!reviewRevisionValid()){$('generation-error').textContent='Enter a revision number from 1 to 99.';$('generation-error').hidden=false;$('generate-submission').disabled=true;return;}const n=Number(value('review-revision'));state.revision=n;state.reviewed.revision=n;$('report-revision').value=String(n);$('review-revision-display').textContent=`v${n}`;$('generation-error').hidden=true;$('generate-submission').disabled=!$('confirm-ready').checked;});
+  $('review-revision').addEventListener('input',()=>{if(!reviewRevisionValid()){$('generation-error').textContent='Enter a revision number from 1 to 99.';$('generation-error').hidden=false;$('generate-submission').disabled=true;return;}const n=Number(value('review-revision'));state.revision=n;state.revisionsByType[state.reportType]=n;state.reviewed.revision=n;$('report-revision').value=String(n);$('review-revision-display').textContent=`v${n}`;$('generation-error').hidden=true;$('generate-submission').disabled=!$('confirm-ready').checked;});
   $('confirm-ready').addEventListener('change', () => { $('generate-submission').disabled = !$('confirm-ready').checked||!reviewRevisionValid(); });
   $('back-to-form').addEventListener('click', () => { $('review-section').hidden = true; $('report-workspace').hidden = false; scrollTo(state.reportType === 'tasks' ? $('task-picker') : commForm); });
   $('generate-submission').addEventListener('click', async () => {
@@ -933,7 +947,8 @@
       for (const url of state.urls) URL.revokeObjectURL(url); state.urls = [];
       const base = filename(r,false); $('download-pdf').href = urlFor(pdf); $('download-pdf').download = `${base}.pdf`; $('download-json').href = urlFor(json); $('download-json').download = `${base}.json`;
       window.SECRETT_FILES.attach($('download-pdf'),pdf);window.SECRETT_FILES.attach($('download-json'),json);
-      $('submission-summary').textContent = `${r.partner.code} · ${r.report_type === 'tasks' ? `${r.tasks.length} ${r.tasks.length === 1 ? 'Task' : 'Tasks'} · ${r.work_package_leadership.length} Work Package ${r.work_package_leadership.length === 1 ? 'update' : 'updates'} · ${(r.additional_contributions||[]).length} additional contribution${(r.additional_contributions||[]).length===1?'':'s'}` : 'Communication & Dissemination'}${r.kpi_contributions?.length?` · ${r.kpi_contributions.length} previously reported KPI value${r.kpi_contributions.length===1?'':'s'}`:''} · ${r.reporting_period.selected_months.join(', ')} · ${r.reporting_period.start} to ${r.reporting_period.end}`;
+      state.generatedSignatures[state.reportType]=periodSignature(r.reporting_period);
+      $('submission-summary').textContent = `${r.partner.code} · ${r.report_type === 'tasks' ? `${r.tasks.length} ${r.tasks.length === 1 ? 'Task' : 'Tasks'} · ${r.work_package_leadership.length} Work Package ${r.work_package_leadership.length === 1 ? 'update' : 'updates'} · ${(r.additional_contributions||[]).length} additional contribution${(r.additional_contributions||[]).length===1?'':'s'}` : 'Communication & Dissemination'}${r.kpi_contributions?.length?` · ${r.kpi_contributions.length} previously reported KPI value${r.kpi_contributions.length===1?'':'s'}`:''} · ${r.reporting_period.selected_months.join(', ')} · ${r.reporting_period.start} to ${r.reporting_period.end} · Report code ${r.report_code} · v${r.revision}`;
       $('review-section').hidden = true; $('submission-section').hidden = false; scrollTo($('submission-section')); $('submission-title').focus({preventScroll:true});
     } catch (error) { $('generation-error').textContent = `Could not generate files: ${error.message}`; $('generation-error').hidden = false; }
     finally { button.textContent = 'Generate report files'; button.disabled = !$('confirm-ready').checked; }

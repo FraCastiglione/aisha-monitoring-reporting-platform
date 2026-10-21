@@ -1191,6 +1191,19 @@ label,.dash-control > span,.dash-kpi-group { color:#46566b; }
 
 /* KPI tables: clear reading widths, aligned labels, and restrained emphasis. */
 .dash-kpi-reference .dash-section-head p,.dash-kpi-reference .dash-kpi-lens-intro { max-width:72ch; text-align:left; }
+.dash-kpi-section-nav { display:flex; flex-wrap:wrap; gap:9px; margin:18px 0 24px; }
+.dash-kpi-section-nav button { border:1px solid #cbb9e7; border-radius:999px; padding:9px 13px; background:#f8f4ff; color:#442773; font:inherit; font-size:12px; font-weight:750; cursor:pointer; }
+.dash-kpi-section-nav button:hover,.dash-kpi-section-nav button:focus-visible { background:#eadfff; border-color:#8460c7; }
+.dash-kpi-group-section { margin:26px 0 32px; scroll-margin-top:100px; }
+.dash-kpi-group-section h3 { margin:0 0 12px; color:#392267; font-size:19px; line-height:1.3; }
+.dash-kpi-contributions { margin-top:10px; padding:9px 11px; border:1px solid #e2d7f2; border-radius:8px; background:#faf7ff; color:#3d3456; font-size:12px; font-weight:500; }
+.dash-kpi-contributions summary { color:#4b1ebc; font-weight:750; cursor:pointer; }
+.dash-kpi-contributions p { margin:9px 0 0; line-height:1.5; overflow-wrap:anywhere; }
+.dash-kpi-contributions p strong { display:block; color:#30234f; }
+.dash-partner-kpi-panel { margin-top:20px; padding:14px 16px; border:1px solid #dfd5ee; border-radius:10px; background:#fbf9fe; }
+.dash-partner-kpi-panel h4 { margin:0 0 8px; color:#392267; }
+.dash-partner-kpi-panel p { margin:7px 0; overflow-wrap:anywhere; }
+#report-code-preview { color:#442773; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:12px; overflow-wrap:anywhere; }
 .dash-kpi-table-wrap { border-color:#d9d2e7; box-shadow:0 8px 24px #3321580b; scrollbar-color:#bca8df #f5f1fa; }
 .dash-kpi-reference-table { min-width:1040px; table-layout:fixed; border-collapse:separate; border-spacing:0; color:#344054; font-size:14px; line-height:1.58; }
 .dash-kpi-reference-table caption { padding:17px 20px; color:#30234f; background:#f6f2fc; font-size:16px; }
@@ -1226,6 +1239,48 @@ label,.dash-control > span,.dash-kpi-group { color:#46566b; }
 .dash-kpi-reference-table .dash-kpi-actual { width:auto; min-width:0; font-variant-numeric:tabular-nums; }
 .dash-kpi-index-source + .dash-kpi-index-source { border-top-color:#e7e1ee; }
 .dash-kpi-field-label { color:#4b1ebc; font-weight:800; }
+
+/* Agreement KPI tables: targets and reviewed measurements share one reading line. */
+.dash-kpi-reference .dash-kpi-lenses { gap:0; width:max-content; max-width:100%; padding:4px; border:1px solid #ded5eb; border-radius:12px; background:#f6f2fb; }
+.dash-kpi-reference .dash-kpi-lenses button { border:0; border-radius:9px; padding:10px 17px; background:transparent; color:#514568; cursor:pointer; }
+.dash-kpi-reference .dash-kpi-lenses button.is-selected { background:#fff; color:#43217f; box-shadow:0 2px 9px #35224a1d; }
+.dash-kpi-reference .dash-kpi-lens-intro { margin:0 0 20px; color:#5b5670; font-size:13px; line-height:1.55; }
+.dash-kpi-reference .dash-kpi-group-section { margin-top:28px; }
+.dash-kpi-reference .dash-kpi-group-section h3 { padding-left:12px; border-left:4px solid #8d6adc; }
+.dash-kpi-reference .dash-kpi-table-wrap { border:1px solid #e0d8eb; border-radius:13px; box-shadow:0 5px 18px #3526530c; }
+.dash-kpi-reference .dash-kpi-reference-table { min-width:1170px; }
+.dash-kpi-reference .dash-kpi-reference-table caption { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+.dash-kpi-reference .dash-kpi-reference-table thead th { padding:13px 14px; background:#3d2a64; font-size:11px; text-transform:uppercase; letter-spacing:.045em; }
+.dash-kpi-reference .dash-kpi-reference-table tbody th,.dash-kpi-reference .dash-kpi-reference-table td { padding:16px 14px; line-height:1.5; }
+.dash-kpi-reference .dash-kpi-reference-table tbody tr:nth-child(even) { background:#fdfcff; }
+.dash-kpi-reference .dash-kpi-reference-table tbody tr:hover { background:#f7f3fd; }
+.dash-kpi-reference .dash-kpi-reference-table .dash-kpi-verbatim { text-align:left; hyphens:none; line-height:1.55; white-space:pre-line; }
+.dash-kpi-reference .dash-kpi-reference-table .dash-kpi-code { width:6%; font-size:14px; font-weight:850; }
+.dash-kpi-reference .dash-kpi-reference-table.is-project-table th:nth-child(2) { width:18%; }
+.dash-kpi-reference .dash-kpi-reference-table.is-project-table th:nth-child(3) { width:25%; }
+.dash-kpi-reference .dash-kpi-reference-table.is-project-table th:nth-child(4) { width:14%; }
+.dash-kpi-reference .dash-kpi-reference-table.is-project-table th:nth-child(5) { width:22%; }
+.dash-kpi-reference .dash-kpi-reference-table.is-project-table th:nth-child(6) { width:15%; }
+.dash-kpi-reference .dash-kpi-reference-table.is-communication-table th:nth-child(1) { width:27%; }
+.dash-kpi-reference .dash-kpi-reference-table.is-communication-table th:nth-child(2) { width:13%; }
+.dash-kpi-reference .dash-kpi-reference-table.is-communication-table th:nth-child(3) { width:27%; }
+.dash-kpi-reference .dash-kpi-reference-table.is-communication-table th:nth-child(4) { width:22%; }
+.dash-kpi-reference .dash-kpi-reference-table.is-communication-table th:nth-child(5) { width:11%; }
+.dash-kpi-reference .dash-kpi-measurement { background:#fcfaff; }
+.dash-kpi-result { display:grid; gap:4px; padding:10px 12px; border:1px solid #e7dff1; border-radius:9px; background:#fff; }
+.dash-kpi-result span { color:#695e7c; font-size:10px; font-weight:800; line-height:1.35; text-transform:uppercase; letter-spacing:.04em; }
+.dash-kpi-result strong { color:#4a2c78; font-size:15px; line-height:1.3; font-weight:800; }
+.dash-kpi-result.is-pending strong { color:#655c72; font-size:13px; font-weight:700; }
+.dash-kpi-measurement .dash-kpi-contributions { margin-top:8px; padding:0; border:1px solid #d9cbee; border-radius:9px; background:#fff; font-size:12px; }
+.dash-kpi-measurement .dash-kpi-contributions summary { padding:10px 12px; color:#4b2784; line-height:1.35; }
+.dash-kpi-measurement .dash-kpi-contributions[open] summary { border-bottom:1px solid #e9e0f3; background:#f7f3fd; }
+.dash-kpi-contribution-entry { padding:10px 12px; }
+.dash-kpi-contribution-entry + .dash-kpi-contribution-entry { border-top:1px solid #eee8f3; }
+.dash-kpi-contribution-top { display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px 10px; }
+.dash-kpi-contribution-top strong { color:#322549; font-size:12px; }
+.dash-kpi-contribution-top b { color:#4b2784; font-variant-numeric:tabular-nums; }
+.dash-kpi-contribution-entry small { display:block; margin-top:5px; color:#665d74; overflow-wrap:anywhere; line-height:1.4; }
+.dash-kpi-contributions .dash-kpi-contribution-empty { margin:0; padding:10px 12px; color:#655c72; }
 
 /* Task writing guidance stays available beside each question-mark button. */
 .guided-field { position:relative; }
