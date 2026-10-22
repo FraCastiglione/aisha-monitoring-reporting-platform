@@ -4,6 +4,7 @@
   const config = window.AISHA_CONFIG;
   const agreement = window.AISHA_AGREEMENT;
   const model = window.AISHA_MODEL;
+  const reportIdentity = window.AISHA_REPORT_IDENTITY;
   const view = { tab: 'overview', overviewDetail: null, selectedWp: 'WP1', ganttMonth: 6, ganttExpanded: new Set(), ganttLarge: false, calendarDay: null, draftDay: 1, reportingMode: 'tasks', partnerKind: 'all', from: 1, through: 5, wp: 'all', search: '', kpiLens:'objectives', kpiGroup: 'all', kpiSearch:'', kpiOnlyFavorites:false, kpiLimit:24, risk: 'all', dueThrough: 6 };
   const favoriteStorageKey='AISHA_KPI_FAVORITES_V1';
   function readKpiFavorites(){try{const value=JSON.parse(localStorage.getItem(favoriteStorageKey)||'[]');return new Set(Array.isArray(value)?value:[]);}catch{return new Set();}}
@@ -18,7 +19,20 @@
   const monthList = months => months.length ? months.map(value => monthCode(model.projectMonth(config, value))).join(', ') : '—';
   const partnerName = code => config.partners.find(item => item.code === code)?.name || code;
   const activeMonths = item => Array.from({length: view.through - view.from + 1}, (_, i) => view.from + i).filter(number => model.active(item, number)).map(month);
-  const reportRows = () => Array.isArray(snapshot.reporting_records) ? snapshot.reporting_records : [];
+  const activeReportVersions=()=>reportIdentity.activeVersions(snapshot.report_registry);
+  function reviewedRows(rows){
+    const versions=activeReportVersions(),seen=new Set(),result=[];
+    for(const row of Array.isArray(rows)?rows:[]){
+      if(row.report_code){const active=versions.get(row.report_code);if(!active||active.revision!==row.revision||active.partner!==row.partner)continue;}
+      const key=JSON.stringify([row.report_code||'',row.revision||0,row.partner,row.kind||row.indicator_id,row.id||row.contribution_id||row.activity_id||'',row.coverage?.months||row.reporting_months||[]]);
+      if(seen.has(key))continue;seen.add(key);result.push(row);
+    }
+    return result;
+  }
+  const reportRows=()=>reviewedRows(snapshot.reporting_records);
+  const kpiContributionRows=()=>reviewedRows(snapshot.partner_kpi_contributions).filter(row=>row.report_code&&row.status==='verified'&&catalogue.kpis.some(item=>item.id===row.indicator_id));
+  const kpiRowsFor=id=>kpiContributionRows().filter(row=>row.indicator_id===id);
+  const reportReference=row=>row.report_code?` · ${row.report_code} · v${row.revision}`:'';
   const taskRows = (task, partner) => reportRows().filter(row => row.kind === 'task' && row.id === task.id && row.partner === partner && row.coverage?.months?.some(value => activeMonths(task).includes(value)));
   const wpRows = (wp, partner) => reportRows().filter(row => row.kind === 'work_package' && row.id === wp.id && row.partner === partner && row.coverage?.months?.some(value => activeMonths(wp).includes(value)));
   const selectedCoverage = rows => [...new Set(rows.flatMap(row => row.coverage.months).filter(value => model.projectMonth(config, value) >= view.from && model.projectMonth(config, value) <= view.through))].sort();
@@ -39,7 +53,7 @@
   }
   function detail(label, content, className = '') { const block = el('details', `dash-detail ${className}`); block.append(el('summary', '', label), content); return block; }
   function empty(message) { return el('p', 'dash-empty', message); }
-  function recordDetail(row) { return `${row.work_status === 'no_work' ? 'No work declared' : 'Contribution reported'} · ${row.coverage.start}–${row.coverage.end} · ${monthList(row.coverage.months)} · ${row.report_status.replaceAll('_', ' ')}`; }
+  function recordDetail(row) { return `${row.work_status === 'no_work' ? 'No work declared' : 'Contribution reported'} · ${row.coverage.start}–${row.coverage.end} · ${monthList(row.coverage.months)} · ${row.report_status.replaceAll('_', ' ')}${reportReference(row)}`; }
   function overview() {
     const current = model.projectMonth(config, snapshot.snapshot_month);
     const submitted = catalogue.deliverables.filter(confirmedDeliverable);
@@ -95,7 +109,7 @@
     for(const item of [...collection].sort((a,b)=>a.due-b.due||a.id.localeCompare(b.id,undefined,{numeric:true}))){
       const state=knownState((isDeliverable?snapshot.deliverable_status:snapshot.milestone_status)?.[item.id]);
       const block=el('details','dash-commitment-detail'),summary=el('summary',''),identity=el('div','dash-commitment-identity'),body=el('div','dash-commitment-body');
-      identity.append(el('strong','',`${item.id} · ${item.title}`),el('small','',`${item.wp} · Lead ${item.lead} · Due ${monthCode(item.due)} (${monthName(item.due)})${item.visibility?` · ${item.visibility}`:''}`));
+      identity.append(el('strong','',`${item.id} · ${item.title}`),el('small','',`${item.wp} · Lead ${item.lead} · Due ${monthCode(item.due)} (${monthName(item.due)})${item.visibility?` · ${item.visibility}`:''} · Internal draft ${month(item.due)}-01 · Official deadline ${monthEnd(item.due)}`));
       summary.append(identity,pill(state==='submitted'?'Submitted':state==='accepted'?'Accepted':state==='achieved'?'Achieved':state?state.replaceAll('_',' '):upcomingMonth(item.due,current)?'Upcoming · next 6 months':'Status not recorded',state?'positive':upcomingMonth(item.due,current)?'watch':'neutral'));
       body.append(el('strong','',isDeliverable?'Agreement description':'Agreement means of verification'),el('p','',(isDeliverable?agreementDetail.deliverables:agreementDetail.milestones)[item.id]));
       const links=catalogue.commitment_links?.[item.id]||[];
@@ -168,7 +182,7 @@
     for(const [name,collection,status] of [['Deliverables',catalogue.deliverables,snapshot.deliverable_status],['Milestones',catalogue.milestones,snapshot.milestone_status]]){
       const group=el('div','dash-wp-outputs');group.append(el('h3','',`${name} · ${collection.filter(item=>item.wp===wp.id).length}`));
       for(const item of collection.filter(item=>item.wp===wp.id).sort((a,b)=>a.due-b.due)){
-        const row=el('details','dash-wp-output-row'),summary=el('summary','');summary.append(el('strong','',`${item.id} · ${item.title}`),el('small','',`Due ${monthCode(item.due)} (${monthName(item.due)}) · Lead ${item.lead}`),pill(knownState(status?.[item.id])?.replaceAll('_',' ')||'Status not recorded',knownState(status?.[item.id])?'positive':'neutral'));row.append(summary,el('p','',name==='Deliverables'?agreementDetail.deliverables[item.id]:agreementDetail.milestones[item.id]));const links=catalogue.commitment_links?.[item.id]||[];if(links.length)row.append(el('p','dash-record-note',`Related Tasks: ${links.map(link=>link.task).join(', ')}${links.some(link=>link.basis?.startsWith('contextual'))?' (MS21 link is contextual)':''}.`));group.append(row);
+        const row=el('details','dash-wp-output-row'),summary=el('summary','');summary.append(el('strong','',`${item.id} · ${item.title}`),el('small','',`Due ${monthCode(item.due)} (${monthName(item.due)}) · Lead ${item.lead} · Internal draft ${month(item.due)}-01 · Official deadline ${monthEnd(item.due)}`),pill(knownState(status?.[item.id])?.replaceAll('_',' ')||'Status not recorded',knownState(status?.[item.id])?'positive':'neutral'));row.append(summary,el('p','',name==='Deliverables'?agreementDetail.deliverables[item.id]:agreementDetail.milestones[item.id]));const links=catalogue.commitment_links?.[item.id]||[];if(links.length)row.append(el('p','dash-record-note',`Related Tasks: ${links.map(link=>link.task).join(', ')}${links.some(link=>link.basis?.startsWith('contextual'))?' (MS21 link is contextual)':''}.`));group.append(row);
       }
       outputColumn.append(group);
     }
@@ -185,9 +199,9 @@
     const months=Array.from({length:50},(_,i)=>month(i+1));
     matrix.style.setProperty('--gantt-months',String(months.length));
     for(const [index,calendar] of months.entries()){
-      const number=index+1,cell=el('button',`dash-gantt-month ${number===view.ganttMonth?'is-selected':''} ${number>48?'is-closeout':''}`);cell.type='button';
-      cell.append(el('strong','',new Intl.DateTimeFormat('en',{month:'short',timeZone:'UTC'}).format(new Date(`${calendar}-01T00:00:00Z`))),el('small','',number?monthCode(number):'—'));
-      {const count=catalogue.deliverables.filter(item=>item.due===number).length+catalogue.milestones.filter(item=>item.due===number).length,reportDue=(snapshot.task_report_deadlines||[]).filter(item=>item.due_date?.startsWith(calendar)).length,reported=reportRows().filter(row=>row.kind==='task'&&row.coverage?.months?.includes(calendar)).length,events=(snapshot.project_events||[]).filter(item=>item.start_date?.slice(0,7)===calendar),review=reviewWindows.find(item=>item.months.includes(number));if(count)cell.append(el('span','dash-gantt-due-count',`${count} due`));if(reportDue)cell.append(el('span','dash-gantt-report-count',`${reportDue} Task due`));if(reported)cell.append(el('span','dash-gantt-report-count',`${reported} report${reported===1?'':'s'}`));if(review)cell.append(el('span','dash-gantt-review-count',`${review.id} review`));if(events.length){cell.append(el('span','dash-gantt-event-count',`${events.length} meeting${events.length===1?'':'s'}`));cell.setAttribute('aria-label',`${monthName(number)} · ${events.map(event=>`${event.title}, ${event.location}, ${event.start_date}–${event.end_date}`).join('; ')}`);}cell.addEventListener('click',()=>{view.ganttMonth=number;view.calendarDay=null;render();document.getElementById('dash-calendar')?.scrollIntoView({block:'start',behavior:'smooth'});});}
+      const number=index+1,cell=el('button',`dash-gantt-month ${number===view.ganttMonth?'is-selected':''} ${number>48?'is-closeout':''}`);cell.type='button';cell.setAttribute('aria-label',`${monthName(number)} · ${monthCode(number)}`);
+      cell.append(el('strong','',new Intl.DateTimeFormat('en',{month:'short',timeZone:'UTC'}).format(new Date(`${calendar}-01T00:00:00Z`))),el('small','',`${monthCode(number)} · ${calendar.slice(0,4)}`));
+      {const drafts=calendarEvents(number).filter(event=>event.type==='draft').length,count=catalogue.deliverables.filter(item=>item.due===number).length+catalogue.milestones.filter(item=>item.due===number).length,reportDue=(snapshot.task_report_deadlines||[]).filter(item=>item.due_date?.startsWith(calendar)).length,reported=reportRows().filter(row=>row.kind==='task'&&row.coverage?.months?.includes(calendar)).length,events=(snapshot.project_events||[]).filter(item=>(item.start_month||item.start_date?.slice(0,7))===calendar),review=reviewWindows.find(item=>item.months.includes(number));if(drafts)cell.append(el('span','dash-gantt-draft-count',`${drafts} draft${drafts===1?'':'s'}`));if(count)cell.append(el('span','dash-gantt-due-count',`${count} due`));if(reportDue)cell.append(el('span','dash-gantt-report-count',`${reportDue} Task report${reportDue===1?'':'s'} due`));if(reported)cell.append(el('span','dash-gantt-report-count',`${reported} report${reported===1?'':'s'}`));if(review)cell.append(el('span','dash-gantt-review-count',`${review.id} review`));if(events.length){cell.append(el('span','dash-gantt-event-count',`${events.length} meeting${events.length===1?'':'s'}`));cell.setAttribute('aria-label',`${monthName(number)} · ${events.map(event=>`${event.title}, ${event.location}, ${event.start_month||event.start_date}`).join('; ')}`);}cell.setAttribute('aria-label',`${monthName(number)} · ${monthCode(number)}${drafts?` · ${drafts} internal draft${drafts===1?'':'s'}`:''}${count?` · ${count} official deadline${count===1?'':'s'}`:''}${reportDue?` · ${reportDue} Task report${reportDue===1?'':'s'} due`:''}${review?` · ${review.id} preparation`:''}${events.length?` · ${events.map(event=>`${event.title}, ${event.location}`).join('; ')}`:''}`);cell.addEventListener('click',()=>{view.ganttMonth=number;view.calendarDay=null;render();document.getElementById('dash-calendar')?.scrollIntoView({block:'start',behavior:'smooth'});});}
       head.append(cell);
     }
     matrix.append(head);
@@ -200,7 +214,7 @@
   }
   function ganttRow(item,isTask,months){
     const row=el('div',`dash-gantt-row ${isTask?'is-task':'is-wp'}`),label=el('button','dash-gantt-label','');label.type='button';label.append(el('strong','',item.id),el('span','',item.title));
-    if(isTask){label.addEventListener('click',()=>{view.selectedWp=item.wp;view.tab='workpackages';render();const target=document.getElementById(`dash-task-${item.id}`);if(target){target.open=true;target.scrollIntoView({block:'start',behavior:'smooth'});}});label.title=`Open ${item.wp} Task details`;}else{label.setAttribute('aria-expanded',String(view.ganttExpanded.has(item.id)));label.addEventListener('click',()=>{view.ganttExpanded.has(item.id)?view.ganttExpanded.delete(item.id):view.ganttExpanded.add(item.id);render();});label.title=`${view.ganttExpanded.has(item.id)?'Hide':'Show'} Tasks in ${item.id}`;}
+    if(isTask){label.addEventListener('click',()=>{view.selectedWp=item.wp;view.tab='workpackages';render();const target=document.getElementById(`dash-task-${item.id}`);if(target){target.open=true;target.scrollIntoView({block:'start',behavior:'smooth'});target.focus({preventScroll:true});}});label.title=`${item.id} · ${item.title} · Open ${item.wp} Task details`;}else{label.setAttribute('aria-expanded',String(view.ganttExpanded.has(item.id)));label.addEventListener('click',()=>{view.ganttExpanded.has(item.id)?view.ganttExpanded.delete(item.id):view.ganttExpanded.add(item.id);render();});label.title=`${view.ganttExpanded.has(item.id)?'Hide':'Show'} Tasks in ${item.id}`;}
     row.append(label);
     for(const [index,calendar] of months.entries()){
       const number=index+1,active=number<=48&&model.active(item,number),review=reviewWindows.find(window=>window.months.includes(number)&&item.startMonth<=window.end&&item.endMonth>=window.from),cell=el('div',`dash-gantt-cell ${active?'is-active':''} ${review?'is-review':''} ${number===view.ganttMonth?'is-selected':''} ${number>48?'is-closeout':''}`);
@@ -344,7 +358,7 @@
       const line=el('div','dash-record-line'), who=el('div');who.append(el('strong','',partner.code),el('small','',partnerName(partner.code)));
       const what=el('div');what.append(el('strong','',`${reported.size}/${eligible.length} assigned Tasks with report entries`));
       what.append(el('small','',rows.length ? `Recorded months: ${monthList(selectedCoverage(rows))}` : 'No partner Task report recorded in selected months'));
-      if(rows.length) for(const row of rows)what.append(el('small','',`${row.id}: ${row.coverage.start}–${row.coverage.end} (${monthList(row.coverage.months)}) · ${row.work_status==='no_work'?'no work declared':'contribution reported'}`));
+      if(rows.length) for(const row of rows)what.append(el('small','',`${row.id}: ${row.coverage.start}–${row.coverage.end} (${monthList(row.coverage.months)}) · ${row.work_status==='no_work'?'no work declared':'contribution reported'}${reportReference(row)}`));
       line.append(who,what);table.append(line);
     }
     box.append(table);
@@ -361,12 +375,19 @@
     box.append(el('p','dash-record-note',`${reported.size} of ${assigned.length} assigned active Tasks have a confirmed entry in the selected months. An unrecorded Task is not automatically overdue.`));
     if(!assigned.length)box.append(empty(partner.kind==='associated_partner'?'No assigned Tasks match this selection. Voluntary contributions can be added in the reporting builder.':'No assigned Tasks match this Work Package and period.'));
     else {const table=el('div','dash-record-table');for(const task of assigned){const taskEntries=taskRows(task,partner.code),line=el('div','dash-record-line'),who=el('div'),what=el('div');who.append(el('strong','',task.id),el('small','',task.title));if(taskEntries.length)for(const row of taskEntries)what.append(el('p','',recordDetail(row)));else what.append(el('span','dash-muted','No report recorded in selected months'));line.append(who,what);table.append(line);}box.append(table);}
+    const voluntary=reportRows().filter(row=>row.partner===partner.code&&row.assignment_basis==='voluntary_unlisted'&&row.coverage?.months?.some(value=>model.projectMonth(config,value)>=view.from&&model.projectMonth(config,value)<=view.through)&&(view.wp==='all'||(row.kind==='task'?config.tasks.find(task=>task.id===row.id)?.wp:row.id)===view.wp));
+    if(voluntary.length){const panel=el('div','dash-partner-kpi-panel');panel.append(el('h4','',`Voluntary contributions · ${voluntary.length}`));for(const row of voluntary)panel.append(el('p','',`${row.id} · ${recordDetail(row)}`));box.append(panel);}
+    const contributions=kpiContributionRows().filter(row=>row.partner===partner.code&&(row.reporting_months||[]).some(value=>model.projectMonth(config,value)>=view.from&&model.projectMonth(config,value)<=view.through));
+    const kpiPanel=el('div','dash-partner-kpi-panel');kpiPanel.append(el('h4','',`Reviewed KPI contributions · ${contributions.length}`));
+    if(contributions.length)for(const row of contributions){const item=catalogue.kpis.find(k=>k.id===row.indicator_id)||catalogue.communication_kpis.find(k=>k.id===row.indicator_id);kpiPanel.append(el('p','',`${row.indicator_id} · ${item?.name||item?.kpi||'Indicator'} · ${row.value}${row.unit?` ${row.unit}`:''} · ${monthList(row.reporting_months||[])}${reportReference(row)}${row.activity_id?` · Activity ${row.activity_id}`:''}`));}
+    else kpiPanel.append(el('p','dash-muted','No reviewed KPI contribution for this partner in the selected months.'));
+    box.append(kpiPanel);
     return reportingDetail(partner.kind==='associated_partner'?'Associated partner':'Full partner',partner.code,partner.name,reported.size,assigned.length,box);
   }
   function reportingSection() {
     const section=el('section','dash-section');section.id='dashboard-reporting';
     section.append(header('Partner reporting coverage','See listed partners, their confirmed report entries, and the exact periods they covered. Associated-partner assignments include the coordinator-confirmed voluntary Task list from Attachment 6.'));
-    if (!reportRows().length) { const note=el('div','dash-state-note');note.append(el('strong','','No partner files added yet'),el('p','','Each Task and Work Package already shows its listed partner assignments. Confirmed partner coverage will appear after submitted files are reviewed and imported.'));section.append(note); }
+    if (!reportRows().length&&!kpiContributionRows().length) { const note=el('div','dash-state-note');note.append(el('strong','','No partner files added yet'),el('p','','Each Task and Work Package already shows its listed partner assignments. Confirmed partner coverage will appear after submitted files are reviewed and imported.'));section.append(note); }
     section.append(reportingControls()); const eligibleWps=config.workPackages.filter(wp=>view.wp==='all'||view.wp===wp.id), active=eligibleWps.filter(wp=>activeMonths(wp).length), future=eligibleWps.filter(wp=>!activeMonths(wp).length);
     const tasks=config.tasks.filter(task=>activeMonths(task).length && (view.wp==='all'||task.wp===view.wp) && (view.reportingMode!=='tasks'||!view.search||`${task.id} ${task.title}`.toLowerCase().includes(view.search)));
     const mode=el('div','dash-mode-switch');
@@ -391,7 +412,7 @@
     const callout=el('div','dash-risk-callout');callout.append(el('strong','',activeFlags.length ? `${new Set(activeFlags.map(item=>item.id)).size} Tasks flagged` : 'No Task risk flags recorded'));
     if(activeFlags.length) for(const item of activeFlags)callout.append(el('p','',`${item.id} · ${item.status.replaceAll('_',' ')}${item.severity ? ` · ${item.severity} issue` : ''} · ${item.source || 'Coordinator update'}${item.note ? ` · ${item.note}` : ''}`));
     else callout.append(el('p','','No Task-specific risk flags have been supplied yet.'));section.append(callout);
-    const controls=el('div','dash-controls');controls.append(select('Explore Agreement risks',[['all','All 17 potential risks'],['high','All high-impact risks'],['high-medium','High impact · medium likelihood']],view.risk,value=>{view.risk=value;render();}));section.append(controls);
+    const controls=el('div','dash-controls');controls.append(select('Explore Agreement risks',[['all',`All ${catalogue.risks.length} potential risks`],['high','All high-impact risks'],['high-medium','High impact · medium likelihood']],view.risk,value=>{view.risk=value;render();}));section.append(controls);
     const grid=el('div','dash-risk-grid');
     for(const risk of catalogue.risks.filter(risk=>view.risk==='all'||(risk.impact==='High'&&(view.risk==='high'||risk.likelihood==='Medium')))){
       const item=el('div','dash-risk-card'),top=el('div','dash-risk-top');top.append(el('strong','',`Risk ${risk.id} · ${risk.title}`),pill(`${risk.impact} impact · ${risk.likelihood} likelihood`,risk.impact==='High'&&risk.likelihood==='Medium'?'watch':'neutral'));
@@ -419,7 +440,27 @@
   function kpiTable(headers,className,caption){
     const wrap=el('div','dash-kpi-table-wrap');wrap.tabIndex=0;wrap.setAttribute('role','region');wrap.setAttribute('aria-label',caption);
     const table=el('table',`dash-kpi-reference-table ${className}`);table.append(el('caption','',caption));const head=el('thead'),tr=el('tr');
-    for(const title of headers){const th=el('th','',title);th.setAttribute('scope','col');tr.append(th);}head.append(tr);const body=el('tbody');table.append(head,body);wrap.append(table);return {wrap,body};
+    for(const title of headers){const th=el('th','',title);th.setAttribute('scope','col');tr.append(th);}head.append(tr);const body=el('tbody');table.append(head,body);wrap.append(table);return {wrap,body,labelCells:()=>{for(const row of body.children)[...row.children].forEach((cell,index)=>{cell.dataset.label=headers[index]||'';});}};
+  }
+  function kpiMeasurementCell(id,unit){
+    const cell=el('td','dash-kpi-measurement'),actual=(snapshot.kpi_values||[]).find(item=>item.id===id),rows=kpiRowsFor(id),hasActual=actual?.actual!==null&&actual?.actual!==undefined;
+    const result=el('div',`dash-kpi-result ${hasActual?'has-result':'is-pending'}`);
+    result.append(el('span','','Project result'),el('strong','',hasActual?`${actual.actual}${unit?` ${unit}`:''}`:'Awaiting review'));
+    cell.append(result);
+    const block=el('details','dash-kpi-contributions');block.append(el('summary','',`Partner contributions · ${rows.length}`));
+    if(!rows.length)block.append(el('p','dash-kpi-contribution-empty','No reviewed partner contributions yet.'));
+    for(const row of rows){const entry=el('div','dash-kpi-contribution-entry'),top=el('div','dash-kpi-contribution-top');top.append(el('strong','',`${row.partner} · ${partnerName(row.partner)}`),el('b','',`${row.value}${row.unit?` ${row.unit}`:''}`));entry.append(top,el('small','',`${monthList(row.reporting_months||[])} · ${row.report_code} · v${row.revision}${row.activity_id?` · Activity ${row.activity_id}`:''}`));block.append(entry);}
+    cell.append(block);return cell;
+  }
+  function sourceMeasurements(row) {
+    const ids=(row.indicator_ids||[]).filter(id=>catalogue.kpis.some(item=>item.id===id));
+    const cell=el('td','dash-kpi-measurement');
+    if(!ids.length){cell.append(el('p','dash-muted','No linked measurement.'));return cell;}
+    for(const id of ids){const indicator=catalogue.kpis.find(item=>item.id===id),value=kpiMeasurementCell(id,indicator.unit==='status'?'':indicator.unit||'');
+      if(ids.length>1)cell.append(el('strong','dash-kpi-measure-label',indicator.name));
+      cell.append(...value.childNodes);
+    }
+    return cell;
   }
   function kpisSection(){
     const section=el('section','dash-section dash-kpi-reference');section.append(header('Project indicators','Browse the SMART objectives, KPI tables and measures in the Grant Agreement. The full Agreement wording is visible in each table, with source pages and related Tasks.'));
@@ -431,14 +472,14 @@
     intro.append(el('p','dash-kpi-category-pages',pageRanges.map(range=>range.length===1?agreementPageLabel(range[0]):`Grant Agreement PDF pp. ${range[0]}–${range.at(-1)} · Part ${range[0]>=107?'B':'A'} pp. ${range[0]-(range[0]>=107?106:61)}–${range.at(-1)-(range[0]>=107?106:61)}`).join('; ')));section.append(intro);
     if(view.kpiLens!=='indicators'){
       const isObjective=view.kpiLens==='objectives',isCall=view.kpiLens==='call',isCommunication=view.kpiLens==='communication';
-      const headers=isObjective?['Code','Objective and commitment','KPIs','Source and related Tasks']:isCall?['Code','KPI (from the Call)','Proposed metric (how we measure it)','Target value by project end (48 months)','Source and related Tasks']:isCommunication?['Code','KPI list and metrics','Target value by project’s end (48 months)','Evidence of achievement','Source and related Tasks']:['Code','Exact Agreement wording','Source and related Tasks'];
-      const {wrap,body}=kpiTable(headers,isObjective?'is-objectives':isCall||isCommunication?'is-source-table':'is-passages',labels[view.kpiLens]);
+      const headers=isObjective?['Code','Objective and commitment','KPIs','Reviewed results and partner contributions','Source and related Tasks']:isCall?['Code','KPI (from the Call)','Proposed metric (how we measure it)','Target value by project end (48 months)','Reviewed results and partner contributions','Source and related Tasks']:isCommunication?['Code','KPI list and metrics','Target value by project’s end (48 months)','Evidence of achievement','Reviewed results and partner contributions','Source and related Tasks']:['Code','Exact Agreement wording','Reviewed results and partner contributions','Source and related Tasks'];
+      const {wrap,body,labelCells}=kpiTable(headers,isObjective?'is-objectives':isCall||isCommunication?'is-source-table':'is-passages',labels[view.kpiLens]);
       for(const row of rows){const tr=el('tr');tr.id=`dash-source-${row.id}`;const code=el('th','dash-kpi-code',row.id);code.setAttribute('scope','row');tr.append(code);
         if(isObjective){const content=el('td');content.append(el('strong','dash-kpi-objective-title',`${row.number}. ${row.title}`));agreementText(content,row.commitment);agreementText(content,row.footnote);const measures=el('td');agreementText(measures,row.measures);tr.append(content,measures);}
         else if(isCall||isCommunication){for(const field of isCall?['kpi','metric','target']:['kpi','target','evidence']){const cell=el('td');agreementText(cell,row[field]);tr.append(cell);}}
         else{const content=el('td');agreementText(content,row.exact_text);agreementText(content,row.footnote);tr.append(content);}
-        const related=el('td','dash-kpi-links-cell');kpiLinks(related,row);tr.append(related);body.append(tr);
-      }section.append(wrap);return section;
+        tr.append(sourceMeasurements(row));const related=el('td','dash-kpi-links-cell');kpiLinks(related,row);tr.append(related);body.append(tr);
+      }labelCells();section.append(wrap);return section;
     }
     const groups=[...new Set(catalogue.kpis.map(k=>k.group))],controls=el('div','dash-controls');controls.append(select('Indicator group',[['all','All indicators'],...groups.map(g=>[g,g])],view.kpiGroup,value=>{view.kpiGroup=value;view.kpiFocus=null;render();}));
     const search=el('label','dash-control dash-search');search.append(el('span','','Find indicator'));const searchInput=el('input');searchInput.type='search';searchInput.placeholder='Name, topic or source code';searchInput.value=view.kpiSearch;search.append(searchInput);controls.append(search);
@@ -449,13 +490,13 @@
       const matches=catalogue.kpis.filter(kpi=>{if(view.kpiGroup!=='all'&&kpi.group!==view.kpiGroup)return false;if(view.kpiOnlyFavorites&&!favorites.has(kpi.id))return false;const passages=(kpi.source_refs||[]).map(ref=>catalogue.source_index?.[ref]).filter(Boolean).flatMap(row=>[row.kpi,row.metric,row.target,row.exact_text]);return terms.every(term=>[kpi.name,kpi.id,kpi.group,...(kpi.source_refs||[]),...passages].filter(Boolean).join(' ').toLocaleLowerCase().includes(term));}).sort((a,b)=>{const rank=kpi=>query&&kpi.name.toLocaleLowerCase().includes(query)?2:query&&terms.every(term=>kpi.name.toLocaleLowerCase().includes(term))?1:0;return Number(b.id===view.kpiFocus)-Number(a.id===view.kpiFocus)||rank(b)-rank(a)||a.name.localeCompare(b.name);});
       resultCount.textContent=`${matches.length} indicator${matches.length===1?'':'s'} shown · ${catalogue.kpis.length} available`;
       if(!matches.length){list.append(empty(view.kpiOnlyFavorites?'No saved indicators match these filters.':'No indicators match. Try a different term or topic.'));return;}
-      const {wrap,body}=kpiTable(['Indicator and topic','Exact Agreement wording','Reviewed actual','Source and related Tasks'],'is-indicator-index','Indicator collection');
+      const {wrap,body,labelCells}=kpiTable(['Indicator and topic','Exact Agreement wording','Reviewed results and partner contributions','Source and related Tasks'],'is-indicator-index','Indicator collection');
       for(const kpi of matches){const actual=(snapshot.kpi_values||[]).find(k=>k.id===kpi.id),tr=el('tr');tr.id=`dash-kpi-${kpi.id}`;if(kpi.id===view.kpiFocus)tr.className='is-focused';const identity=el('th','dash-kpi-index-identity');identity.setAttribute('scope','row');identity.append(el('span','dash-kpi-group',kpi.group),el('strong','',kpi.name));
         const star=el('button','dash-kpi-table-star',favorites.has(kpi.id)?'★ Saved':'☆ Save');star.type='button';star.setAttribute('aria-label',`${favorites.has(kpi.id)?'Remove':'Add'} ${kpi.name} ${favorites.has(kpi.id)?'from':'to'} favourites`);star.setAttribute('aria-pressed',String(favorites.has(kpi.id)));star.onclick=()=>{favorites.has(kpi.id)?favorites.delete(kpi.id):favorites.add(kpi.id);saveKpiFavorites(favorites);renderItems();};identity.append(star);tr.append(identity);
         const content=el('td');for(const ref of kpi.source_refs||[]){const row=catalogue.source_index?.[ref];if(!row)continue;const block=el('div','dash-kpi-index-source');block.append(el('strong','dash-kpi-source-code',ref));for(const [field,label] of [['exact_text',''],['footnote',''],['kpi','KPI'],['metric','Proposed metric (how we measure it)'],['target','Target value by project end (48 months)'],['evidence','Evidence of achievement']])if(row[field]){if(label)block.append(el('strong','dash-kpi-field-label',label));agreementText(block,row[field]);}for(const page of agreementPages(row))block.append(el('small','dash-kpi-page',agreementPageLabel(page)));content.append(block);}tr.append(content);
-        const figures=el('td','dash-kpi-actual');figures.append(el('strong','',actual?.actual===null||actual?.actual===undefined?'Pending':`${actual.actual} ${kpi.unit}`));if(actual?.partners?.length)for(const partner of actual.partners)figures.append(el('p','',`${partner.code} · ${partnerName(partner.code)}: ${partner.value} ${kpi.unit}`));tr.append(figures);
+        tr.append(kpiMeasurementCell(kpi.id,kpi.unit==='status'?'':kpi.unit));
         const related=el('td','dash-kpi-links-cell');kpiLinks(related,{...kpi,source_page:null});tr.append(related);body.append(tr);
-      }list.append(wrap);
+      }labelCells();list.append(wrap);
     };
     searchInput.addEventListener('input',()=>{view.kpiSearch=searchInput.value;renderItems();});favoritesOnly.addEventListener('click',()=>{view.kpiOnlyFavorites=!view.kpiOnlyFavorites;favoritesOnly.classList.toggle('is-active',view.kpiOnlyFavorites);favoritesOnly.textContent=view.kpiOnlyFavorites?'★ Saved favourites':'☆ Saved favourites';favoritesOnly.setAttribute('aria-pressed',String(view.kpiOnlyFavorites));renderItems();});renderItems();return section;
   }
@@ -480,6 +521,6 @@
   try {
     const source=window.AISHA_EMBEDDED_DATA?.catalogue,data=window.AISHA_EMBEDDED_DATA?.snapshot,detailData=window.AISHA_EMBEDDED_DATA?.detail;
     if(data?.schema_version!=='2.0'||data.project!=='AISHA'||!Array.isArray(source?.deliverables)||!Array.isArray(source?.milestones)||!Array.isArray(source?.risks)||!Array.isArray(source?.kpis)||!detailData?.deliverables||!detailData?.milestones||!agreement?.workPackages)throw new Error('Dashboard data is incomplete');
-    catalogue=source;snapshot=data;agreementDetail=detailData;const current=model.projectMonth(config,data.snapshot_month);if(current){view.through=current;view.dueThrough=current<=6?6:current<=12?12:current<=18?18:current<=36?36:48;view.ganttMonth=Math.min(48,current+1);}view.draftDay=1;render();
+    catalogue=source;snapshot=data;agreementDetail=detailData;const current=model.projectMonth(config,data.snapshot_month);if(current){view.through=current;view.dueThrough=current<=6?6:current<=12?12:current<=18?18:current<=36?36:48;view.ganttMonth=model.projectMonth(config,model.defaultMonth(config))||current;}view.draftDay=1;render();
   } catch(error){host.replaceChildren(el('p','dash-error',`Dashboard could not load: ${error.message}.`));}
 })();

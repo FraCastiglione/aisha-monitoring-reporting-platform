@@ -110,7 +110,8 @@
     pair("Partner organisation", `${report.partner.name} (${report.partner.code})`);
     pair("Contributor", `${report.contributor.name} · ${report.contributor.role} · ${report.contributor.email}`);
     pair("Reporting period", report.reporting_period.start && report.reporting_period.end ? `${report.reporting_period.code ? `${report.reporting_period.code} · ` : ""}${report.reporting_period.start} to ${report.reporting_period.end}` : "Reporting period not yet selected");
-    if (report.report_type === "tasks") pair("Selected months", report.reporting_period.selected_months.join(", "));
+    if (report.reporting_period.selected_months) pair("Selected months", report.reporting_period.selected_months.join(", "));
+    if (report.report_code) pair("Report code", `${report.report_code} · v${report.revision}`);
     pair("Report key and revision", `${report.report_key} · v${report.revision}`);
     pair("Generated", generatedLabel(report.generated_at));
 
@@ -196,7 +197,7 @@
       pair("Other activities or materials", a.other_activities_or_materials || "None");
       pair("Estimated people reached", a.estimated_people_reached === null ? "Unknown" : a.estimated_people_reached);
       pair("Pre-registrations or enrolments", a.preregistrations_or_enrolments === null ? "Unknown" : a.preregistrations_or_enrolments);
-      section("Coordinator support");
+      section("Coordination or communication team support");
       pair("Support required", a.coordinator_support_required);
       pair("Support requested", a.coordinator_support_request || "None");
     }
