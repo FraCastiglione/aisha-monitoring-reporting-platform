@@ -311,15 +311,43 @@ fieldset.field legend { margin-bottom: 8px; color: var(--ink); font-size: 13px; 
 .extra-months { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; }
 .extra-months > strong { width:100%; color:var(--blue-deep); font-size:13px; }
 .extra-months label { display:flex; align-items:center; gap:5px; padding:6px 8px; border:1px solid #d0dce6; border-radius:8px; background:white; font-size:12px; }
+.extra-months label { flex:0 0 auto; min-width:0; white-space:nowrap; cursor:pointer; }
+.extra-months input[type="checkbox"] { flex:0 0 16px; width:16px; min-width:16px; height:16px; margin:0; padding:0; accent-color:#6431cf; }
+.extra-add-actions { display:flex; flex-wrap:wrap; gap:9px; }
+.extra-pick-option:has(input:checked) { background:#f2eafd; color:#42217c; }
+.count-field .required-mark { color:#694ab3; font-weight:800; }
+.count-field.is-invalid .required-mark,.field-error-indicator { color:#a4203b; }
+.field-error-indicator { margin:7px 0 0; font-size:12px; font-weight:700; }
+.count-field.is-invalid input[type="number"] { border-color:#b33b4b; background:#fffafa; }
+.count-field.is-invalid .check-label { color:#922846; }
+.comm-question.field { margin:0 0 18px; padding:12px 14px 14px; border:1px solid #e1dced; border-radius:10px; background:#fff; }
+.comm-question.field legend { padding:0 5px; margin-bottom:9px; }
+.comm-question .required-mark { color:#694ab3; font-weight:800; }
+.comm-question.is-invalid { border-color:#ca6178; background:#fff5f7; box-shadow:inset 4px 0 #b43c57; }
+.comm-question.is-invalid legend,.comm-question.is-invalid .required-mark { color:#922846; }
+.comm-question.is-invalid .radio-row label { border-color:#dfa4b1; background:#fff; }
+.extra-month-timeline { margin:12px 0 6px; }
+.extra-month-timeline .timeline-month:disabled { color:#9ca5b7; background:#f5f6f9; border-color:#e8eaf1; cursor:not-allowed; opacity:.55; }
+.extra-month-status { margin:5px 0 0; color:#594383; font-size:12px; font-weight:700; }
+.individual-download-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:22px 0 17px; }
+.individual-download-options > div { min-width:0; padding:12px; border:1px solid #ddd4f1; border-radius:10px; background:#faf8ff; }
+.individual-download-options .button { display:flex; align-items:center; justify-content:center; width:100%; min-height:43px; text-align:center; }
+.individual-download-options small { display:block; margin-top:8px; color:var(--muted); font-size:11px; line-height:1.4; text-align:center; }
+.individual-download-close { margin-top:2px; }
+@media (max-width:600px) { .individual-download-options { grid-template-columns:1fr; } }
 .extra-entry { display:grid; gap:5px; padding:12px 14px; margin:8px 0; border:1px solid #d3e2e2; border-radius:9px; background:#fff; }
 .extra-entry strong { color:var(--blue-deep); }
 .extra-entry p { margin:0; white-space:pre-wrap; }
 .extra-entry .text-button { justify-self:start; }
 .extra-report-card { margin:10px 0; }
 .extra-report-card .extra-preview { color:var(--muted); white-space:pre-wrap; }
-.extra-picker { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:14px 0; }
+.extra-picker { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:14px 0; }
 .extra-pick-group { border:1px solid #cbd9ec; border-radius:10px; background:#fff; overflow:hidden; }
 .extra-pick-group > summary { padding:12px 15px; color:var(--blue-deep); font-size:13px; font-weight:800; cursor:pointer; background:#eef3fc; }
+.extra-other-content { padding:12px 14px 14px; }
+.extra-other-content p { margin:0 0 12px; color:var(--muted); font-size:12px; line-height:1.5; }
+.extra-other-content .button { width:100%; white-space:normal; }
+@media (max-width:950px) { .extra-picker { grid-template-columns:1fr; } }
 .extra-pick-options { max-height:250px; overflow:auto; padding:8px; }
 .extra-pick-option { display:flex; align-items:flex-start; gap:8px; padding:7px 8px; border-radius:7px; color:#354765; font-size:12px; line-height:1.4; cursor:pointer; }
 .extra-pick-option:hover,.extra-pick-option:has(input:checked) { background:#eaf5f3; }

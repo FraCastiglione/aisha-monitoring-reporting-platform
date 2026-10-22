@@ -165,8 +165,8 @@
       if (report.additional_contributions?.length) {
         section("Additional voluntary contributions");
         for (const entry of report.additional_contributions) {
-          section(`${entry.id} — ${entry.title}`);
-          pair("Contribution scope", `${entry.kind === "task" ? "Task" : "Work Package"} outside the partner's listed assignments`);
+          section(entry.kind === "general" ? entry.title : `${entry.id} — ${entry.title}`);
+          pair("Contribution scope", entry.kind === "general" ? "Other project work" : `${entry.kind === "task" ? "Task" : "Work Package"} outside the partner's listed assignments`);
           pair("Months covered", entry.months.join(", "));
           pair("Report status", entry.status === "draft" ? "Draft in progress" : "Contribution completed");
           pair("Activities carried out", entry.description);

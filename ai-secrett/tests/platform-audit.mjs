@@ -93,6 +93,10 @@ const report={schema_version:'2.4',project:'AI-SECRETT',document_kind:'submissio
 const pdf=await window.SECRETT_PDF.createPdf(report);
 const decoded=await window.SECRETT_PDF.readEmbeddedReport(pdf);
 assert.deepEqual(decoded,JSON.parse(JSON.stringify(report)),'PDF must retain exact editable record for all 66 Tasks');
+const generalContribution={kind:'general',id:'GEN-0123456789ABCDEF',title:'Cross-project coordination',months:['2025-10'],description:'Coordinated work across partners.',results:'Shared plan agreed.',difficulties:'',upcoming:'',evidence:'',status:'completed',assignment_basis:'voluntary_unlisted'};
+const generalReport={...report,tasks:[],additional_contributions:[generalContribution]};
+const generalPdf=await window.SECRETT_PDF.createPdf(generalReport);
+assert.deepEqual(await window.SECRETT_PDF.readEmbeddedReport(generalPdf),JSON.parse(JSON.stringify(generalReport)),'Other project work must survive PDF round-trip');
 const plain=await window.PDFLib.PDFDocument.create();plain.addPage();
 await assert.rejects(window.SECRETT_PDF.readEmbeddedReport(new Blob([await plain.save()])),/matching JSON file/);
 console.log(`PASS: ${config.partners.length} partners × 48 months, ${checked} eligible Task-months, all 66 Tasks, 12 WPs, 23 deliverables, 17 milestones, 10 risks, 36 KPIs, all 66 Task PDF round-trip and ordinary-PDF recovery`);
