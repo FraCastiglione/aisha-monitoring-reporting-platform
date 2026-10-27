@@ -37,6 +37,8 @@ Individual Task PDFs are clearly labelled as one-Task reports and may include an
 
 The contributor name, role and email are self-declared; the static site does not authenticate them. `generated_at` is the browser's clock time and is shown in UTC on the PDF. It is not evidence that the coordination team received a file. There is no `submitted_at` or `accepted_at` in partner-generated files.
 
+An unsaved-progress guard tracks Task and Communication reports independently. Browser saves and byte-verified full-report copies protect their exact versions. An individual Task PDF does not protect the rest of the partner report, and verifying an older copy does not clear newer edits. The native close/reload prompt is requested only for changed, unprotected progress; it is subject to browser policy and is not automatic storage.
+
 ## Communication and coordinator use
 
 The separate monthly Communication & Dissemination form uses schema version 1.4. Its report key is `{partner}:COMM:{start}:{end}:{selected_months joined by commas}`. Whole selected months may contain gaps; only the explicit list is covered. Earlier schema 1.1/1.2 14-day files remain readable and require the partner to review/select the monthly coverage. Transitional 1.3 single-month files also remain readable. Conditional fields are validated before review. Unknown reach and enrolments are `null`, distinct from measured zero. Legacy KPI values may be retained with their evidence; the coordinator checks for overlap before using the communication fields and KPI claims in project totals.

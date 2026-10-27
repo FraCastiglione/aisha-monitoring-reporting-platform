@@ -80,3 +80,19 @@ assert(privateValidate({...currentMonthly,report_code:'WRONG'},expectedFilename(
 console.log('Private coordinator intake accepts new monthly schema and code-bearing filenames PASS');
 
 }
+
+// Resuming a complete report preserves its identity; copying selected entries does not replace another report's identity.
+state.partner=ife;state.reportType='tasks';populate(ife,p);
+const resumeSource=ctx.record('submission');resumeSource.report_code='AISHA-IF.E-TASKS-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';resumeSource.revision=4;
+const currentCode='AISHA-IF.E-TASKS-BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB';
+for(const mode of ['full-empty','full-existing','partial-empty']){
+ populate(ife,p);state.reportCodes.tasks=currentCode;state.revision=1;
+ if(mode!=='full-existing'){state.selected=new Map();state.wpUpdates=new Map();state.extras=[];state.kpis=new Map();}
+ ctx.prepareWholeImport(copy(resumeSource));
+ if(mode==='partial-empty')ctx.$('whole-import-entries').children[0].children[0].checked=false;
+ ctx.$('confirm-whole-import').listeners.click();
+ const restored=ctx.record('draft');
+ assert.equal(restored.report_code,mode==='full-empty'?resumeSource.report_code:currentCode,mode+' report identity');
+ assert.equal(restored.revision,mode==='full-empty'?4:1,mode+' report revision');
+}
+console.log('Whole-report full resume keeps incoming identity/revision; partial and existing-report merges retain their current identity: PASS');

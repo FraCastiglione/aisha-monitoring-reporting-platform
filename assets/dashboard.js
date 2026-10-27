@@ -10,6 +10,23 @@
   function readKpiFavorites(){try{const value=JSON.parse(localStorage.getItem(favoriteStorageKey)||'[]');return new Set(Array.isArray(value)?value:[]);}catch{return new Set();}}
   function saveKpiFavorites(ids){try{localStorage.setItem(favoriteStorageKey,JSON.stringify([...ids]));}catch{ /* Browser storage is optional. */ }}
   let catalogue, snapshot, agreementDetail;
+  function focusKey(control) {
+    if (control.id) return `id:${control.id}`;
+    if (control.dataset?.focusKey) return control.dataset.focusKey;
+    const label = control.closest?.('label')?.querySelector('span')?.textContent;
+    if (label && /^(INPUT|SELECT)$/.test(control.tagName)) return `field:${label}`;
+    return control.getAttribute?.('aria-label') || control.textContent?.replace(/\s+/g, ' ').trim();
+  }
+  function captureDashboardFocus() {
+    const control = document.activeElement;
+    return control && host.contains?.(control) ? { control, key: focusKey(control) } : null;
+  }
+  function restoreDashboardFocus(saved) {
+    if (!saved?.key || saved.control.isConnected) return;
+    const controls = [...host.querySelectorAll('button,input,select,summary,[tabindex]')];
+    const target = controls.find(control => focusKey(control) === saved.key) || host.querySelector('.dash-tabs [aria-current="page"]');
+    target?.focus({ preventScroll: true });
+  }
   const el = (tag, className = '', value) => { const item = document.createElement(tag); if (className) item.className = className; if (value !== undefined) item.textContent = value; return item; };
   const month = number => { const start=new Date(`${config.project.startDate.slice(0,7)}-01T00:00:00Z`);start.setUTCMonth(start.getUTCMonth()+number-1);return `${start.getUTCFullYear()}-${String(start.getUTCMonth()+1).padStart(2,'0')}`; };
   const monthEnd = number => { const value=month(number),[year,part]=value.split('-').map(Number);return `${value}-${String(new Date(Date.UTC(year,part,0)).getUTCDate()).padStart(2,'0')}`; };
@@ -192,8 +209,8 @@
     const section=el('section',`dash-section dash-gantt ${view.ganttLarge?'is-large':''}`);
     section.append(header('Project Gantt','The 48-month project schedule, followed by two closeout months for the final Technical Progress Report. Choose a month for its calendar, or expand a Work Package to see its Tasks.'));
     const tools=el('div','dash-gantt-tools');
-    const enlarge=el('button','dash-gantt-expand',view.ganttLarge?'Use normal width':'Expand Gantt');enlarge.type='button';enlarge.addEventListener('click',()=>{view.ganttLarge=!view.ganttLarge;render();});tools.append(enlarge);
-    const expand=el('button','dash-gantt-expand',view.ganttExpanded.size===config.workPackages.length?'Hide all Task rows':'Show all Task rows');expand.type='button';expand.addEventListener('click',()=>{view.ganttExpanded=view.ganttExpanded.size===config.workPackages.length?new Set():new Set(config.workPackages.map(wp=>wp.id));render();});tools.append(expand);section.append(tools);
+    const enlarge=el('button','dash-gantt-expand',view.ganttLarge?'Use normal width':'Expand Gantt');enlarge.type='button';enlarge.dataset.focusKey='gantt:width';enlarge.addEventListener('click',()=>{view.ganttLarge=!view.ganttLarge;render();});tools.append(enlarge);
+    const expand=el('button','dash-gantt-expand',view.ganttExpanded.size===config.workPackages.length?'Hide all Task rows':'Show all Task rows');expand.type='button';expand.dataset.focusKey='gantt:tasks';expand.addEventListener('click',()=>{view.ganttExpanded=view.ganttExpanded.size===config.workPackages.length?new Set():new Set(config.workPackages.map(wp=>wp.id));render();});tools.append(expand);section.append(tools);
     const legend=el('div','dash-gantt-legend');for(const [tone,label] of [['wp','Work Package active'],['task','Task active'],['review','Technical Progress Report preparation'],['selected','Selected month'],['draft','Internal review draft'],['due','Official deadline']]){const item=el('span','');item.append(el('i',tone),label);legend.append(item);}section.append(legend);
     const scroller=el('div','dash-gantt-scroll'),matrix=el('div','dash-gantt-matrix'),head=el('div','dash-gantt-row dash-gantt-header');head.append(el('div','dash-gantt-label','WORK PACKAGE / TASK'));
     const months=Array.from({length:50},(_,i)=>month(i+1));
@@ -230,7 +247,7 @@
   function installGanttTooltip(scroller,section){
     const popup=el('div','dash-gantt-tooltip');popup.id='dash-gantt-tooltip';popup.setAttribute('role','tooltip');popup.hidden=true;section.append(popup);
     let target=null;
-    const place=(x,y)=>{const bounds=popup.getBoundingClientRect(),width=bounds.width||Math.min(300,innerWidth-24),height=bounds.height||105;popup.style.left=`${Math.max(12,Math.min(innerWidth-width-12,x+16))}px`;popup.style.top=`${y+height+18<innerHeight?y+16:Math.max(12,y-height-12)}px`;};
+    const place=(x,y)=>{const bounds=popup.getBoundingClientRect(),width=bounds.width||Math.min(300,innerWidth-24),height=bounds.height||105;popup.style.left=`${Math.max(12,Math.min(innerWidth-width-12,x+16))}px`;const preferredTop=y+height+18<innerHeight?y+16:y-height-12;popup.style.top=`${Math.max(12,Math.min(innerHeight-height-12,preferredTop))}px`;};
     const show=(cell,x,y)=>{if(!cell?.dataset.tooltip)return;target=cell;popup.replaceChildren();const lines=cell.dataset.tooltip.split('\n');popup.append(el('strong','',lines.shift()));for(const line of lines)popup.append(el('span','',line));popup.hidden=false;place(x,y);};
     const hide=()=>{popup.hidden=true;target=null;};
     const focusedCell=()=>document.activeElement?.closest?.('.dash-gantt-cell[data-tooltip]');
@@ -394,7 +411,7 @@
     const allReportingPartners=config.partners.filter(partner=>tasks.some(task=>model.assigned(task,partner.code,config)));
     const reportingPartners=config.partners.filter(partner=>view.partnerKind==='all'||(partner.kind||'beneficiary')===view.partnerKind);
     const summary=el('div','dash-report-summary');for(const [value,label] of [[`${monthCode(view.from)}–${monthCode(view.through)}`,'Selected period'],[String(tasks.length),'Active Tasks'],[String(active.length),'Active Work Packages'],[String(allReportingPartners.length),'Partners assigned']]){const item=el('div','');item.append(el('strong','',value),el('span','',label));summary.append(item);}section.append(summary);
-    for(const [key,label,count] of [['tasks','Tasks',tasks.length],['work_packages','Work Packages',active.length],['partners','Partners',view.reportingMode==='partners'?reportingPartners.length:allReportingPartners.length]]){const button=el('button',view.reportingMode===key?'is-selected':'',`${label}  ${count}`);button.type='button';button.setAttribute('aria-pressed',String(view.reportingMode===key));button.addEventListener('click',()=>{view.reportingMode=key;render();});mode.append(button);}section.append(mode);
+    for(const [key,label,count] of [['tasks','Tasks',tasks.length],['work_packages','Work Packages',active.length],['partners','Partners',view.reportingMode==='partners'?reportingPartners.length:allReportingPartners.length]]){const button=el('button',view.reportingMode===key?'is-selected':'',`${label}  ${count}`);button.type='button';button.dataset.focusKey=`reporting:${key}`;button.setAttribute('aria-pressed',String(view.reportingMode===key));button.addEventListener('click',()=>{view.reportingMode=key;render();});mode.append(button);}section.append(mode);
     const taskPanel=el('div','dash-report-panel'),taskHead=el('h3','','Tasks');taskHead.append(el('span','',`${tasks.length} in this view`));taskPanel.append(taskHead);
     if(tasks.length) tasks.forEach(task=>taskPanel.append(taskBlock(task))); else taskPanel.append(empty('No Tasks match the selected months and filter.'));
     const wpPanel=el('div','dash-report-panel'),wpHead=el('h3','','Work Packages');wpHead.append(el('span','',`${active.length} active`));wpPanel.append(wpHead);
@@ -486,17 +503,18 @@
     const favoritesOnly=el('button',`dash-kpi-favorites-filter ${view.kpiOnlyFavorites?'is-active':''}`,view.kpiOnlyFavorites?'★ Saved favourites':'☆ Saved favourites');favoritesOnly.type='button';favoritesOnly.setAttribute('aria-pressed',String(view.kpiOnlyFavorites));controls.append(favoritesOnly);section.append(controls);
     const resultCount=el('p','dash-kpi-results'),list=el('div','dash-kpi-list');section.append(resultCount,list);
     const renderItems=()=>{
+      const savedFocus = captureDashboardFocus();
       list.replaceChildren();const favorites=readKpiFavorites(),query=view.kpiSearch.trim().toLocaleLowerCase(),terms=query.split(/\s+/).filter(Boolean);
       const matches=catalogue.kpis.filter(kpi=>{if(view.kpiGroup!=='all'&&kpi.group!==view.kpiGroup)return false;if(view.kpiOnlyFavorites&&!favorites.has(kpi.id))return false;const passages=(kpi.source_refs||[]).map(ref=>catalogue.source_index?.[ref]).filter(Boolean).flatMap(row=>[row.kpi,row.metric,row.target,row.exact_text]);return terms.every(term=>[kpi.name,kpi.id,kpi.group,...(kpi.source_refs||[]),...passages].filter(Boolean).join(' ').toLocaleLowerCase().includes(term));}).sort((a,b)=>{const rank=kpi=>query&&kpi.name.toLocaleLowerCase().includes(query)?2:query&&terms.every(term=>kpi.name.toLocaleLowerCase().includes(term))?1:0;return Number(b.id===view.kpiFocus)-Number(a.id===view.kpiFocus)||rank(b)-rank(a)||a.name.localeCompare(b.name);});
       resultCount.textContent=`${matches.length} indicator${matches.length===1?'':'s'} shown · ${catalogue.kpis.length} available`;
-      if(!matches.length){list.append(empty(view.kpiOnlyFavorites?'No saved indicators match these filters.':'No indicators match. Try a different term or topic.'));return;}
+      if(!matches.length){list.append(empty(view.kpiOnlyFavorites?'No saved indicators match these filters.':'No indicators match. Try a different term or topic.'));restoreDashboardFocus(savedFocus);return;}
       const {wrap,body,labelCells}=kpiTable(['Indicator and topic','Exact Agreement wording','Reviewed results and partner contributions','Source and related Tasks'],'is-indicator-index','Indicator collection');
       for(const kpi of matches){const actual=(snapshot.kpi_values||[]).find(k=>k.id===kpi.id),tr=el('tr');tr.id=`dash-kpi-${kpi.id}`;if(kpi.id===view.kpiFocus)tr.className='is-focused';const identity=el('th','dash-kpi-index-identity');identity.setAttribute('scope','row');identity.append(el('span','dash-kpi-group',kpi.group),el('strong','',kpi.name));
-        const star=el('button','dash-kpi-table-star',favorites.has(kpi.id)?'★ Saved':'☆ Save');star.type='button';star.setAttribute('aria-label',`${favorites.has(kpi.id)?'Remove':'Add'} ${kpi.name} ${favorites.has(kpi.id)?'from':'to'} favourites`);star.setAttribute('aria-pressed',String(favorites.has(kpi.id)));star.onclick=()=>{favorites.has(kpi.id)?favorites.delete(kpi.id):favorites.add(kpi.id);saveKpiFavorites(favorites);renderItems();};identity.append(star);tr.append(identity);
+        const star=el('button','dash-kpi-table-star',favorites.has(kpi.id)?'★ Saved':'☆ Save');star.type='button';star.dataset.focusKey=`favorite:${kpi.id}`;star.setAttribute('aria-label',`${favorites.has(kpi.id)?'Remove':'Add'} ${kpi.name} ${favorites.has(kpi.id)?'from':'to'} favourites`);star.setAttribute('aria-pressed',String(favorites.has(kpi.id)));star.onclick=()=>{favorites.has(kpi.id)?favorites.delete(kpi.id):favorites.add(kpi.id);saveKpiFavorites(favorites);renderItems();};identity.append(star);tr.append(identity);
         const content=el('td');for(const ref of kpi.source_refs||[]){const row=catalogue.source_index?.[ref];if(!row)continue;const block=el('div','dash-kpi-index-source');block.append(el('strong','dash-kpi-source-code',ref));for(const [field,label] of [['exact_text',''],['footnote',''],['kpi','KPI'],['metric','Proposed metric (how we measure it)'],['target','Target value by project end (48 months)'],['evidence','Evidence of achievement']])if(row[field]){if(label)block.append(el('strong','dash-kpi-field-label',label));agreementText(block,row[field]);}for(const page of agreementPages(row))block.append(el('small','dash-kpi-page',agreementPageLabel(page)));content.append(block);}tr.append(content);
         tr.append(kpiMeasurementCell(kpi.id,kpi.unit==='status'?'':kpi.unit));
         const related=el('td','dash-kpi-links-cell');kpiLinks(related,{...kpi,source_page:null});tr.append(related);body.append(tr);
-      }labelCells();list.append(wrap);
+      }labelCells();list.append(wrap);restoreDashboardFocus(savedFocus);
     };
     searchInput.addEventListener('input',()=>{view.kpiSearch=searchInput.value;renderItems();});favoritesOnly.addEventListener('click',()=>{view.kpiOnlyFavorites=!view.kpiOnlyFavorites;favoritesOnly.classList.toggle('is-active',view.kpiOnlyFavorites);favoritesOnly.textContent=view.kpiOnlyFavorites?'★ Saved favourites':'☆ Saved favourites';favoritesOnly.setAttribute('aria-pressed',String(view.kpiOnlyFavorites));renderItems();});renderItems();return section;
   }
@@ -511,12 +529,14 @@
   }
   function render() {
     if(!catalogue||!snapshot||!agreementDetail)return;
+    const savedFocus = captureDashboardFocus();
     const tabs=el('nav','dash-tabs');tabs.setAttribute('aria-label','Dashboard sections');
     for(const [key,label] of [['overview','Overview'],['gantt','Gantt'],['workpackages','Work Packages'],['reporting','Partner reporting'],['messages','Message board'],['risks','Risks'],['kpis','KPIs']]){
       const button=el('button',view.tab===key?'is-active':'',label);button.type='button';button.setAttribute('aria-current',view.tab===key?'page':'false');button.addEventListener('click',()=>switchTab(key));tabs.append(button);
     }
     const panel=view.tab==='gantt'?ganttSection():view.tab==='workpackages'?workPackagesSection():view.tab==='reporting'?reportingSection():view.tab==='messages'?messageBoard():view.tab==='risks'?risksSection():view.tab==='kpis'?kpisSection():overview();
     host.replaceChildren(tabs,panel);
+    restoreDashboardFocus(savedFocus);
   }
   try {
     const source=window.AISHA_EMBEDDED_DATA?.catalogue,data=window.AISHA_EMBEDDED_DATA?.snapshot,detailData=window.AISHA_EMBEDDED_DATA?.detail;

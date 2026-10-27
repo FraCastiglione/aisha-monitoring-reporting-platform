@@ -49,6 +49,12 @@ const tooltipSource=read('assets/dashboard.js'),tooltipStart=tooltipSource.index
 vm.runInNewContext(tooltipSource.slice(tooltipStart,tooltipEnd)+'\nwindow.TOOLTIP_TEST=installGanttTooltip;',Object.assign(ctx,{el:(tag,cls,text)=>{const n=new N(tag);n.className=cls;n.textContent=text;return n;}}));
 const tooltipScroller=new N('div'),tooltipSection=new N('section'),focusCell=new N('div');focusCell.dataset.tooltip='WP1 · M50\nRP3 preparation';focusCell.closest=()=>focusCell;tooltipScroller.contains=n=>n===focusCell;ctx.document.activeElement=focusCell;
 ctx.window.TOOLTIP_TEST(tooltipScroller,tooltipSection);tooltipScroller.listeners.focusin({target:focusCell});const tooltip=tooltipSection.children[0];assert.equal(tooltip.hidden,false);tooltipScroller.listeners.scroll();assert.equal(tooltip.hidden,false,'Keyboard tooltip survives automatic scrolling');tooltipSection.listeners.keydown({key:'Escape'});assert.equal(tooltip.hidden,true,'Escape dismisses tooltip');ctx.document.activeElement=null;tooltipScroller.listeners.pointerover({target:focusCell,clientX:10,clientY:10});tooltipScroller.listeners.scroll();assert.equal(tooltip.hidden,true,'Pointer scrolling dismisses tooltip');console.log('Gantt keyboard auto-scroll, Escape and pointer scrolling: PASS');
+// Browser focus can begin before a distant row scrolls into the viewport.
+focusCell.getBoundingClientRect=()=>({left:2000,top:1400,width:70,height:38});ctx.document.activeElement=focusCell;
+tooltipScroller.listeners.focusin({target:focusCell});
+assert(Number.parseFloat(tooltip.style.top)+tooltip.getBoundingClientRect().height<=ctx.innerHeight-12,'Distant keyboard tooltip must stay fully inside the viewport');
+assert(Number.parseFloat(tooltip.style.left)+tooltip.getBoundingClientRect().width<=ctx.innerWidth-12,'Distant keyboard tooltip must remain horizontally visible');
+console.log('Distant Gantt keyboard tooltip viewport bounds: PASS');
 // New report-code ledger: superseded revisions and duplicate copies cannot inflate coverage or KPI rows.
 const ledgerCode='AISHA-IF.E-TASKS-07070707070707070707070707070707';
 e.snapshot.report_registry.push({report_code:ledgerCode,revision:1,partner:'IF.E',status:'verified'},{report_code:ledgerCode,revision:2,partner:'IF.E',status:'verified'});

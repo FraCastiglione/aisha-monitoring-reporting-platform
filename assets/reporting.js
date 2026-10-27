@@ -6,7 +6,19 @@
   const $ = id => document.getElementById(id);
   const taskForm = $('task-form');
   const commForm = $('communication-form');
+  for (const [button, input] of [['choose-report-import','import-report-file'],['choose-comm-import','comm-import-file'],['choose-task-import','task-import-file']]) $(button).addEventListener('click', () => $(input).click());
   const state = { partner: null, contributor: null, reportType: null, reportCodes:{tasks:null,communication:null}, generatedSignatures:{tasks:null,communication:null}, revisionsByType:{tasks:1,communication:1}, selected: new Map(), wpUpdates: new Map(), extras: [], kpis: new Map(), kpisByType:{tasks:new Map(),communication:new Map()}, selectedMonths: new Set(), commMonths: new Set(), lastPeriod: null, editing: null, wpEditing: null, extraEditing: null, editWasNew: false, revision: 1, reviewed: null, urls: [], taskPdfUrl: null };
+  const progressGuard = window.AISHA_PROGRESS?.create();
+  const progressKey = (type = state.reportType) => `${state.partner?.code}:${type}`;
+  function progressFingerprint(type = state.reportType) {
+    if (!state.partner || !type) return null;
+    const common = { contributor: state.contributor, revision: type === state.reportType ? $('report-revision').value : String(state.revisionsByType[type]), kpis: [...(type === state.reportType ? state.kpis : state.kpisByType[type]).values()] };
+    return JSON.stringify(type === 'tasks' ? { ...common, months: sortedMonths(), start: $('report-start').value, end: $('report-end').value, tasks: [...state.selected], leadership: [...state.wpUpdates], extras: state.extras } : { ...common, months: sortedCommunicationMonths(), form: commSnapshot() });
+  }
+  function trackProgress() { const partner = state.partner.code, type = state.reportType; progressGuard?.register(progressKey(type), () => state.partner?.code === partner ? progressFingerprint(type) : null); }
+  function rememberReportCopy(blob, key, snapshot) { progressGuard?.rememberCopy(blob, key, snapshot); }
+  window.addEventListener('aisha:saved-copy-verified', event => progressGuard?.verifyCopy(event.detail.blob));
+  window.addEventListener('beforeunload', event => { if (progressGuard?.hasUnsaved()) { event.preventDefault(); event.returnValue = ''; } });
   let kpiCatalogue=[];
   const communicationKpis=new Set();
   const kpiModel=window.AISHA_KPI_MODEL;
@@ -193,7 +205,7 @@
         button.setAttribute('aria-pressed', state.selectedMonths.has(ym) ? 'true' : 'false');
         if (state.selectedMonths.has(ym)) button.classList.add('is-in-range');
         button.addEventListener('pointerdown', event => { if (event.button !== 0) return; event.preventDefault(); timelineDrag = { start: n, last: n, moved: false, base: new Set(state.selectedMonths), remove: state.selectedMonths.has(ym) }; });
-        button.addEventListener('click', event => { if (event.detail === 0) toggleMonth(ym); });
+        button.addEventListener('click', event => { if (event.detail !== 0) return; toggleMonth(ym); [...timeline.querySelectorAll('button')].find(item => item.dataset.month === String(n))?.focus(); });
         months.append(button);
       }
       group.append(months); timeline.append(group);
@@ -366,7 +378,8 @@
   function hasWpContribution(entry) { return ['progress','coordination','difficulties','next','support'].some(k => String(entry[k] || '').trim()) || Object.values(entry.task_updates || {}).some(row => ['status','progress','blocker','next'].some(k => String(row[k] || '').trim())); }
   function renderWpLeadership(p) {
     const eligible = config.workPackages.filter(wp => wp.lead === state.partner.code && activeWpMonths(wp,p).length);
-    $('wp-leader-section').hidden = !eligible.length;
+    const outside = config.workPackages.filter(wp => state.wpUpdates.has(wp.id) && !eligible.some(item => item.id === wp.id));
+    $('wp-leader-section').hidden = !eligible.length && !outside.length;
     const host = $('wp-leader-list'); host.replaceChildren();
     for (const wp of eligible) {
       const entry = state.wpUpdates.get(wp.id), card = textNode('article','',`wp-leader-card${entry ? ` is-${entry.status}` : ''}`);
@@ -379,6 +392,13 @@
       if (entry?.status !== 'no_work') { const none = textNode('button','Declare no Work Package work','button button-quiet'); none.type='button'; none.addEventListener('click',()=>setWpNoWork(wp)); actions.append(none); }
       if (entry) { const remove = textNode('button','Remove update','button button-quiet'); remove.type='button'; remove.addEventListener('click',()=>{state.wpUpdates.delete(wp.id);renderOverview();}); actions.append(remove); }
       card.append(actions); host.append(card);
+    }
+    for (const wp of outside) {
+      const card=textNode('article','','wp-leader-card out-of-range');
+      card.append(textNode('h4',`${wp.id} — ${wp.title}`),textNode('p','This saved leadership update is outside the selected months. Its answers are preserved. Select months when this Work Package is active, or remove the update before reviewing the report.','task-date-warning'));
+      const remove=textNode('button','Remove update','button button-quiet');remove.type='button';
+      remove.addEventListener('click',async()=>{if(!await confirmAction('Remove leadership update?',`The saved leadership update for ${wp.id} will be removed from this report. Download a copy first if you need to keep it.`,'Remove update'))return;state.wpUpdates.delete(wp.id);renderOverview();});
+      card.append(remove);host.append(card);
     }
   }
   function captureWp() {
@@ -596,6 +616,7 @@
       $('report-end').min = config.project.startDate; $('report-end').max = projectEnd();
       renderOverview();
     } else paintCommunicationTimeline();
+    trackProgress();
     scrollTo($('report-workspace')); $('workspace-title').focus({ preventScroll: true });
   });
   $('back-to-choice').addEventListener('click', () => { $('report-workspace').hidden = true; $('review-section').hidden = true; $('submission-section').hidden = true; scrollTo($('report-choice')); });
@@ -717,11 +738,11 @@
   $('close-draft-downloads').addEventListener('click',()=>{$('draft-download-dialog').close();});
   $('open-browser-draft').addEventListener('click',()=>{$('browser-draft-dialog').showModal();});
   $('close-browser-draft').addEventListener('click',()=>{$('browser-draft-dialog').close();});
-  $('save-draft').addEventListener('click', () => { try { const r = record('draft'); localStorage.setItem(draftKey(), JSON.stringify(r)); message('Browser draft saved on this device. Download a draft file as a portable backup.'); } catch (error) { message(`Could not save browser draft: ${error.message}`); } });
-  $('download-draft').addEventListener('click', () => { try { const r = record('draft'); download(new Blob([JSON.stringify(r,null,2)],{type:'application/json'}),`${filename(r,true)}.json`); message('JSON draft ready. Check your saved copy in the download window.'); } catch (error) { message(`Could not download draft: ${error.message}`); } });
-  $('download-draft-pdf').addEventListener('click', async () => {try {const editable=record('draft'),display=record('submission');if(state.reportType==='communication'){for(const name of ['events_organised','media_outreach','website_articles_published','email_or_newsletter_sent','coordinator_support_required'])if(!radio(commForm,name))display.answers[name]=null;}display.document_kind='draft';display.pdf_kind='draft_report';display.generated_at=new Date().toISOString();download(await window.AISHA_PDF.createPdf(display,editable),`${filename(editable,true)}.pdf`);message('PDF draft ready. It contains editable AISHA data; check your saved copy in the download window.');}catch(error){message(`Could not download draft PDF: ${error.message}`);}if(!$('extra-editor').hidden){$('extra-editor-message').textContent=$('draft-message').textContent;$('extra-editor-message').hidden=false;}});
-  $('load-browser-draft').addEventListener('click', async () => { try { await kpiReady; const saved = localStorage.getItem(draftKey()); if (!saved) { $('browser-draft-dialog').close();return message('No browser draft was found for this partner and report type.'); } restore(JSON.parse(saved));$('browser-draft-dialog').close(); } catch (error) { $('browser-draft-dialog').close();message(`Could not load browser draft: ${error.message}`); } });
-  $('delete-browser-draft').addEventListener('click', () => { try { if (!localStorage.getItem(draftKey())) { $('browser-draft-dialog').close();return message('No browser draft was found for this partner and report type.'); } localStorage.removeItem(draftKey());$('browser-draft-dialog').close();message('Browser draft deleted.'); } catch { $('browser-draft-dialog').close();message('Browser storage is unavailable.'); } });
+  $('save-draft').addEventListener('click', () => { try { const r = record('draft'); localStorage.setItem(draftKey(), JSON.stringify(r)); progressGuard?.protect(progressKey(), progressFingerprint()); message('Browser draft saved on this device. Download a draft file as a portable backup.'); } catch (error) { message(`Could not save browser draft: ${error.message}`); } });
+  $('download-draft').addEventListener('click', () => { try { const r = record('draft'), name = `${filename(r,true)}.json`; const blob=new Blob([JSON.stringify(r,null,2)],{type:'application/json'});rememberReportCopy(blob, progressKey(), progressFingerprint()); download(blob,name); message('JSON draft ready. Check your saved copy in the download window.'); } catch (error) { message(`Could not download draft: ${error.message}`); } });
+  $('download-draft-pdf').addEventListener('click', async () => {try {const editable=record('draft'),display=record('submission'),copyKey=progressKey(),copySnapshot=progressFingerprint(),copyName=`${filename(editable,true)}.pdf`;if(state.reportType==='communication'){for(const name of ['events_organised','media_outreach','website_articles_published','email_or_newsletter_sent','coordinator_support_required'])if(!radio(commForm,name))display.answers[name]=null;}display.document_kind='draft';display.pdf_kind='draft_report';display.generated_at=new Date().toISOString();const pdf=await window.AISHA_PDF.createPdf(display,editable);rememberReportCopy(pdf,copyKey,copySnapshot);download(pdf,copyName);message('PDF draft ready. It contains editable AISHA data; check your saved copy in the download window.');}catch(error){message(`Could not download draft PDF: ${error.message}`);}if(!$('extra-editor').hidden){$('extra-editor-message').textContent=$('draft-message').textContent;$('extra-editor-message').hidden=false;}});
+  $('load-browser-draft').addEventListener('click', async () => { try { await kpiReady; const saved = localStorage.getItem(draftKey()); if (!saved) { $('browser-draft-dialog').close();return message('No browser draft was found for this partner and report type.'); } restore(JSON.parse(saved));progressGuard?.protect(progressKey(),progressFingerprint());$('browser-draft-dialog').close(); } catch (error) { $('browser-draft-dialog').close();message(`Could not load browser draft: ${error.message}`); } });
+  $('delete-browser-draft').addEventListener('click', () => { try { if (!localStorage.getItem(draftKey())) { $('browser-draft-dialog').close();return message('No browser draft was found for this partner and report type.'); } localStorage.removeItem(draftKey());progressGuard?.invalidate(progressKey());$('browser-draft-dialog').close();message('Browser draft deleted.'); } catch { $('browser-draft-dialog').close();message('Browser storage is unavailable.'); } });
 
   function importedTaskAnswers(a, status) {
     if (!a || ['activities_carried_out','results_achieved','difficulties_encountered','upcoming_activities','additional_comments'].some(k=>typeof a[k] !== 'string' || a[k].length > 100000)) throw new Error('A Task answer is invalid.');
@@ -832,7 +853,7 @@
     fields.website_article_details=[...new Set((a.website_articles||[]).map(e=>e.details||'').filter(Boolean))].join('\n');for(const control of commForm.querySelectorAll('[name]')){const v=a[control.name];if(v!==undefined)fields[control.name]=typeof v==='boolean'?(v?'yes':'no'):Array.isArray(v)?v.join('\n'):v===null?'':String(v);}
     return {...raw,document_kind:'draft',form_state:{fields,article_details:a.website_articles.map(e=>({...e})),article_note:fields.website_article_details,events:a.events.map(e=>({description:e.description,participants:String(e.participants),activity_id:e.activity_id||''})),reach_unknown:a.estimated_people_reached===null,enrolments_unknown:a.preregistrations_or_enrolments===null}};
   }
-  async function importCommunicationFile(file){if(!file)return;try{const pdf=file.name.toLowerCase().endsWith('.pdf');if(file.size>(pdf?10000000:5000000))throw new Error('The file is too large.');const raw=communicationAsDraft(pdf?await window.AISHA_PDF.readEmbeddedReport(file):JSON.parse(await file.text()));const legacy=['1.1','1.2'].includes(raw.schema_version);if(!await confirmAction('Replace this communication report?', `${legacy?'This older report used a 14-day period. Its answers will be restored; select or review the project months before generating a new report. ':'The report’s answers and selected months will be restored. '}Download your current draft first if you need to keep a separate copy.`, 'Import report'))return;restore(raw);$('comm-import-message').textContent=legacy?'Older communication report restored. Check the selected months and review which activities belong in them.':'Communication report restored. Review the selected months and answers.';}catch(error){$('comm-import-message').textContent=`Could not import report: ${error.message}`;if(error.code==='NO_AISHA_DATA')window.AISHA_FILES.recover(file,importCommunicationFile,null,'The matching JSON must be a communication report for this partner. You will confirm before it replaces the current report.');}$('comm-import-message').hidden=false;}
+  async function importCommunicationFile(file){if(!file)return;try{const pdf=file.name.toLowerCase().endsWith('.pdf');if(file.size>(pdf?10000000:5000000))throw new Error('The file is too large.');const raw=communicationAsDraft(pdf?await window.AISHA_PDF.readEmbeddedReport(file):JSON.parse(await file.text()));const legacy=['1.1','1.2'].includes(raw.schema_version);if(!await confirmAction('Replace this communication report?', `${legacy?'This older report used a 14-day period. Its answers will be restored; select or review the project months before generating a new report. ':'The report’s answers and selected months will be restored. '}Download your current draft first if you need to keep a separate copy.`, 'Import report'))return;restore(raw);if(!legacy)progressGuard?.protect(progressKey(),progressFingerprint());$('comm-import-message').textContent=legacy?'Older communication report restored. Check the selected months and review which activities belong in them.':'Communication report restored. Review the selected months and answers.';}catch(error){$('comm-import-message').textContent=`Could not import report: ${error.message}`;if(error.code==='NO_AISHA_DATA')window.AISHA_FILES.recover(file,importCommunicationFile,null,'The matching JSON must be a communication report for this partner. You will confirm before it replaces the current report.');}$('comm-import-message').hidden=false;}
   $('comm-import-file').addEventListener('change',event=>{const file=event.target.files?.[0];event.target.value='';if(file)importCommunicationFile(file);});
   $('cancel-whole-import').addEventListener('click',()=>{$('whole-import-dialog').close();pendingWholeImport=null;});
   $('confirm-whole-import').addEventListener('click',()=>{
@@ -841,11 +862,13 @@
       const checks=[...$('whole-import-entries').querySelectorAll('input:checked')];if(!checks.length)throw new Error('Select at least one report entry.');
       const taskIds=new Set(checks.filter(el=>el.dataset.kind==='task').map(el=>el.value)),wpIds=new Set(checks.filter(el=>el.dataset.kind==='wp').map(el=>el.value)),extraIds=new Set(checks.filter(el=>el.dataset.kind==='extra').map(el=>el.value)),kpiIds=new Set(checks.filter(el=>el.dataset.kind==='kpi').map(el=>el.value));
       const {imported,samePeriod}=pendingWholeImport,selectedTasks=imported.tasks.filter(item=>taskIds.has(item.id)),selectedWps=imported.work_package_leadership.filter(item=>wpIds.has(item.id)),selectedExtras=imported.additional_contributions.filter(item=>extraIds.has(`${item.kind}:${item.id}`)),selectedKpis=imported.kpi_contributions.filter(item=>kpiIds.has(kpiKey(item)));
+      const allEntriesSelected=selectedTasks.length===imported.tasks.length&&selectedWps.length===imported.work_package_leadership.length&&selectedExtras.length===imported.additional_contributions.length&&selectedKpis.length===imported.kpi_contributions.length;
+      const completeResume=samePeriod&&imported.reporting_period.selected_months?.length&&!state.selected.size&&!state.wpUpdates.size&&!state.extras.length&&!state.kpis.size&&allEntriesSelected;
       let toRestore;
-      if(samePeriod){toRestore=record('draft');toRestore.tasks=toRestore.tasks.filter(item=>!taskIds.has(item.id)).concat(selectedTasks);toRestore.work_package_leadership=toRestore.work_package_leadership.filter(item=>!wpIds.has(item.id)).concat(selectedWps);toRestore.additional_contributions=toRestore.additional_contributions.filter(item=>!extraIds.has(`${item.kind}:${item.id}`)).concat(selectedExtras);toRestore.kpi_contributions=toRestore.kpi_contributions.filter(item=>!kpiIds.has(kpiKey(item))).concat(selectedKpis);}
+      if(samePeriod&&!completeResume){toRestore=record('draft');toRestore.tasks=toRestore.tasks.filter(item=>!taskIds.has(item.id)).concat(selectedTasks);toRestore.work_package_leadership=toRestore.work_package_leadership.filter(item=>!wpIds.has(item.id)).concat(selectedWps);toRestore.additional_contributions=toRestore.additional_contributions.filter(item=>!extraIds.has(`${item.kind}:${item.id}`)).concat(selectedExtras);toRestore.kpi_contributions=toRestore.kpi_contributions.filter(item=>!kpiIds.has(kpiKey(item))).concat(selectedKpis);}
       else toRestore={...imported,tasks:selectedTasks,work_package_leadership:selectedWps,additional_contributions:selectedExtras,kpi_contributions:selectedKpis};
       if(checks.some(el=>el.dataset.kind==='contributor'))toRestore={...toRestore,contributor:imported.contributor};
-      restore(toRestore);$('whole-import-dialog').close();pendingWholeImport=null;message(checks.some(el=>el.dataset.kind==='contributor')?'Contributor details restored. Your timeline and existing report entries are unchanged.':`Imported ${selectedTasks.length} Task entries, ${selectedWps.length} Work Package updates, ${selectedExtras.length} additional contributions and ${selectedKpis.length} KPI values. Review them before generating files.`);
+      restore(toRestore);if(imported.reporting_period.selected_months?.length&&allEntriesSelected&&(!samePeriod||completeResume))progressGuard?.protect(progressKey(),progressFingerprint());$('whole-import-dialog').close();pendingWholeImport=null;message(checks.some(el=>el.dataset.kind==='contributor')?'Contributor details restored. Your timeline and existing report entries are unchanged.':`Imported ${selectedTasks.length} Task entries, ${selectedWps.length} Work Package updates, ${selectedExtras.length} additional contributions and ${selectedKpis.length} KPI values. Review them before generating files.`);
     }catch(error){$('whole-import-error').textContent=`Could not import selected entries: ${error.message}`;$('whole-import-error').hidden=false;}
   });
   function validatedKpiEntries(entries){if(!Array.isArray(entries)||entries.length>500)throw new Error('KPI contributions are invalid.');const result=new Map();for(const raw of entries){const item=kpiDefinition(raw.id),entry=kpiModel.validate({...raw,basis:raw.basis||''},item),key=kpiKey(entry);if(result.has(key))throw new Error('Duplicate indicator and activity reference.');if(state.reportType==='communication'&&!communicationKpis.has(entry.id))throw new Error('The file contains a non-communication indicator. Import it into a Task report.');result.set(key,entry);}return result;}
@@ -945,11 +968,11 @@
     if (!$('confirm-ready').checked || !state.reviewed || !reviewRevisionValid()) return;
     const button = $('generate-submission'); button.disabled = true; button.textContent = 'Generating…'; $('generation-error').hidden = true;
     try {
-      const r = { ...state.reviewed, generated_at: new Date().toISOString() };
+      const r = { ...state.reviewed, generated_at: new Date().toISOString() }, copyKey=progressKey(),copySnapshot=progressFingerprint();
       const [pdf,json] = await Promise.all([window.AISHA_PDF.createPdf(r),Promise.resolve(new Blob([JSON.stringify(r,null,2)],{type:'application/json'}))]);
       for (const url of state.urls) URL.revokeObjectURL(url); state.urls = [];
       const base = filename(r,false); $('download-pdf').href = urlFor(pdf); $('download-pdf').download = `${base}.pdf`; $('download-json').href = urlFor(json); $('download-json').download = `${base}.json`;
-      window.AISHA_FILES.attach($('download-pdf'),pdf);window.AISHA_FILES.attach($('download-json'),json);
+      rememberReportCopy(pdf,copyKey,copySnapshot);rememberReportCopy(json,copyKey,copySnapshot);window.AISHA_FILES.attach($('download-pdf'),pdf);window.AISHA_FILES.attach($('download-json'),json);
       state.generatedSignatures[state.reportType]=periodSignature(r.reporting_period);
       $('submission-summary').textContent = `${r.partner.code} · ${r.report_type === 'tasks' ? `${r.tasks.length} ${r.tasks.length === 1 ? 'Task' : 'Tasks'} · ${r.work_package_leadership.length} Work Package ${r.work_package_leadership.length === 1 ? 'update' : 'updates'} · ${(r.additional_contributions||[]).length} additional contribution${(r.additional_contributions||[]).length===1?'':'s'}` : 'Communication & Dissemination'}${r.kpi_contributions?.length?` · ${r.kpi_contributions.length} previously reported KPI value${r.kpi_contributions.length===1?'':'s'}`:''} · ${r.reporting_period.selected_months.join(', ')} · ${r.reporting_period.start} to ${r.reporting_period.end} · Report code ${r.report_code} · v${r.revision}`;
       $('review-section').hidden = true; $('submission-section').hidden = false; scrollTo($('submission-section')); $('submission-title').focus({preventScroll:true});

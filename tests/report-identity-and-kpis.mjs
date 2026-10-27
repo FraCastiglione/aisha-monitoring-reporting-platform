@@ -39,7 +39,7 @@ assert.equal(result.reporting_records.length,1);
 assert.equal(result.partner_kpi_contributions.length,1);
 assert.equal(result.partner_kpi_contributions[0].value,3);
 assert(!JSON.stringify(result).includes('contributor'));
-files['shared.json']={...report,partner:{code:'FARI'},report_code:'AISHA-FARI-TASKS-09090909090909090909'};
+files['shared.json']={...report,partner:{code:'UNIBO'},report_code:'AISHA-UNIBO-TASKS-09090909090909090909'};
 const shared=prepare({verified_reports:[...manifest.verified_reports,{file:'shared.json',reviewed_at:'2026-10-21'}]},file=>files[file]);
 assert.equal(shared.shared_activity_review.length,1);
 assert.equal(shared.shared_activity_review[0].activity_id,'EVT-2026-01');
@@ -57,3 +57,34 @@ files['private.json']={...revised,contributor:{email:'private@example.invalid'},
 const clean=prepare({verified_reports:[{file:'private.json',reviewed_at:'2026-10-22'}],reviewed_kpi_contributions:[{report_code:code,revision:2,partner:'IF.E',indicator_id:'ccqf_validation',contribution_id:'MEASURE-1',value:2,unit:'stakeholders',reporting_months:['2026-10'],private_note:'SECRET NOTE'}]},file=>files[file]);assert(!JSON.stringify(clean).includes('SECRET NOTE'));assert(!JSON.stringify(clean).includes('private@example'));
 for(const [id,value,unit]of [['unique_visitors',1.5,'visitors'],['ccqf_validation',-1,'stakeholders'],['dsjp_landing','broken','status']]){assert.throws(()=>prepare({verified_reports:[{file:'private.json',reviewed_at:'2026-10-22'}],reviewed_kpi_contributions:[{report_code:code,revision:2,partner:'IF.E',indicator_id:id,contribution_id:'BAD',value,unit,reporting_months:['2026-10']}]},file=>files[file]),/Invalid reviewed KPI/);}
 console.log('Narrative-free public summaries and AISHA indicator-type validation PASS');
+
+// Preparation must enforce the same listed/voluntary distinction as the builder.
+const prepared = candidate => prepare({verified_reports:[{file:'test.json',reviewed_at:'2026-10-27'}]},()=>candidate);
+for(const partner of ['BOSCH','CEPS','EPRD','RT']){
+  const unlisted={...report,partner:{code:partner},report_code:`AISHA-${partner}-TASKS-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,kpi_contributions:[]};
+  assert.throws(()=>prepared(unlisted),/Invalid Task assignment/);
+  for(const role of ['Named participant','Voluntary associated partner participant','All associated partners participant']){
+    const legacy={...unlisted,tasks:[{...unlisted.tasks[0],partner_role:role}]};
+    assert.equal(prepared(legacy).reporting_records[0].assignment_basis,'voluntary_unlisted');
+  }
+  const current={...unlisted,tasks:[{...unlisted.tasks[0],partner_role:'Task contributor',assignment_basis:'voluntary_unlisted'}]};
+  assert.equal(prepared(current).reporting_records[0].assignment_basis,'voluntary_unlisted');
+}
+const configuration=vm.createContext({window:{}});
+for(const file of ['config.js','project-model.js'])vm.runInContext(fs.readFileSync(path.join(root,'assets',file),'utf8'),configuration);
+const {AISHA_CONFIG:config,AISHA_MODEL:model}=configuration.window;
+const unassigned=config.tasks.find(task=>!model.assigned(task,'IF.E',config)&&model.active(task,6));
+assert.throws(()=>prepared({...report,tasks:[{...report.tasks[0],id:unassigned.id}],kpi_contributions:[]}),/Invalid Task assignment/);
+assert.throws(()=>prepared({...report,tasks:[],additional_contributions:[{kind:'task',id:'T1.1',assignment_basis:'voluntary_unlisted',months:['2026-10'],status:'completed'}],kpi_contributions:[]}),/Invalid voluntary contribution/);
+const voluntary=prepared({...report,tasks:[],additional_contributions:[{kind:'task',id:unassigned.id,assignment_basis:'voluntary_unlisted',months:['2026-10'],status:'completed'}],kpi_contributions:[]});
+assert.equal(voluntary.reporting_records[0].assignment_basis,'voluntary_unlisted');
+// Work Package coverage follows only its active selected months, not the report's outer dates.
+const leadership={...report,partner:{code:'UWK'},report_code:'AISHA-UWK-TASKS-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',reporting_period:{start:'2026-05-01',end:'2028-12-31',selected_months:['2026-05','2027-11','2028-12']},tasks:[],work_package_leadership:[{id:'WP5',work_status:'completed',coverage:{months:['2027-11','2028-12']}}],kpi_contributions:[]};
+assert.deepEqual(prepared(leadership).reporting_records[0].coverage,{start:'2027-11-01',end:'2028-12-31',months:['2027-11','2028-12']});
+console.log('Formal/voluntary assignment safeguards, legacy AP preservation and clipped Work Package coverage PASS');
+const reviewedClaim={report_code:code,revision:1,partner:'IF.E',indicator_id:'unique_visitors',contribution_id:'MEASURE-1',value:2,unit:'visitors',reporting_months:['2026-10']};
+for(const bad of [{reporting_months:[]},{reporting_months:['2026-10','2026-10']},{contribution_id:{private_note:'SECRET'}},{activity_id:{private_note:'SECRET'}},{activity_id:'A private narrative'}]){
+  assert.throws(()=>prepare({verified_reports:[{file:'one.json',reviewed_at:'2026-10-27'}],reviewed_kpi_contributions:[{...reviewedClaim,...bad}]},()=>report),/Invalid reviewed KPI|Invalid shared activity/);
+}
+assert.throws(()=>prepared({...report,kpi_contributions:[{...report.kpi_contributions[0],activity_id:{private_note:'SECRET'}}]}),/Invalid shared activity/);
+console.log('Reviewed KPI month completeness and public identifier privacy guards PASS');
