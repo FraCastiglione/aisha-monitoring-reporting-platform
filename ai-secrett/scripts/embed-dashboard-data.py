@@ -32,3 +32,7 @@ reporting_data = {
     + ");\n",
     encoding="utf-8",
 )
+
+# Keep the browser planning baseline in sync with the authoritative source JSON.
+effort = json.loads((root / "assets" / "staff-effort-data.json").read_text(encoding="utf-8"))
+(root / "assets" / "staff-effort-data.js").write_text("window.SECRETT_EFFORT_DATA = " + json.dumps(effort, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")

@@ -1,10 +1,10 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
 const site=process.argv[2]||require('path').resolve(__dirname,'..');
 const read=p=>fs.readFileSync(site+'/'+p,'utf8');
-class N{constructor(tag){this.tagName=tag;this.children=[];this.childNodes=this.children;this.style={setProperty(){}};this.dataset={};this.listeners={};this.classList={add(){},toggle(){}};this.isConnected=false;}append(...a){this.children.push(...a);}replaceChildren(...a){this.children=a;this.childNodes=a;}setAttribute(k,v){this[k]=v;}addEventListener(t,f){this.listeners[t]=f;}scrollIntoView(){}focus(){}getBoundingClientRect(){return{left:0,top:0,width:100,height:100};}querySelector(q){return walk(this).find(n=>q.startsWith('.')&&n.className?.split(' ').includes(q.slice(1)))||null;}}
+class N{constructor(tag){this.tagName=tag;this.children=[];this.childNodes=this.children;this.style={setProperty(){}};this.dataset={};this.listeners={};this.classList={add(){},toggle(){}};this.isConnected=false;}append(...a){this.children.push(...a);}replaceChildren(...a){this.children=a;this.childNodes=a;}setAttribute(k,v){this[k]=v;}addEventListener(t,f){this.listeners[t]=f;}replaceWith(node){this.replacement=node;}scrollIntoView(){}focus(){}getBoundingClientRect(){return{left:0,top:0,width:100,height:100};}querySelector(q){return walk(this).find(n=>q.startsWith('.')&&n.className?.split(' ').includes(q.slice(1)))||null;}}
 function walk(node){return [node,...(node.children||[]).flatMap(n=>typeof n==='object'?walk(n):[])];}
-const host=new N('main'),ctx={window:{},document:{getElementById(id){return id==='dashboard-content'?host:walk(host).find(n=>n.id===id)||null;},createElement(tag){return new N(tag);}},localStorage:{getItem(){return'[]'},setItem(){}},requestAnimationFrame(){},matchMedia(){return{matches:false}},innerWidth:1024,innerHeight:768,location:{hash:''},CustomEvent:class{},console};ctx.window.dispatchEvent=()=>{};
-for(const p of ['assets/config.js','assets/agreement-content.js','assets/project-model.js','assets/report-identity.js','assets/embedded-data.js'])vm.runInNewContext(read(p),ctx);
+const host=new N('main'),ctx={window:{},document:{getElementById(id){return id==='dashboard-content'?host:walk(host).find(n=>n.id===id)||null;},createElement(tag){return new N(tag);}},localStorage:{getItem(){return'[]'},setItem(){}},requestAnimationFrame(){},matchMedia(){return{matches:false}},innerWidth:1024,innerHeight:768,location:{hash:''},CustomEvent:class{},console};ctx.window.dispatchEvent=()=>{};ctx.Option=class extends N{constructor(text,value){super('option');this.textContent=text;this.value=value;}};
+for(const p of ['assets/config.js','assets/agreement-content.js','assets/project-model.js','assets/report-identity.js','assets/embedded-data.js','assets/staff-effort-data.js','assets/staff-effort-model.js','assets/staff-effort-dashboard.js'])vm.runInNewContext(read(p),ctx);
 const c=ctx.window.SECRETT_CONFIG,a=ctx.window.SECRETT_AGREEMENT,e=ctx.window.SECRETT_EMBEDDED_DATA,cat=e.catalogue,m=ctx.window.SECRETT_MODEL;
 
 for(const [key,path]of [['catalogue','assets/dashboard-catalogue.json'],['snapshot','dashboard-data.json'],['detail','assets/dashboard-detail.json']])assert.deepEqual(JSON.parse(JSON.stringify(e[key])),JSON.parse(read(path)));
@@ -45,3 +45,24 @@ const tooltipSource=read('assets/dashboard.js'),tooltipStart=tooltipSource.index
 vm.runInNewContext(tooltipSource.slice(tooltipStart,tooltipEnd)+'\nwindow.TOOLTIP_TEST=installGanttTooltip;',Object.assign(ctx,{el:(tag,cls,text)=>{const n=new N(tag);n.className=cls;n.textContent=text;return n;}}));
 const tooltipScroller=new N('div'),tooltipSection=new N('section'),focusCell=new N('div');focusCell.dataset.tooltip='WP1 · M50\nRP3 preparation';focusCell.closest=()=>focusCell;tooltipScroller.contains=n=>n===focusCell;ctx.document.activeElement=focusCell;
 ctx.window.TOOLTIP_TEST(tooltipScroller,tooltipSection);tooltipScroller.listeners.focusin({target:focusCell});const tooltip=tooltipSection.children[0];assert.equal(tooltip.hidden,false);tooltipScroller.listeners.scroll();assert.equal(tooltip.hidden,false,'Keyboard tooltip survives automatic scrolling');tooltipSection.listeners.keydown({key:'Escape'});assert.equal(tooltip.hidden,true,'Escape dismisses tooltip');ctx.document.activeElement=null;tooltipScroller.listeners.pointerover({target:focusCell,clientX:10,clientY:10});tooltipScroller.listeners.scroll();assert.equal(tooltip.hidden,true,'Pointer scrolling dismisses tooltip');console.log('Gantt keyboard auto-scroll, Escape and pointer scrolling: PASS');
+
+// Staff effort table: source totals, nested partner/WP/Task rows, monthly detail,
+// reported values and exclusions of obsolete revisions.
+const drawEffort=snapshot=>ctx.window.SECRETT_EFFORT_DASH.render(c,m,snapshot);
+let effort=drawEffort(e.snapshot);
+let effortNodes=walk(effort);
+assert.equal(effortNodes.filter(n=>n.className==='effort-row-partner').length,23);
+assert.equal(effortNodes.find(n=>n.className==='effort-stats').children.length,2);
+assert(!effortNodes.some(n=>['effort-controls','effort-legend'].includes(n.className)));
+assert(!effortNodes.some(n=>n.textContent==='Balance'));
+const total=effortNodes.find(n=>n.tagName==='tfoot');assert(walk(total).some(n=>n.textContent==='/ 2,130.63'));
+const uveg=effortNodes.find(n=>n.className==='effort-row-partner');walk(uveg).find(n=>n.tagName==='button').onclick();effort=effort.replacement;
+assert.equal(walk(effort).filter(n=>n.className==='effort-row-wp').length,12);
+const firstWp=walk(effort).find(n=>n.className==='effort-row-wp');walk(firstWp).find(n=>n.tagName==='button').onclick();effort=effort.replacement;
+assert.equal(walk(effort).filter(n=>n.className==='effort-row-task').length,4);
+const firstTask=walk(effort).find(n=>n.className==='effort-row-task');walk(firstTask).find(n=>n.tagName==='button').onclick();effort=effort.replacement;
+const monthDetail=walk(effort).find(n=>n.className==='effort-month-detail');assert.equal(walk(monthDetail).filter(n=>n.tagName==='tr').length,8);
+const staffCode='AISECRETT-UVEG-TASKS-0123456789ABCDEF0123456789ABCDEF';
+const seeded={...e.snapshot,report_registry:[{report_code:staffCode,revision:2,status:'verified',partner:'UVEG',report_type:'tasks',selected_months:['2025-10']}],staff_effort_records:[{report_code:staffCode,revision:1,status:'verified',partner:'UVEG',scope:'task',id:'T1.1',wp:'WP1',month:'2025-10',pm:'99.0000'},{report_code:staffCode,revision:2,status:'verified',partner:'UVEG',scope:'task',id:'T1.1',wp:'WP1',month:'2025-10',pm:'2.0000'}]};
+effort=drawEffort(seeded);const texts=walk(effort).map(n=>n.textContent);assert(texts.includes('2.00 PM'));assert(!texts.includes('99.00 PM'));assert(walk(effort).filter(n=>n.tagName==='strong'&&n.textContent==='2.00').length>0);
+console.log('Staff effort dashboard totals, expandable rows, monthly detail and current-revision records: PASS');

@@ -17,3 +17,10 @@ This folder is a dedicated path in the existing GitHub Pages repository. The AIS
 The October 2026 dashboard shows M13. Its status evidence is the user update of 6 October 2026. The full Gantt covers 50 months, including RP1 preparation at M19–20, RP2 at M37–38 and RP3 at M49–50. It shows the Valencia October 2025 kick-off, JOIST Larissa April 2026 meeting, and LPGA Las Palmas October 2026 meeting at month precision. Internal drafts are exactly 30 calendar days before the due date, using month-end for Agreement due months. Task report deadlines follow the coordinator Task-end planning convention. The current audit is in `AUDIT-2026-10-06.md`.
 
 The dashboard embeds its three JSON data files in `assets/dashboard.js` and `assets/embedded-data.js` so it can display without additional browser requests. After editing any dashboard JSON file, run `python3 scripts/embed-dashboard-data.py` from this folder and update the script version queries in `index.html`. PDF font and logo bytes are bundled in `assets/pdf-assets.js`; regenerate them with `python3 scripts/embed-pdf-assets.py` after changing either asset. Run `node tests/platform-audit.mjs` and `node tests/dashboard-functional-audit.cjs` with Node.js 24 or later before publishing.
+
+
+## Staff effort preview (28 October 2026)
+
+The local preview replaces visible Task raw-cost monitoring with person-month reporting and adds an expandable Staff effort dashboard. The source baseline is the Grant Agreement table in Part A pp. 20–22 (PDF pp. 80–82), with internal equal Task/month shares confirmed by the coordinator. New Task files use schema 2.5; older files remain importable and EUR values are never converted to PM. Work above plan is allowed. No partner effort reports have yet been incorporated into the snapshot.
+
+See [the staff effort contract](docs/staff-effort.md) for formulas, rounding, import/revision protections and the coordinator update workflow, and [the preview audit](AUDIT-2026-10-28-staff-effort.md) for verification evidence. These changes are preview only.

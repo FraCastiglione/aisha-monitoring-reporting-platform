@@ -2,6 +2,12 @@
 // Usage: node prepare-reviewed-reports.mjs manifest.json output.json
 import fs from 'node:fs';
 import path from 'node:path';
+import vm from 'node:vm';
+const effortContext=vm.createContext({window:{},Intl});
+const assetRoot=new URL('../assets/',import.meta.url);
+for(const file of ['config.js','project-model.js','staff-effort-model.js'])vm.runInContext(fs.readFileSync(new URL(file,assetRoot),'utf8'),effortContext);
+const effortApi=effortContext.window.SECRETT_EFFORT;
+const effortModel=effortApi.create(effortContext.window.SECRETT_CONFIG,effortContext.window.SECRETT_MODEL,JSON.parse(fs.readFileSync(new URL('staff-effort-data.json',assetRoot),'utf8')));
 
 export function prepare(manifest,readReport){
   if(!Array.isArray(manifest?.verified_reports))throw new Error('Add a verified_reports array to the manifest.');
@@ -17,17 +23,19 @@ export function prepare(manifest,readReport){
     families.set(code,{partner,type,period});
     const key=`${code}:v${rev}`,raw=JSON.stringify(report),previous=seenVersions.get(key);
     if(previous&&previous.raw!==raw)throw new Error(`Conflicting copies of ${key}.`);
-    if(!previous)seenVersions.set(key,{report,reviewed_at:item.reviewed_at,raw});
+    if(!previous)seenVersions.set(key,{report,reviewed_at:item.reviewed_at,raw,allow_effort_removals:item.allow_effort_removals===true});else if(item.allow_effort_removals===true)previous.allow_effort_removals=true;
   }
   const latest=new Map();
   for(const entry of seenVersions.values()){const code=entry.report.report_code,previous=latest.get(code);if(!previous||entry.report.revision>previous.report.revision)latest.set(code,entry);}
+  for(const [code,current] of latest){const currentKeys=new Set((current.report.staff_effort?.rows||[]).map(effortApi.key));const omitted=[...seenVersions.values()].filter(entry=>entry.report.report_code===code&&entry.report.revision<current.report.revision).flatMap(entry=>entry.report.staff_effort?.rows||[]).filter(row=>!currentKeys.has(effortApi.key(row)));if(omitted.length&&!current.allow_effort_removals)throw new Error(`Revision ${current.report.revision} of ${code} removes previous staff effort entries. Review the omissions and explicitly set allow_effort_removals for that verified file if intended.`);}
   const reports=[...latest.values()].sort((a,b)=>a.report.report_code.localeCompare(b.report.report_code));
-  const report_registry=[],reporting_records=[],partner_kpi_contributions=[],coverageSeen=new Map();
+  const report_registry=[],reporting_records=[],partner_kpi_contributions=[],staff_effort_records=[],coverageSeen=new Map(),effortCoverage=new Map();
   for(const {report,reviewed_at} of reports){
     const {report_code,revision,report_type,partner,reporting_period}=report;
     const base={report_code,revision,partner:partner.code,report_type,status:'verified'};
     report_registry.push({...base,reviewed_at,selected_months:reporting_period.selected_months});
     if(report_type==='tasks'){
+      for(const row of effortModel.validateReport(report,{complete:report.schema_version==='2.5'})){const key=`${partner.code}:${effortApi.key(row)}`,previous=effortCoverage.get(key);if(previous&&previous!==report_code)throw new Error(`Overlapping staff effort ${key} in ${previous} and ${report_code}.`);effortCoverage.set(key,report_code);const {note,...publicEffort}=row;staff_effort_records.push({...publicEffort,...base});}
       for(const task of report.tasks||[]){
         if(!task.id||!Array.isArray(task.coverage?.months)||!task.coverage.months.length)throw new Error(`Invalid Task coverage in ${report_code}.`);
         for(const month of task.coverage.months){const key=`${partner.code}:${task.id}:${month}`,previous=coverageSeen.get(key);if(previous&&previous!==report_code)throw new Error(`Overlapping Task coverage ${key} in ${previous} and ${report_code}. Review before counting.`);coverageSeen.set(key,report_code);}
@@ -58,7 +66,8 @@ export function prepare(manifest,readReport){
     const group=sharedActivities.get(activity)||[];group.push({report_code:item.report_code,partner:item.partner});sharedActivities.set(activity,group);
   }
   const shared_activity_review=[...sharedActivities].filter(([,entries])=>entries.length>1).map(([key,entries])=>({indicator_id:key.slice(0,key.indexOf(':')),activity_id:key.slice(key.indexOf(':')+1),reported_by:entries}));
-  return {report_registry,reporting_records,partner_kpi_contributions,shared_activity_review};
+  const effortCodes=new Set(staff_effort_records.map(row=>row.report_code)),effort_as_of=report_registry.filter(row=>effortCodes.has(row.report_code)).map(row=>row.reviewed_at).sort().at(-1)||null;
+  return {report_registry,reporting_records,partner_kpi_contributions,staff_effort_records,effort_as_of,shared_activity_review};
 }
 
 if(process.argv[1]&&path.resolve(process.argv[1])===decodeURI(new URL(import.meta.url).pathname)){

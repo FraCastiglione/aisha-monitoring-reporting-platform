@@ -7,6 +7,7 @@
   const taskForm = $('task-form');
   const commForm = $('communication-form');
   const state = { partner: null, contributor: null, reportType: null, reportCodes:{tasks:null,communication:null}, generatedSignatures:{tasks:null,communication:null}, revisionsByType:{tasks:1,communication:1}, selected: new Map(), wpUpdates: new Map(), extras: [], kpis: new Map(), kpisByType:{tasks:new Map(),communication:new Map()}, selectedMonths: new Set(), commMonths: new Set(), lastPeriod: null, editing: null, wpEditing: null, extraEditing: null, editWasNew: false, revision: 1, reviewed: null, urls: [], taskPdfUrl: null };
+  const effortUI=window.SECRETT_EFFORT_UI.connect({state,config,model,period,renderOverview,extraDisplayName});
   let kpiCatalogue=[];
   const communicationKpis=new Set();
   const kpiModel=window.SECRETT_KPI_MODEL;
@@ -259,7 +260,7 @@
     const list = $('task-list'); list.replaceChildren();
     const p = period(); const rangeIssue = !p ? 'Select one or more project months on the timeline.' : '';
     const eligible = rangeIssue ? [] : selectedInRange();
-    if (rangeIssue) { $('task-month-summary').textContent = rangeIssue; $('selected-task-summary').textContent = ''; $('wp-leader-section').hidden = true; renderExtras(null); return; }
+    if (rangeIssue) { const effortSummary=document.getElementById('report-effort-summary');if(effortSummary)effortSummary.hidden=true; $('task-month-summary').textContent = rangeIssue; $('selected-task-summary').textContent = ''; $('wp-leader-section').hidden = true; renderExtras(null); return; }
     state.lastPeriod = p;
     const wpCount = new Set(eligible.map(t => t.wp)).size;
     const availability = eligible.length ? `You can report on ${eligible.length} scheduled ${eligible.length === 1 ? 'Task' : 'Tasks'} across ${wpCount} Work ${wpCount === 1 ? 'Package' : 'Packages'}.` : 'No scheduled Tasks are available for the selected months.';
@@ -296,10 +297,11 @@
     }
     renderWpLeadership(p);
     renderExtras(p);
+    effortUI.decorate();
     if (outside.length) {
       const section = textNode('section', '', 'task-package out-of-range');
       section.append(textNode('h4', 'Selected Tasks outside these dates'));
-      for (const id of outside) { const row = textNode('div', `${id} — ${taskById(id)?.title || ''}`, 'outside-row'); const remove = textNode('button', 'Remove', 'text-button'); remove.type = 'button'; remove.addEventListener('click', () => { state.selected.delete(id); renderOverview(); }); row.append(remove); section.append(row); }
+      for (const id of outside) { const row = textNode('div', `${id} — ${taskById(id)?.title || ''}`, 'outside-row'); const remove = textNode('button', 'Remove', 'text-button'); remove.type = 'button'; remove.addEventListener('click', () => { state.selected.delete(id); effortUI.clear('task',id); renderOverview(); }); row.append(remove); section.append(row); }
       list.append(section);
     }
   }
@@ -332,7 +334,7 @@
         if (!selected) { const noWork = textNode('button', 'Declare no work carried out', 'button button-quiet'); noWork.type = 'button'; noWork.addEventListener('click', () => setNoWork(task)); actions.append(noWork); }
         if (selected) {
           if (chosenCoverage.status !== 'no_work') { const noWork = textNode('button', 'Declare no work carried out', 'button button-quiet'); noWork.type = 'button'; noWork.addEventListener('click', () => setNoWork(task)); actions.append(noWork); }
-          const remove = textNode('button', 'Remove Task', 'button button-quiet'); remove.type = 'button'; remove.addEventListener('click', () => { state.selected.delete(task.id); renderOverview(); }); actions.append(remove);
+          const remove = textNode('button', 'Remove Task', 'button button-quiet'); remove.type = 'button'; remove.addEventListener('click', () => { state.selected.delete(task.id); effortUI.clear('task',task.id); renderOverview(); }); actions.append(remove);
         }
         card.append(actions); return card;
   }
@@ -345,7 +347,7 @@
       card.append(textNode('p',`${entry.kind==='task'?'Task':entry.kind==='work_package'?'Work Package':'Other project work'} · ${monthCodes(entry.months)} · ${entry.status==='completed'?'Report complete':entry.description||entry.results?'Draft in progress':'Still to finish'}`,'task-chosen-coverage'));
       if(entry.description||entry.results)card.append(textNode('p',(entry.description||entry.results).slice(0,240),'extra-preview'));
       const actions=textNode('div','','task-card-actions'),edit=textNode('button',entry.status==='completed'?'Edit contribution':'Continue report','button button-secondary');edit.type='button';edit.addEventListener('click',()=>openExtra(entry));actions.append(edit);
-      const remove=textNode('button','Remove contribution','button button-quiet');remove.type='button';remove.addEventListener('click',()=>{state.extras=state.extras.filter(row=>row!==entry);renderOverview();});actions.append(remove);card.append(actions);host.append(card);}
+      const remove=textNode('button','Remove contribution','button button-quiet');remove.type='button';remove.addEventListener('click',()=>{state.extras=state.extras.filter(row=>row!==entry);if(entry.kind!=='work_package')effortUI.clear(entry.kind==='task'?'task':'other',entry.id);else message('Work Package narrative contribution removed. Its independent staff effort record is preserved.');renderOverview();});actions.append(remove);card.append(actions);host.append(card);}
     let available=0;
     for(const [kind,items,container,title] of [['task',config.tasks,$('extra-task-options'),'Extra Tasks'],['work_package',config.workPackages,$('extra-wp-options'),'Extra Work Packages']]){
       container.replaceChildren();const group=document.createElement('details');group.className='extra-pick-group';group.append(textNode('summary',title));const choices=textNode('div','','extra-pick-options');
@@ -375,10 +377,10 @@
     }
     updateExtraMonthStatus();
     for(const [id,key] of [['extra-description','description'],['extra-results','results'],['extra-difficulties','difficulties'],['extra-upcoming','upcoming'],['extra-evidence','evidence']])$(id).value=entry[key]||'';
-    $('extra-editor-message').hidden=true;setExtraEditor(true);scrollTo($('extra-editor'));
+    $('extra-editor-message').hidden=true;setExtraEditor(true);effortUI.extraEditor();scrollTo($('extra-editor'));
   }
   function updateExtraMonthStatus(){const buttons=[...$('extra-edit-months').querySelectorAll('button:not(:disabled)')],selected=buttons.filter(button=>button.getAttribute('aria-pressed')==='true').length;$('extra-month-status').textContent=buttons.length?`${selected} of ${buttons.length} available month${buttons.length===1?'':'s'} covered.`:'No months are available here. Change the main report timeline.';}
-  function setExtraMonths(months){for(const button of $('extra-edit-months').querySelectorAll('button:not(:disabled)')){const selected=months.has(button.dataset.month);button.setAttribute('aria-pressed',String(selected));button.classList.toggle('is-in-range',selected);}captureExtra();updateExtraMonthStatus();}
+  function setExtraMonths(months){for(const button of $('extra-edit-months').querySelectorAll('button:not(:disabled)')){const selected=months.has(button.dataset.month);button.setAttribute('aria-pressed',String(selected));button.classList.toggle('is-in-range',selected);}captureExtra();updateExtraMonthStatus();effortUI.extraEditor();}
   function toggleExtraMonth(month){const selected=new Set(state.extraEditing?.months||[]);if(selected.has(month))selected.delete(month);else selected.add(month);setExtraMonths(selected);}
   let extraMonthDrag=null;
   window.addEventListener('pointermove',event=>{if(!extraMonthDrag)return;const target=document.elementFromPoint(event.clientX,event.clientY)?.closest('#extra-edit-months button.timeline-month:not(:disabled)');if(!target||target.dataset.month===extraMonthDrag.last)return;extraMonthDrag.last=target.dataset.month;extraMonthDrag.moved=true;const start=extraMonthDrag.start,end=extraMonthDrag.last,range=[...$('extra-edit-months').querySelectorAll('button:not(:disabled)')].map(button=>button.dataset.month).filter(month=>month>=(start<end?start:end)&&month<=(start>end?start:end)),selected=new Set(extraMonthDrag.base);for(const month of range)if(extraMonthDrag.remove)selected.delete(month);else selected.add(month);setExtraMonths(selected);});
@@ -390,7 +392,7 @@
   $('extra-editor').addEventListener('change',captureExtra);
   $('extra-back').addEventListener('click',()=>{captureExtra();state.extraEditing=null;setExtraEditor(false);renderOverview();scrollTo($('extra-contributions'));});
   $('extra-back-top').addEventListener('click',()=>$('extra-back').click());
-  $('extra-done').addEventListener('click',()=>{captureExtra();const entry=state.extraEditing;if(entry.kind==='general'&&!entry.title){$('extra-editor-message').textContent='Give this project contribution a short title.';$('extra-editor-message').hidden=false;$('extra-general-title').focus();return;}if(!entry.months.length||(!entry.description&&!entry.results)){$('extra-editor-message').textContent='Choose at least one month and describe activities or results before completing this contribution.';$('extra-editor-message').hidden=false;return;}entry.status='completed';state.extraEditing=null;setExtraEditor(false);renderOverview();scrollTo($('extra-contributions'));});
+  $('extra-done').addEventListener('click',()=>{captureExtra();const entry=state.extraEditing;if(entry.kind==='general'&&!entry.title){$('extra-editor-message').textContent='Give this project contribution a short title.';$('extra-editor-message').hidden=false;$('extra-general-title').focus();return;}if(!entry.months.length||(!entry.description&&!entry.results)){$('extra-editor-message').textContent='Choose at least one month and describe activities or results before completing this contribution.';$('extra-editor-message').hidden=false;return;}const effortIssue=effortUI.extraIssue(entry);if(effortIssue){$('extra-editor-message').textContent=effortIssue;$('extra-editor-message').hidden=false;return;}entry.status='completed';state.extraEditing=null;setExtraEditor(false);renderOverview();scrollTo($('extra-contributions'));});
   $('extra-download-draft').addEventListener('click',()=>{captureExtra();$('open-draft-downloads').click();});
   $('extra-save-browser').addEventListener('click',()=>{captureExtra();$('save-draft').click();$('extra-editor-message').textContent=$('draft-message').textContent;$('extra-editor-message').hidden=false;});
   $('add-extra').addEventListener('click',()=>{
@@ -456,7 +458,7 @@
       }
       host.append(row);
     }
-    $('wp-editor-message').hidden=true; setWpEditor(true); scrollTo($('wp-leader-form'));
+    $('wp-editor-message').hidden=true; setWpEditor(true); effortUI.wpEditor(); scrollTo($('wp-leader-form'));
   }
   async function setWpNoWork(wp) {
     const existing = state.wpUpdates.get(wp.id);
@@ -485,8 +487,9 @@
   async function setNoWork(task) {
     const previousTop = taskCard(task.id)?.getBoundingClientRect().top ?? null;
     const existing = state.selected.get(task.id);
-    if (existing && hasContribution(existing) && !await confirmAction('Declare no work carried out', `This Task will be declared as no work carried out. The contribution already entered for ${task.id} will be cleared.`, 'Declare no work')) return;
+    if (existing && (hasContribution(existing)||effortUI.hasTask(task.id)) && !await confirmAction('Declare no work carried out', `This Task will be declared as no work carried out. The contribution already entered for ${task.id} will be cleared.`, 'Declare no work')) return;
     const p = period(), coverage = model.taskCoverage(config, task, p.start, p.end, p.selected_months);
+    effortUI.clear('task',task.id);
     state.selected.set(task.id, { ...emptyTask(), status: 'no_work', coverage_start: existing?.coverage_start || coverage.start, coverage_end: existing?.coverage_end || coverage.end });
     state.editing = null; setTaskEditor(false); renderOverview(); keepTaskInView(task.id, previousTop);
   }
@@ -556,7 +559,7 @@
     $('task-source').textContent = `Task description: Grant Agreement, Annex 1, PDF p. ${task.sourcePage}. Participants and window: Consortium Agreement §4.5.5, PDF pp. 15–18; RCE commitments: Attachment 5, PDF p. 61${task.timingBasis === 'work_package' ? '; activity window inherited from WP1' : ''}`;
     for (const id of ['task-cover-start','task-cover-end']) { $(id).min = coverage.start; $(id).max = coverage.end; }
     updateTaskCoverageSummary();
-    setTaskEditor(true); scrollTo(taskForm);
+    setTaskEditor(true); effortUI.taskEditor(); scrollTo(taskForm);
   }
   function updateConditions() {
     const issue = radio(taskForm, 'significant_issue') === 'yes';
@@ -580,8 +583,8 @@
     el.querySelector('.remove-event').addEventListener('click', () => { el.remove(); if (radio(commForm, 'events_organised') === 'yes' && !$('comm-events-list').children.length) addEvent(); });
     $('comm-events-list').append(el);
   }
-  taskForm.addEventListener('input', event => { captureTask(); if (event.target.matches('#task-cover-start,#task-cover-end')) updateTaskCoverageSummary(); clearError(); $('task-editor-message').hidden = true; });
-  taskForm.addEventListener('change', event => { updateConditions(); captureTask(); if (event.target.matches('#task-cover-start,#task-cover-end')) updateTaskCoverageSummary(); clearError(); $('task-editor-message').hidden = true; });
+  taskForm.addEventListener('input', event => { captureTask(); if (event.target.matches('#task-cover-start,#task-cover-end')) {updateTaskCoverageSummary();effortUI.taskEditor();} clearError(); $('task-editor-message').hidden = true; });
+  taskForm.addEventListener('change', event => { updateConditions(); captureTask(); if (event.target.matches('#task-cover-start,#task-cover-end')) {updateTaskCoverageSummary();effortUI.taskEditor();} clearError(); $('task-editor-message').hidden = true; });
   commForm.addEventListener('input', () => {clearError();updateCommunicationQuestionErrors();updateCommunicationCountErrors();});
   commForm.addEventListener('change', updateConditions);
   commForm.addEventListener('reset',()=>{showCommunicationQuestionErrors=false;showCommunicationCountErrors=false;setTimeout(()=>{updateCommunicationQuestionErrors();updateCommunicationCountErrors();},0);});
@@ -590,14 +593,15 @@
   $('comm-clear-months').addEventListener('click', () => setCommunicationMonths(new Set()));
   $('done-task').addEventListener('click', () => {
     captureTask(); const answer = state.selected.get(state.editing.id);
-    if (!hasContribution(answer) && answer.status !== 'no_work') { $('task-editor-message').textContent = 'Describe a contribution, choose “No work carried out”, or return to the overview and leave this Task unfinished.'; $('task-editor-message').hidden = false; return; }
+    if (!hasContribution(answer) && !effortUI.hasTask(state.editing.id) && answer.status !== 'no_work') { $('task-editor-message').textContent = 'Describe a contribution, choose “No work carried out”, or return to the overview and leave this Task unfinished.'; $('task-editor-message').hidden = false; return; }
     if (!validIndividualCoverage(state.editing.id,answer,period())) { $('task-editor-message').textContent = 'Set valid Task dates within the selected months.'; $('task-editor-message').hidden = false; scrollTo($('task-dates-details')); return; }
     const issue = taskAnswerIssue(state.editing.id,answer); if (issue) { $('task-editor-message').textContent = issue; $('task-editor-message').hidden = false; return; }
+    const effortIssue=effortUI.taskIssue(state.editing.id);if(effortIssue){$('task-editor-message').textContent=effortIssue;$('task-editor-message').hidden=false;return;}
     answer.status = answer.status === 'no_work' ? 'no_work' : 'completed'; const taskId = state.editing.id; state.editing = null; setTaskEditor(false); renderOverview(); keepTaskInView(taskId);
   });
   $('back-from-task').addEventListener('click', () => {
     captureTask(); const answer = state.selected.get(state.editing.id);
-    if (state.editWasNew && !hasContribution(answer)) state.selected.delete(state.editing.id);
+    if (state.editWasNew && !hasContribution(answer)&&!effortUI.hasTask(state.editing.id)) state.selected.delete(state.editing.id);
     state.editing = null; setTaskEditor(false); renderOverview(); scrollTo($('task-picker'));
   });
   $('task-top-back').addEventListener('click', () => $('back-from-task').click());
@@ -621,7 +625,7 @@
     reconcileSelectedCoverage(oldPeriod,period());
     renderOverview();
   });
-  window.addEventListener('secrett:contributor-ready', event => { if (state.partner && state.partner.code !== event.detail.partner.code) { state.selected = new Map(); state.wpUpdates=new Map(); state.extras=[];state.extraEditing=null;state.reportCodes={tasks:null,communication:null};state.generatedSignatures={tasks:null,communication:null};state.revisionsByType={tasks:1,communication:1};state.kpisByType={tasks:new Map(),communication:new Map()}; state.kpis=new Map(); state.selectedMonths = new Set(); state.commMonths = new Set(); state.lastPeriod = null; state.reportType = null; state.revision = 1; state.reviewed = null; state.editing = null; state.wpEditing = null; $('report-revision').value = '1'; $('report-start').value = ''; $('report-end').value = ''; commForm.reset(); state.commArticles=[]; state.commArticleNote=''; $('comm-events-list').replaceChildren(); $('comm-reach-unknown').checked = false; $('comm-enrolments-unknown').checked = false; updateConditions(); for (const url of state.urls) URL.revokeObjectURL(url); state.urls = []; if (state.taskPdfUrl) URL.revokeObjectURL(state.taskPdfUrl); state.taskPdfUrl = null; for (const dialog of document.querySelectorAll('dialog[open]')) dialog.close(); } state.partner = event.detail.partner; state.contributor = event.detail.contributor; $('report-workspace').hidden = true; $('review-section').hidden = true; $('submission-section').hidden = true; });
+  window.addEventListener('secrett:contributor-ready', event => { if (state.partner && state.partner.code !== event.detail.partner.code) { state.selected = new Map(); effortUI.reset(); state.wpUpdates=new Map(); state.extras=[];state.extraEditing=null;state.reportCodes={tasks:null,communication:null};state.generatedSignatures={tasks:null,communication:null};state.revisionsByType={tasks:1,communication:1};state.kpisByType={tasks:new Map(),communication:new Map()}; state.kpis=new Map(); state.selectedMonths = new Set(); state.commMonths = new Set(); state.lastPeriod = null; state.reportType = null; state.revision = 1; state.reviewed = null; state.editing = null; state.wpEditing = null; $('report-revision').value = '1'; $('report-start').value = ''; $('report-end').value = ''; commForm.reset(); state.commArticles=[]; state.commArticleNote=''; $('comm-events-list').replaceChildren(); $('comm-reach-unknown').checked = false; $('comm-enrolments-unknown').checked = false; updateConditions(); for (const url of state.urls) URL.revokeObjectURL(url); state.urls = []; if (state.taskPdfUrl) URL.revokeObjectURL(state.taskPdfUrl); state.taskPdfUrl = null; for (const dialog of document.querySelectorAll('dialog[open]')) dialog.close(); } state.partner = event.detail.partner; state.contributor = event.detail.contributor; $('report-workspace').hidden = true; $('review-section').hidden = true; $('submission-section').hidden = true; });
   window.addEventListener('secrett:edit-details', () => { $('report-workspace').hidden = true; $('review-section').hidden = true; $('submission-section').hidden = true; });
   window.addEventListener('secrett:report-selected', event => {
     const chosenType = event.detail.reportType === 'task' ? 'tasks' : 'communication';
@@ -656,7 +660,7 @@
       const p = period();
       if (!p) return fail('Choose valid reporting dates and selected months within the project.', $('report-start'));
       const eligible = new Set(selectedInRange().map(t => t.id));
-      if (!state.selected.size && !state.wpUpdates.size && !state.extras.length && !state.kpis.size) return fail('Add a Task, Work Package update or additional contribution.');
+      if (!state.selected.size && !state.wpUpdates.size && !state.extras.length && !state.kpis.size && !effortUI.hasCurrentRows()) return fail('Add a Task, Work Package update or additional contribution.');
       if ([...state.selected.keys()].some(id => !eligible.has(id) && !model.taskCoverage(config,taskById(id),p.start,p.end,p.selected_months))) return fail('Remove selected Tasks outside the report dates, or change the dates.');
       for (const [id, answer] of state.selected) {
         const allowed = model.taskCoverage(config, taskById(id), p.start, p.end, p.selected_months);
@@ -673,6 +677,7 @@
         if (entry.status === 'no_work' && hasWpContribution(entry)) return fail(`Clear the leadership update for ${id} before declaring no Work Package work.`);
       }
       for(const entry of state.extras){const item=entry.kind==='task'?taskById(entry.id):entry.kind==='work_package'?wpById(entry.id):null;if((entry.kind==='general'?!entry.title?.trim()||entry.title.length>200:!item)||entry.status!=='completed'||!(entry.description||entry.results)||!entry.months.length||entry.months.some(m=>!p.selected_months.includes(m)||(item&&!model.active(item,model.projectMonth(config,m))))||(entry.kind==='task'?model.assigned(item,state.partner.code,config):entry.kind==='work_package'&&item.lead===state.partner.code))return fail(`Finish additional contribution “${extraDisplayName(entry)}”, or remove it before generating the report.`);}
+      try{effortUI.validate(record('submission'));}catch(error){return fail(error.message);}
       return true;
     }
     if (!communicationPeriod()) return fail('Choose one or more project months for the communication report.', $('comm-month-timeline').querySelector('button'));
@@ -717,13 +722,14 @@
     const tasks = state.reportType === 'tasks';
     const p = tasks ? (period() || { start: value('report-start'), end: value('report-end'), start_project_month: null, end_project_month: null, start_code: null, end_code: null, selected_months: sortedMonths() }) : (communicationPeriod() || { start: '', end: '', start_project_month: null, end_project_month: null, start_code: null, end_code: null, selected_months: [] });
     const key = tasks ? `${state.partner.code}:TASKS:${p.start}:${p.end}` : `${state.partner.code}:COMM:${p.start}:${p.end}:${p.selected_months.join(',')}`;
-    const base = { schema_version: tasks ? '2.4' : '1.4', project: 'AI-SECRETT', document_kind: kind, report_type: tasks ? 'tasks' : 'communication', report_key: key, report_code:reportCode(), revision: state.revision, partner: { code: state.partner.code, name: state.partner.name, kind: state.partner.kind || 'beneficiary' }, contributor: { ...state.contributor }, reporting_period: p, generated_at: kind === 'submission' ? new Date().toISOString() : null, kpi_contributions:[...state.kpis.values()] };
+    const base = { schema_version: tasks ? '2.5' : '1.4', project: 'AI-SECRETT', document_kind: kind, report_type: tasks ? 'tasks' : 'communication', report_key: key, report_code:reportCode(), revision: state.revision, partner: { code: state.partner.code, name: state.partner.name, kind: state.partner.kind || 'beneficiary' }, contributor: { ...state.contributor }, reporting_period: p, generated_at: kind === 'submission' ? new Date().toISOString() : null, kpi_contributions:[...state.kpis.values()] };
     if (tasks) {
       base.tasks = [...state.selected].map(([id, answers]) => { const task = taskById(id); const months = p.selected_months.filter(m => m >= answers.coverage_start.slice(0,7) && m <= answers.coverage_end.slice(0,7) && model.active(task,model.projectMonth(config,m))); return { id, title: task.title, work_package: task.wp, task_lead: task.lead, partner_role: !model.assigned(task,state.partner.code,config)||state.partner.kind==='associated_partner'?'Task contributor':model.role(task, state.partner.code, config), ...(!model.assigned(task,state.partner.code,config)?{assignment_basis:'voluntary_unlisted'}:{}), work_status: answers.status || 'draft', coverage: { start: answers.coverage_start, end: answers.coverage_end, months }, agreement_source_page: task.sourcePage, answers: kind === 'draft' ? { ...answers } : finalTaskAnswers(answers) }; });
       base.work_package_leadership=[...state.wpUpdates].map(([id,entry])=>{const wp=wpById(id);return {id,title:wp.title,leader:wp.lead,work_status:entry.status,coverage:{months:activeWpMonths(wp,p)},answers:{progress:entry.progress,coordination:entry.coordination,difficulties:entry.difficulties,next:entry.next,support:entry.support},task_updates:Object.entries(entry.task_updates).filter(([taskId])=>{const t=taskById(taskId);return t && p.selected_months.some(m=>model.active(t,model.projectMonth(config,m)));}).map(([taskId,row])=>({id:taskId,title:taskById(taskId).title,task_lead:taskById(taskId).lead,...row}))};});
       base.additional_contributions=state.extras.map(entry=>({...entry,title:entry.kind==='general'?entry.title:(entry.kind==='task'?taskById(entry.id):wpById(entry.id)).title,assignment_basis:'voluntary_unlisted'}));
     }
     else base.answers = communicationAnswers();
+    if(tasks)effortUI.attach(base);
     if (kind === 'draft') { base.saved_at = new Date().toISOString(); if (!tasks) base.form_state = commSnapshot(); }
     const checkText = object => { for (const [key,entry] of Object.entries(object || {})) { if (typeof entry === 'string' && entry.length > 100000 && !(tasks && (taskNarrativeFields.has(key) || (key === 'note' && object.currency === 'EUR')))) throw new Error('Keep other report answers within 100,000 characters.'); if (entry && typeof entry === 'object') checkText(entry); } };
     checkText(base);
@@ -754,8 +760,8 @@
     $('individual-pdf-description').textContent = `Save ${id} — ${taskById(id).title}${answer.status === 'draft' ? ' as a draft' : ''} as a readable PDF or editable JSON. Both files contain only this Task; the JSON can be imported later.`;
     dialog.showModal();
     try {
-      const editable=record('draft');editable.tasks=editable.tasks.filter(item=>item.id===id);editable.work_package_leadership=[];editable.additional_contributions=[];editable.kpi_contributions=[];individualTaskJson=editable;individualTaskJsonName=`AI-SECRETT_${safe(state.partner.code)}_${id}_${p.start}_${p.end}_INDIVIDUAL_TASK_DRAFT.json`;$('download-individual-json').disabled=false;
-      const r = record('submission'); r.tasks = r.tasks.filter(item => item.id === id); r.work_package_leadership=[]; r.additional_contributions=[];r.kpi_contributions=[]; r.document_kind = 'individual_task_copy'; r.pdf_kind = 'individual_task'; r.generated_at = new Date().toISOString();
+      const editable=record('draft');editable.tasks=editable.tasks.filter(item=>item.id===id);editable.work_package_leadership=[];editable.additional_contributions=[];editable.kpi_contributions=[];editable.staff_effort=effortUI.select(editable,row=>row.scope==='task'&&row.id===id);individualTaskJson=editable;individualTaskJsonName=`AI-SECRETT_${safe(state.partner.code)}_${id}_${p.start}_${p.end}_INDIVIDUAL_TASK_DRAFT.json`;$('download-individual-json').disabled=false;
+      const r = record('submission'); r.tasks = r.tasks.filter(item => item.id === id); r.work_package_leadership=[]; r.additional_contributions=[];r.kpi_contributions=[];r.staff_effort=effortUI.select(r,row=>row.scope==='task'&&row.id===id); r.document_kind = 'individual_task_copy'; r.pdf_kind = 'individual_task'; r.generated_at = new Date().toISOString();
       const blob=await window.SECRETT_PDF.createPdf(r);
       state.taskPdfUrl = URL.createObjectURL(blob);
       link.href = state.taskPdfUrl; link.download = `AI-SECRETT_${safe(state.partner.code)}_${id}_${p.start}_${p.end}_INDIVIDUAL_TASK_REPORT.pdf`; link.textContent = 'Download PDF'; link.setAttribute('aria-disabled','false');
@@ -785,7 +791,7 @@
     return { status, activities_carried_out:a.activities_carried_out, results_achieved:a.results_achieved, difficulties_encountered:a.difficulties_encountered, raw_costs:cost.amount || '', raw_costs_note:cost.note, upcoming_activities:a.upcoming_activities, additional_comments:a.additional_comments, significant_issue:a.significant_issue === null ? '' : a.significant_issue ? 'yes' : 'no', severity:a.severity || '', coordinator_action_required:a.coordinator_action_required === null ? '' : a.coordinator_action_required ? 'yes' : 'no', coordinator_support_request:a.coordinator_support_request || '' };
   }
   function importedAsDraft(r) {
-    if (!r || r.project !== 'AI-SECRETT' || r.report_type !== 'tasks' || !['submission','individual_task_copy'].includes(r.document_kind) || !['2.0','2.1','2.2','2.3','2.4'].includes(r.schema_version)) throw new Error('Choose an AI-SECRETT Task report generated by this tool.');
+    if (!r || r.project !== 'AI-SECRETT' || r.report_type !== 'tasks' || !['submission','individual_task_copy'].includes(r.document_kind) || !['2.0','2.1','2.2','2.3','2.4','2.5'].includes(r.schema_version)) throw new Error('Choose an AI-SECRETT Task report generated by this tool.');
     if (r.partner?.code !== state.partner.code || r.partner?.name !== state.partner.name) throw new Error('The report belongs to another partner. Select that partner before importing.');
     if (!r.contributor || ['name','role','email'].some(k=>typeof r.contributor[k] !== 'string' || !r.contributor[k].trim() || r.contributor[k].length > 300)) throw new Error('Contributor details are invalid.');
     const months=r.reporting_period?.selected_months || model.monthsBetween(config,r.reporting_period?.start || '',r.reporting_period?.end || '');
@@ -813,8 +819,9 @@
       wpItems.push({...item,task_updates:item.task_updates.map(row=>({...row,task_lead:taskById(row.id).lead}))});wpSeen.add(wp.id);
     }
     if(r.document_kind === 'individual_task_copy' && (tasks.length !== 1 || wpItems.length))throw new Error('Individual Task PDF data is invalid.');
-    if(!tasks.length && !wpItems.length && !(r.additional_contributions||[]).length && !(r.kpi_contributions||[]).length)throw new Error('The report contains no contribution.');
-    return {...r,schema_version:'2.4',document_kind:'draft',reporting_period:p,tasks,work_package_leadership:wpItems,additional_contributions:r.additional_contributions||[],kpi_contributions:r.kpi_contributions||[],generated_at:null,saved_at:new Date().toISOString()};
+    if(!tasks.length && !wpItems.length && !(r.additional_contributions||[]).length && !(r.kpi_contributions||[]).length && !(r.staff_effort?.rows||[]).length)throw new Error('The report contains no contribution.');
+    effortUI.M.validateReport(r);
+    return {...r,document_kind:'draft',reporting_period:p,tasks,work_package_leadership:wpItems,additional_contributions:r.additional_contributions||[],kpi_contributions:r.kpi_contributions||[],generated_at:null,saved_at:new Date().toISOString()};
   }
   let taskImportTarget=null, pendingWholeImport=null;
   function openTaskImport(task){
@@ -831,13 +838,13 @@
       if(file.size>(pdf?10000000:5000000))throw new Error('The file is too large.');
       const raw=json?JSON.parse(await file.text()):await window.SECRETT_PDF.readEmbeddedReport(file);
       if(pdf&&raw.document_kind!=='individual_task_copy')throw new Error('This is a whole-report PDF. Use “Import report” below the project timeline.');
-      if(raw.project!=='AI-SECRETT'||raw.report_type!=='tasks'||raw.partner?.code!==state.partner.code||raw.partner?.name!==state.partner.name||!['2.0','2.1','2.2','2.3','2.4'].includes(raw.schema_version))throw new Error('Choose an AI-SECRETT Task report for this partner.');
+      if(raw.project!=='AI-SECRETT'||raw.report_type!=='tasks'||raw.partner?.code!==state.partner.code||raw.partner?.name!==state.partner.name||!['2.0','2.1','2.2','2.3','2.4','2.5'].includes(raw.schema_version))throw new Error('Choose an AI-SECRETT Task report for this partner.');
       const imported=raw.document_kind==='draft'?raw:importedAsDraft(raw),incoming=model.rangePeriod(config,imported.reporting_period?.start,imported.reporting_period?.end,imported.reporting_period?.selected_months),current=period();
       if(!incoming)throw new Error('The file has invalid reporting dates or selected months.');
       const entries=imported.tasks?.filter(item=>item.id===taskImportTarget);
       if(!entries||entries.length!==1||imported.tasks.length!==1||imported.work_package_leadership?.length||imported.additional_contributions?.length||imported.kpi_contributions?.length)throw new Error(`The file must contain only ${taskImportTarget}. Use “Import report” for a whole report.`);
       if(!current||current.start!==incoming.start||current.end!==incoming.end||JSON.stringify(current.selected_months)!==JSON.stringify(incoming.selected_months))throw new Error('The file covers different selected months. Use “Import report” below the project timeline to choose its reporting period.');
-      const id=taskImportTarget,combined=record('draft');combined.tasks=combined.tasks.filter(item=>item.id!==id).concat(entries);
+      const id=taskImportTarget,combined=record('draft');combined.tasks=combined.tasks.filter(item=>item.id!==id).concat(entries);combined.staff_effort=effortUI.merge(combined,imported,row=>row.scope==='task'&&row.id===id);
       restore(combined);state.editing=null;setTaskEditor(false);$('task-import-dialog').close();taskImportTarget=null;
       $('overview-import-message').hidden=true;message(`${id} imported. Other entries are unchanged. Review its answers before generating the report.`);
     }catch(error){$('task-import-error').textContent=`Could not import this Task: ${error.message}`;$('task-import-error').hidden=false;if(error.code==='NO_SECRETT_DATA')window.SECRETT_FILES.recover(file,f=>importTaskFile(f,true),()=>{$('task-import-dialog').close();taskImportTarget=null;},`Only ${taskImportTarget} will be restored. Other Task and Work Package entries stay unchanged.`);}
@@ -858,6 +865,8 @@
     for(const item of imported.work_package_leadership){const label=textNode('label','');const check=document.createElement('input');check.type='checkbox';check.checked=true;check.dataset.kind='wp';check.value=item.id;label.append(check,textNode('span',`${item.id} — Work Package leadership update`));host.append(label);}
     for(const item of imported.additional_contributions){const label=textNode('label','');const check=document.createElement('input');check.type='checkbox';check.checked=true;check.dataset.kind='extra';check.value=`${item.kind}:${item.id}`;label.append(check,textNode('span',item.kind==='general'?(item.title||'Other project contribution'):`${item.id} — ${item.title||'additional voluntary contribution'}`));host.append(label);}
     for(const item of imported.kpi_contributions){const label=textNode('label','');const check=document.createElement('input');check.type='checkbox';check.checked=true;check.dataset.kind='kpi';check.value=kpiKey(item);label.append(check,textNode('span',`${item.name||item.id} — ${item.scope||'direct KPI contribution'}`));host.append(label);}
+    effortUI.M.validateReport(imported);
+    if(imported.staff_effort?.rows.some(row=>row.scope==='work_package')){const label=textNode('label','');const check=document.createElement('input');check.type='checkbox';check.checked=true;check.dataset.kind='effort';label.append(check,textNode('span','Direct Work Package staff effort (separate from Task effort)'));host.append(label);}
     $('whole-import-error').hidden=true;$('whole-import-dialog').showModal();
   }
   async function importWholeFile(file){
@@ -897,6 +906,8 @@
       let toRestore;
       if(samePeriod){toRestore=record('draft');toRestore.tasks=toRestore.tasks.filter(item=>!taskIds.has(item.id)).concat(selectedTasks);toRestore.work_package_leadership=toRestore.work_package_leadership.filter(item=>!wpIds.has(item.id)).concat(selectedWps);toRestore.additional_contributions=toRestore.additional_contributions.filter(item=>!extraIds.has(`${item.kind}:${item.id}`)).concat(selectedExtras);toRestore.kpi_contributions=toRestore.kpi_contributions.filter(item=>!kpiIds.has(kpiKey(item))).concat(selectedKpis);}
       else toRestore={...imported,tasks:selectedTasks,work_package_leadership:selectedWps,additional_contributions:selectedExtras,kpi_contributions:selectedKpis};
+      const bringEffort=row=>row.scope==='task'?(taskIds.has(row.id)||extraIds.has(`task:${row.id}`)):row.scope==='other'?extraIds.has(`general:${row.id}`):checks.some(el=>el.dataset.kind==='effort');
+      toRestore.staff_effort=samePeriod?effortUI.merge(toRestore,imported,bringEffort):effortUI.select(imported,bringEffort);
       if(checks.some(el=>el.dataset.kind==='contributor'))toRestore={...toRestore,contributor:imported.contributor};
       restore(toRestore);$('whole-import-dialog').close();pendingWholeImport=null;message(checks.some(el=>el.dataset.kind==='contributor')?'Contributor details restored. Your timeline and existing report entries are unchanged.':`Imported ${selectedTasks.length} Task entries, ${selectedWps.length} Work Package updates, ${selectedExtras.length} additional contributions and ${selectedKpis.length} KPI values. Review them before generating files.`);
     }catch(error){$('whole-import-error').textContent=`Could not import selected entries: ${error.message}`;$('whole-import-error').hidden=false;}
@@ -911,11 +922,12 @@
   }
   function restore(r) {
     if (!r || r.project !== 'AI-SECRETT' || r.document_kind !== 'draft' || r.partner?.code !== state.partner.code || r.report_type !== state.reportType) throw new Error('Choose the draft’s partner and report type before loading it.');
-    if (!['2.0','2.1','2.2','2.3','2.4','1.1','1.2','1.3','1.4'].includes(r.schema_version)) throw new Error('Unsupported draft version.');
+    if (!['2.0','2.1','2.2','2.3','2.4','2.5','1.1','1.2','1.3','1.4'].includes(r.schema_version)) throw new Error('Unsupported draft version.');
     if (!r.contributor || ['name','role','email'].some(k => typeof r.contributor[k] !== 'string' || r.contributor[k].length > 300)) throw new Error('Invalid contributor details.');
     const importedKpis=validatedKpiEntries(r.kpi_contributions||[]);
+    if(state.reportType==='tasks')effortUI.M.validateReport(r);
     if (state.reportType === 'tasks') {
-      if (!['2.0','2.1','2.2','2.3','2.4'].includes(r.schema_version) || !Array.isArray(r.tasks)) throw new Error('This is not a whole-partner Task draft.');
+      if (!['2.0','2.1','2.2','2.3','2.4','2.5'].includes(r.schema_version) || !Array.isArray(r.tasks)) throw new Error('This is not a whole-partner Task draft.');
       const selectedMonths = r.reporting_period?.selected_months || model.monthsBetween(config,r.reporting_period?.start || '',r.reporting_period?.end || '');
       if (!Array.isArray(selectedMonths) || selectedMonths.length > config.project.durationMonths) throw new Error('Draft month selection is invalid.');
       const p = model.rangePeriod(config, r.reporting_period?.start, r.reporting_period?.end, selectedMonths);
@@ -946,7 +958,7 @@
       }
       const extras=validatedExtras(r.additional_contributions||[],p);
       if(extras.some(entry=>entry.kind==='task'&&selected.has(entry.id)))throw new Error('A Task appears in both the Task report and additional contributions.');
-      state.selected = selected; state.wpUpdates=wpUpdates;state.extras=extras; state.selectedMonths = new Set(selectedMonths); $('report-start').value = p?.start || r.reporting_period?.start || ''; $('report-end').value = p?.end || r.reporting_period?.end || ''; renderOverview();
+      effortUI.restore(r);state.selected = selected; state.wpUpdates=wpUpdates;state.extras=extras; state.selectedMonths = new Set(selectedMonths); $('report-start').value = p?.start || r.reporting_period?.start || ''; $('report-end').value = p?.end || r.reporting_period?.end || ''; renderOverview();
     } else {
       if (!['1.1','1.2','1.3','1.4'].includes(r.schema_version)) throw new Error('This is not a communication draft.');
       if (!r.form_state?.fields || typeof r.form_state.fields !== 'object' || !Array.isArray(r.form_state.events) || r.form_state.events.length > 100 || r.form_state.events.some(e=>!e || typeof e.description !== 'string' || typeof e.participants !== 'string' || e.description.length > 100000 || e.participants.length > 100)) throw new Error('Communication draft is incomplete.');
@@ -971,6 +983,7 @@
     state.generatedSignatures[state.reportType]=null;
     $('report-code-preview').textContent=state.reportCodes[state.reportType];
     state.revision = Number.isInteger(r.revision) && r.revision >= 1 && r.revision <= 99 ? r.revision : 1;state.revisionsByType[state.reportType]=state.revision;$('report-revision').value = String(state.revision);
+    if(state.reportType==='tasks')renderOverview();
     message(state.reportType==='tasks'?'Whole-report draft loaded. Review the dates, selected Tasks and answers.':['1.1','1.2'].includes(r.schema_version)?'Older communication draft loaded. Review the activities and choose the correct months before generating a new report.':'Communication draft loaded. Review the selected months and answers.'); scrollTo(state.reportType === 'tasks' ? $('task-picker') : commForm);
   }
   function reviewItem(label, content) { const el = textNode('div','','review-item');const dd=textNode('dd',content === null || content === undefined || content === '' ? 'Not provided' : typeof content === 'boolean' ? (content ? 'Yes' : 'No') : Array.isArray(content) ? (content.length ? content.join('\n') : 'None') : String(content));if(label==='Revision')dd.id='review-revision-display';el.append(textNode('dt',label),dd); return el; }
@@ -980,11 +993,12 @@
     const host = $('review-content'); host.replaceChildren();
     reviewGroup(host,'Report details',[['Partner',`${r.partner.name} (${r.partner.code})`],['Contributor',`${r.contributor.name} · ${r.contributor.role} · ${r.contributor.email}`],['Period',`${r.reporting_period.start} to ${r.reporting_period.end}`],['Selected months',r.reporting_period.selected_months.join(', ')],['Report code',r.report_code],['Revision',`v${r.revision}`],['Report key',r.report_key]]);
     if (r.report_type === 'tasks') {
-      for (const item of r.tasks) { const a = item.answers; reviewGroup(host,`${item.id} — ${item.title}${item.assignment_basis==='voluntary_unlisted'?' · voluntary contribution':''}`,[['Work Package',item.work_package],['Your role',item.assignment_basis==='voluntary_unlisted' ? 'Voluntary contributor' : state.partner.kind==='associated_partner' ? 'Task contributor' : item.partner_role === 'Task responsibility to confirm' ? 'Responsibility to confirm' : item.partner_role === 'Task lead (COO)' ? 'Task leader' : 'Task participant'],['Task leader',item.task_lead || '—'],['Work reported',item.work_status === 'no_work' ? 'No work carried out' : 'Contribution completed'],['Task coverage',`${item.coverage.start} to ${item.coverage.end}`],['Task months',item.coverage.months.join(', ')],...(item.work_status === 'no_work' ? [] : [['Activities carried out',a.activities_carried_out],['Results achieved',a.results_achieved],['Difficulties encountered',a.difficulties_encountered],...(state.partner.kind === 'associated_partner' ? [] : [['Raw costs',`${a.raw_costs_incurred.amount === null ? 'Not provided' : `${a.raw_costs_incurred.amount} EUR`}${a.raw_costs_incurred.note ? ` · ${a.raw_costs_incurred.note}` : ''}`]]),['Upcoming activities',a.upcoming_activities],['Additional comments',a.additional_comments],['Significant issue',a.significant_issue],['Severity',a.severity],['Coordinator action required',a.coordinator_action_required],['Support requested',a.coordinator_support_request]])]); }
+      for (const item of r.tasks) { const a = item.answers; reviewGroup(host,`${item.id} — ${item.title}${item.assignment_basis==='voluntary_unlisted'?' · voluntary contribution':''}`,[['Work Package',item.work_package],['Your role',item.assignment_basis==='voluntary_unlisted' ? 'Voluntary contributor' : state.partner.kind==='associated_partner' ? 'Task contributor' : item.partner_role === 'Task responsibility to confirm' ? 'Responsibility to confirm' : item.partner_role === 'Task lead (COO)' ? 'Task leader' : 'Task participant'],['Task leader',item.task_lead || '—'],['Work reported',item.work_status === 'no_work' ? 'No work carried out' : 'Contribution completed'],['Task coverage',`${item.coverage.start} to ${item.coverage.end}`],['Task months',item.coverage.months.join(', ')],...(item.work_status === 'no_work' ? [] : [['Activities carried out',a.activities_carried_out],['Results achieved',a.results_achieved],['Difficulties encountered',a.difficulties_encountered],['Upcoming activities',a.upcoming_activities],['Additional comments',a.additional_comments],['Significant issue',a.significant_issue],['Severity',a.severity],['Coordinator action required',a.coordinator_action_required],['Support requested',a.coordinator_support_request]])]); }
       for(const wp of r.work_package_leadership || []) {reviewGroup(host,`${wp.id} — ${wp.title} · leadership update`,[['Leader',wp.leader],['Selected months',wp.coverage.months.join(', ')],['Work declared',wp.work_status === 'no_work' ? 'No Work Package work carried out' : 'Leadership update completed'],...(wp.work_status === 'no_work' ? [] : [['Progress and achievements',wp.answers.progress],['Coordination and integration',wp.answers.coordination],['Difficulties and dependencies',wp.answers.difficulties],['Next priorities',wp.answers.next],['Support needed',wp.answers.support]])]);if(wp.work_status !== 'no_work')for(const row of wp.task_updates)reviewGroup(host,`${row.id} — Work Package leader assessment`,[['Status',assessmentLabel(row.status)],['Progress',row.progress],['Blocker',row.blocker],['Next action',row.next]]);}
       for(const entry of r.additional_contributions||[])reviewGroup(host,`${entry.kind==='general'?entry.title:`${entry.id} — ${entry.title}`} · additional voluntary contribution`,[['Scope',entry.kind==='task'?'Task':entry.kind==='work_package'?'Work Package':'Other project work'],['Months',entry.months.join(', ')],['Activities carried out',entry.description],['Results achieved',entry.results],['Difficulties encountered',entry.difficulties],['Upcoming activities',entry.upcoming],['Evidence reference',entry.evidence]]);
     }
     else { const a = r.answers; reviewGroup(host,'Communication activities',[['Events organised',a.events_organised],['Events',a.events.map(x => `${x.description} (${x.participants} participants${x.activity_id?` · ${x.activity_id}`:''})`)],['Media outreach',a.media_outreach],['Journalists contacted',a.journalists_contacted],['Media outlets contacted',a.media_outlets_contacted],['Media details',a.media_details],['Website articles published',a.website_articles_published],['Website articles',a.website_articles.map(x => `${x.url}${x.details ? ` · ${x.details}` : ''}`)],['Social posts',a.social_posts_count],['Social links',a.social_post_urls],['Social details',a.social_details],['Email/newsletter sent',a.email_or_newsletter_sent],['Estimated recipients',a.estimated_recipients],['Email details',a.email_details],['Other activities',a.other_activities_or_materials],['Estimated reach',a.estimated_people_reached===null?'Unknown':a.estimated_people_reached],['Pre-registrations/enrolments',a.preregistrations_or_enrolments===null?'Unknown':a.preregistrations_or_enrolments],['Coordination or communication team support required',a.coordinator_support_required],['Support requested',a.coordinator_support_request]]); }
+    if(r.staff_effort){const E=window.SECRETT_EFFORT;reviewGroup(host,'Staff effort',[['Total in this report',`${E.format(effortUI.M.total(r.staff_effort.rows))} PM`],['Monthly entries',r.staff_effort.rows.map(row=>`${row.id} · ${row.wp||'Separate project work'} · ${row.month}: ${E.format(E.units(row.pm))} PM${row.note?` · ${row.note}`:''}`).join('\n')||'Not reported']]);}
     for(const entry of r.kpi_contributions||[])reviewGroup(host,`${entry.name} · direct KPI contribution`,[['Activity reference',entry.scope||'Not specified'],['Shared activity code',entry.activity_id||'Not specified'],['Measured value',`${entry.value}${entry.unit==='%'?'%':entry.unit==='status'?'':` ${entry.unit}`}`],...(entry.basis?[['Calculation basis',entry.basis]]:[]),['Evidence reference',entry.evidence],['Nextcloud proof',entry.proof_status==='uploaded'?'Already uploaded':'Will upload after downloading']]);
     $('review-revision').value=String(r.revision);$('confirm-ready').checked = false; $('generate-submission').disabled = true; $('generation-error').hidden = true;
     $('report-workspace').hidden = true; $('review-section').hidden = false; $('submission-section').hidden = true; scrollTo($('review-section')); $('review-title').focus({preventScroll:true});

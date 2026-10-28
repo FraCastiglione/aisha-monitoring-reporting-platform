@@ -1,0 +1,91 @@
+{
+  "schema_version": "2.5",
+  "project": "AI-SECRETT",
+  "document_kind": "submission",
+  "report_type": "tasks",
+  "report_code": "AISECRETT-UVEG-TASKS-0123456789ABCDEF0123456789ABCDEF",
+  "revision": 1,
+  "partner": {
+    "code": "UVEG",
+    "name": "UNIVERSITAT DE VALENCIA"
+  },
+  "contributor": {
+    "name": "Synthetic audit",
+    "role": "Tester",
+    "email": "audit@example.invalid"
+  },
+  "reporting_period": {
+    "start": "2025-10-01",
+    "end": "2025-11-30",
+    "selected_months": [
+      "2025-10",
+      "2025-11"
+    ]
+  },
+  "report_key": "UVEG:TASKS:2025-10-01:2025-11-30",
+  "tasks": [
+    {
+      "id": "T1.1",
+      "title": "SOTA Analysis of Triple Transition and Creativity Potentials in the EU Targeted Sectors",
+      "work_package": "WP1",
+      "task_lead": "INESC",
+      "partner_role": "Named participant",
+      "work_status": "completed",
+      "coverage": {
+        "start": "2025-10-01",
+        "end": "2025-11-30",
+        "months": [
+          "2025-10",
+          "2025-11"
+        ]
+      },
+      "answers": {
+        "activities_carried_out": "Research",
+        "results_achieved": "Outputs",
+        "difficulties_encountered": "",
+        "upcoming_activities": "",
+        "additional_comments": "",
+        "raw_costs_incurred": {
+          "amount": null,
+          "currency": "EUR",
+          "note": ""
+        },
+        "significant_issue": null,
+        "coordinator_action_required": null,
+        "severity": null
+      }
+    }
+  ],
+  "work_package_leadership": [],
+  "additional_contributions": [],
+  "kpi_contributions": [],
+  "generated_at": "2026-10-28T12:00:00.000Z",
+  "staff_effort": {
+    "unit": "PM",
+    "allocation_version": "equal-task-month-v1",
+    "rows": [
+      {
+        "scope": "task",
+        "id": "T1.1",
+        "wp": "WP1",
+        "month": "2025-10",
+        "pm": "15.0000",
+        "note": "Above plan is allowed."
+      },
+      {
+        "scope": "task",
+        "id": "T1.1",
+        "wp": "WP1",
+        "month": "2025-11",
+        "pm": "0.0000"
+      },
+      {
+        "scope": "work_package",
+        "id": "WP1",
+        "wp": "WP1",
+        "month": "2025-10",
+        "pm": "2.2500"
+      }
+    ]
+  }
+}
