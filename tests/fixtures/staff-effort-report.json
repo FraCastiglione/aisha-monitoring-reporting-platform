@@ -1,0 +1,97 @@
+{
+  "schema_version": "2.5",
+  "project": "AISHA",
+  "document_kind": "submission",
+  "report_type": "tasks",
+  "report_code": "AISHA-IF.E-TASKS-00000000000000000000000000000001",
+  "report_key": "IF.E:TASKS:2026-05-01:2026-06-30",
+  "revision": 1,
+  "partner": {
+    "code": "IF.E",
+    "name": "Inspiring Futures Europe"
+  },
+  "contributor": {
+    "name": "AUDIT TEST",
+    "role": "TEST",
+    "email": "audit@example.invalid"
+  },
+  "reporting_period": {
+    "start": "2026-05-01",
+    "end": "2026-06-30",
+    "start_project_month": 1,
+    "end_project_month": 2,
+    "start_code": "M01",
+    "end_code": "M02",
+    "selected_months": [
+      "2026-05",
+      "2026-06"
+    ]
+  },
+  "generated_at": "2026-10-31T00:00:00.000Z",
+  "tasks": [
+    {
+      "id": "T1.1",
+      "title": "Governance & Sustainability Board",
+      "work_package": "WP1",
+      "task_lead": "IF.E",
+      "partner_role": "Task lead (COO)",
+      "work_status": "completed",
+      "coverage": {
+        "start": "2026-05-01",
+        "end": "2026-06-30",
+        "months": [
+          "2026-05",
+          "2026-06"
+        ]
+      },
+      "agreement_source_page": 69,
+      "answers": {
+        "activities_carried_out": "AUDIT TEST ONLY",
+        "results_achieved": "",
+        "difficulties_encountered": "",
+        "upcoming_activities": "",
+        "additional_comments": "",
+        "raw_costs_incurred": {
+          "amount": null,
+          "currency": "EUR",
+          "note": ""
+        },
+        "significant_issue": null,
+        "severity": null,
+        "coordinator_action_required": null,
+        "coordinator_support_request": null
+      }
+    }
+  ],
+  "work_package_leadership": [],
+  "additional_contributions": [],
+  "kpi_contributions": [],
+  "staff_effort": {
+    "unit": "PM",
+    "allocation_version": "equal-task-month-v1",
+    "rows": [
+      {
+        "scope": "task",
+        "id": "T1.1",
+        "wp": "WP1",
+        "month": "2026-05",
+        "pm": "15.0000"
+      },
+      {
+        "scope": "task",
+        "id": "T1.1",
+        "wp": "WP1",
+        "month": "2026-06",
+        "pm": "0.0000"
+      },
+      {
+        "scope": "work_package",
+        "id": "WP1",
+        "wp": "WP1",
+        "month": "2026-05",
+        "pm": "2.2500"
+      }
+    ],
+    "notes": []
+  }
+}

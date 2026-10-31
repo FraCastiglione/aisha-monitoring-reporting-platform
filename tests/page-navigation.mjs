@@ -18,7 +18,7 @@ for(const hash of ['', '#reporting','#dashboard','#instructions']){
   const app=boot(hash);assert.equal(app.scrolls.at(-1).top,0);assert.equal(app.scrolls.at(-1).behavior,'instant');
   assert.equal(app.window.history.scrollRestoration,'manual','Page routes must suppress late browser scroll restoration');
   app.events.get('pageshow')({persisted:false});assert.equal(app.scrolls.length,2,'Fresh opens and reloads reset after browser restoration');
-  const count=app.scrolls.length;app.events.get('pageshow')({persisted:true});assert.equal(app.scrolls.length,count,'Returning to a cached in-progress document preserves position');
+  const count=app.scrolls.length;app.events.get('pageshow')({persisted:true});assert.equal(app.scrolls.length,count+(hash==='#dashboard'?1:0),'Cached dashboard opens at the header; cached in-progress reports preserve position');
 }
 for(const hash of ['#contributor-title','#main','#reporting-title']){
   const app=boot(hash);app.events.get('pageshow')({persisted:false});assert.equal(app.scrolls.length,0,'Intentional in-page anchors must retain their own position');
@@ -27,6 +27,12 @@ for(const hash of ['#contributor-title','#main','#reporting-title']){
 const app=boot('#reporting');let prevented=0;const click={button:0,preventDefault(){prevented++;}};
 app.brand.listeners.click(click);app.links[0].listeners.click(click);assert.equal(prevented,2,'Already-active home links must still return to the header');
 for(const modifier of ['metaKey','ctrlKey','shiftKey','altKey'])app.brand.listeners.click({...click,[modifier]:true});assert.equal(prevented,2,'Modified clicks retain normal new-tab behavior');
-app.window.location.hash='#dashboard';app.events.get('hashchange')();assert.equal(app.nodes.get('dashboard').hidden,false);assert.equal(app.nodes.get('reporting').hidden,true);assert.equal(app.scrolls.at(-1).top,0);
+app.window.location.hash='#dashboard';app.events.get('hashchange')();assert.equal(app.nodes.get('dashboard-page').hidden,false);assert.equal(app.nodes.get('reporting').hidden,true);assert.equal(app.scrolls.at(-1).top,0);
 const count=app.scrolls.length;app.window.location.hash='#contributor-title';app.events.get('hashchange')();assert.equal(app.nodes.get('reporting').hidden,false);assert.equal(app.scrolls.length,count,'Start a report still jumps to contributor details');
 console.log('Page navigation: initial root/routes, reload restoration, cached returns, same-route home links, modified clicks and in-page anchors PASS');
+// A page hash must not also be a browser-native fragment target. Native fragment
+// scrolling can run after our handler, including after deferred layout changes.
+const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert(!/\bid="dashboard"/.test(html),'Dashboard route must not have a native fragment target');
+assert(/\bid="dashboard-page"/.test(html));
+console.log('Dashboard page route cannot trigger a late native anchor jump: PASS');

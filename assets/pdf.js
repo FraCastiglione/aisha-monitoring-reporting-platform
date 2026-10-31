@@ -115,6 +115,14 @@
     pair("Report key and revision", `${report.report_key} · v${report.revision}`);
     pair("Generated", generatedLabel(report.generated_at));
 
+    const effortApi=window.AISHA_EFFORT,effortModel=report.staff_effort&&effortApi?effortApi.create(window.AISHA_CONFIG,window.AISHA_MODEL,window.AISHA_EFFORT_DATA):null;
+    const effortRows=report.staff_effort?.rows||[],effortFunded=window.AISHA_EFFORT_DATA?.partners.some(p=>p.code===report.partner.code);
+    if(effortModel){
+      section("Staff effort summary (person-months)");
+      pair("Reported in this report",effortRows.length?`${effortApi.format(effortModel.total(effortRows))} PM`:"Not reported");
+      for(const wp of window.AISHA_CONFIG.workPackages){const rows=effortRows.filter(r=>r.wp===wp.id);if(!rows.length)continue;pair(wp.id,`${effortApi.format(effortModel.total(rows))} PM reported / ${effortFunded?`${effortApi.format(effortModel.plannedWp(report.partner.code,wp.id,report.reporting_period.selected_months))} PM planned for selected months`:"No Grant Agreement allocation"}`);}
+      const unallocated=effortRows.filter(r=>!r.wp);if(unallocated.length)pair("Separate project work",`${effortApi.format(effortModel.total(unallocated))} PM`);
+    }
     const a = report.answers;
     if (report.report_type === "tasks") {
       pair("Tasks included", report.tasks.length);
@@ -126,12 +134,18 @@
         pair("Task coverage in this report", `${item.coverage.start} to ${item.coverage.end}`);
         pair("Task months covered", item.coverage.months.join(", "));
         pair("Work reported", item.work_status === "no_work" ? "No work carried out" : item.work_status === "draft" ? "Draft contribution" : "Contribution completed");
+        if(effortModel){
+          const rows=effortRows.filter(r=>r.scope==='task'&&r.id===item.id),hasPlan=effortModel.hasTaskPlan(report.partner.code,item.id),unplanned=effortFunded?'No assigned Task estimate':'No Grant Agreement allocation';
+          pair("Staff effort (PM)",`${rows.length?effortApi.format(effortModel.total(rows)):'Not reported'} reported / ${hasPlan?`${effortApi.format(effortModel.plannedTask(report.partner.code,item.id,item.coverage.months,item.coverage.start,item.coverage.end))} planned for these dates`:unplanned}`);
+          for(const month of item.coverage.months){const row=rows.find(r=>r.month===month);pair(`Staff effort · ${month}`,`${row?effortApi.format(effortApi.units(row.pm)):'Not reported'} PM reported / ${hasPlan?`${effortApi.format(effortModel.plannedTask(report.partner.code,item.id,[month],item.coverage.start,item.coverage.end))} PM planned`:unplanned}`);}
+          const notes=[...new Set([...rows.map(r=>r.note),...(report.staff_effort.notes||[]).filter(n=>n.scope==='task'&&n.id===item.id).map(n=>n.text)].filter(Boolean))];if(notes.length)pair("Staff effort details",notes.join("\n"));
+        }
         if (item.work_status === "no_work") continue;
         const t = item.answers;
         pair("Activities carried out", t.activities_carried_out);
         pair("Results achieved", t.results_achieved);
         pair("Difficulties encountered", t.difficulties_encountered);
-        if (report.partner.kind !== "associated_partner") pair("Raw costs incurred", `${t.raw_costs_incurred.amount === null ? "Not provided" : `${t.raw_costs_incurred.amount} EUR`}${t.raw_costs_incurred.note ? ` · ${t.raw_costs_incurred.note}` : ""}`);
+        if (!report.staff_effort && report.partner.kind !== "associated_partner") pair("Legacy raw costs incurred", `${t.raw_costs_incurred.amount === null ? "Not provided" : `${t.raw_costs_incurred.amount} EUR`}${t.raw_costs_incurred.note ? ` · ${t.raw_costs_incurred.note}` : ""}`);
         pair("Upcoming activities", t.upcoming_activities);
         pair("Additional comments", t.additional_comments);
         pair("Significant issue", t.significant_issue);
@@ -139,6 +153,11 @@
         pair("Coordinator action required", t.coordinator_action_required);
         pair("Support requested", t.coordinator_support_request);
       }
+      if(effortModel){
+        const other=effortRows.filter(r=>!(r.scope==='task'&&report.tasks.some(t=>t.id===r.id)));
+        if(other.length){section("Additional staff effort");for(const row of other)pair(`${row.id} · ${row.wp||'Separate project work'} · ${row.month}`,`${effortApi.format(effortApi.units(row.pm))} PM${row.scope==='work_package'?' · Direct WP effort; excludes Task entries':''}${row.note?` · ${row.note}`:''}`);}
+      }
+      if(effortModel)for(const note of report.staff_effort.notes||[])if(note.scope!=='task'&&note.text)pair(`Staff effort details · ${note.id}`,note.text);
       if (report.work_package_leadership?.length) {
         section("Work Package leadership updates");
         for (const wp of report.work_package_leadership) {

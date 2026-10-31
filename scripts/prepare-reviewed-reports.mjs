@@ -6,6 +6,8 @@ import vm from 'node:vm';
 const root=new URL('../',import.meta.url),context={window:{}};
 for(const file of ['config.js','project-model.js'])vm.runInNewContext(fs.readFileSync(new URL('assets/'+file,root),'utf8'),context);
 const config=context.window.AISHA_CONFIG,model=context.window.AISHA_MODEL,catalogue=JSON.parse(fs.readFileSync(new URL('assets/dashboard-catalogue.json',root),'utf8'));
+vm.runInNewContext(fs.readFileSync(new URL('assets/staff-effort-model.js',root),'utf8'),context);
+const effortApi=context.window.AISHA_EFFORT,effortModel=effortApi.create(config,model,JSON.parse(fs.readFileSync(new URL('assets/staff-effort-data.json',root),'utf8')));
 const indicator=id=>catalogue.kpis.find(item=>item.id===id);
 const unitFor=id=>indicator(id)?.unit||'';
 function activityId(value){if(value===undefined||value==='')return '';if(typeof value!=='string')throw new Error('Invalid shared activity code.');const normalized=value.trim().toUpperCase();if(normalized.length>80||!(/^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+){2,8}$/).test(normalized))throw new Error('Invalid shared activity code.');return normalized;}
@@ -29,17 +31,19 @@ export function prepare(manifest,readReport){
     families.set(code,{partner,type,period});
     const key=`${code}:v${rev}`,raw=JSON.stringify(report),previous=seenVersions.get(key);
     if(previous&&previous.raw!==raw)throw new Error(`Conflicting copies of ${key}.`);
-    if(!previous)seenVersions.set(key,{report,reviewed_at:item.reviewed_at,raw});
+    if(!previous)seenVersions.set(key,{report,reviewed_at:item.reviewed_at,raw,allow_effort_removals:item.allow_effort_removals===true});else if(item.allow_effort_removals===true)previous.allow_effort_removals=true;
   }
   const latest=new Map();
   for(const entry of seenVersions.values()){const code=entry.report.report_code,previous=latest.get(code);if(!previous||entry.report.revision>previous.report.revision)latest.set(code,entry);}
+  for(const [code,current] of latest){const currentKeys=new Set((current.report.staff_effort?.rows||[]).map(effortApi.key));const omitted=[...seenVersions.values()].filter(entry=>entry.report.report_code===code&&entry.report.revision<current.report.revision).flatMap(entry=>entry.report.staff_effort?.rows||[]).filter(row=>!currentKeys.has(effortApi.key(row)));if(omitted.length&&!current.allow_effort_removals)throw new Error(`Revision ${current.report.revision} of ${code} removes previous staff effort entries. Review the omissions and explicitly set allow_effort_removals for that verified file if intended.`);}
   const reports=[...latest.values()].sort((a,b)=>a.report.report_code.localeCompare(b.report.report_code));
-  const report_registry=[],reporting_records=[],partner_kpi_contributions=[],coverageSeen=new Map();
+  const report_registry=[],reporting_records=[],partner_kpi_contributions=[],staff_effort_records=[],coverageSeen=new Map(),effortCoverage=new Map();
   for(const {report,reviewed_at} of reports){
     const {report_code,revision,report_type,partner,reporting_period}=report;
     const base={report_code,revision,partner:partner.code,report_type,status:'verified'};
     report_registry.push({...base,reviewed_at,selected_months:reporting_period.selected_months});
     if(report_type==='tasks'){
+      for(const row of effortModel.validateReport(report,{complete:report.schema_version==='2.5'})){const key=`${partner.code}:${effortApi.key(row)}`,previous=effortCoverage.get(key);if(previous&&previous!==report_code)throw new Error(`Overlapping staff effort ${key} in ${previous} and ${report_code}.`);effortCoverage.set(key,report_code);const {note,...publicEffort}=row;staff_effort_records.push({...publicEffort,...base});}
       for(const task of report.tasks||[]){
         const definition=config.tasks.find(item=>item.id===task.id),assigned=definition&&model.assigned(definition,partner.code,config);
         if(!definition||(!assigned&&!model.associatedReportTask(definition,partner.code,config,task))||(assigned&&task.assignment_basis==='voluntary_unlisted'))throw new Error(`Invalid Task assignment in ${report_code}.`);
@@ -85,7 +89,8 @@ export function prepare(manifest,readReport){
     const group=sharedActivities.get(activity)||[];group.push({report_code:item.report_code,partner:item.partner});sharedActivities.set(activity,group);
   }
   const shared_activity_review=[...sharedActivities].filter(([,entries])=>entries.length>1).map(([key,entries])=>({indicator_id:key.slice(0,key.indexOf(':')),activity_id:key.slice(key.indexOf(':')+1),reported_by:entries}));
-  return {report_registry,reporting_records,partner_kpi_contributions,shared_activity_review};
+  const effortCodes=new Set(staff_effort_records.map(row=>row.report_code)),effort_as_of=report_registry.filter(row=>effortCodes.has(row.report_code)).map(row=>row.reviewed_at).sort().at(-1)||null;
+  return {report_registry,reporting_records,partner_kpi_contributions,staff_effort_records,effort_as_of,shared_activity_review};
 }
 
 if(process.argv[1]&&path.resolve(process.argv[1])===decodeURI(new URL(import.meta.url).pathname)){

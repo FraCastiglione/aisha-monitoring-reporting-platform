@@ -23,7 +23,7 @@
     const requested = window.location.hash.slice(1);
     const active = views.has(requested) ? requested : "reporting";
     for (const view of views) {
-      document.getElementById(view).hidden = view !== active;
+      document.getElementById(view === "dashboard" ? "dashboard-page" : view).hidden = view !== active;
       const link = document.querySelector(`[data-view-link="${view}"]`);
       if (view === active) link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");
@@ -144,6 +144,10 @@
   }
   window.addEventListener("hashchange", showView);
   // Initial fragment scrolling and reload restoration happen after deferred scripts.
-  window.addEventListener("pageshow", event => { if (!event.persisted) scrollToPageTop(); });
+  window.addEventListener("pageshow", event => {
+    // Keep an in-progress reporting form's cached position, but always open the
+    // dashboard at its page header, including browser Back/Forward cache returns.
+    if (!event.persisted || window.location.hash === "#dashboard") scrollToPageTop();
+  });
   showView();
 })();

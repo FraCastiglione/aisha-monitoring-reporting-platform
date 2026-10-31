@@ -399,6 +399,7 @@
     if(contributions.length)for(const row of contributions){const item=catalogue.kpis.find(k=>k.id===row.indicator_id)||catalogue.communication_kpis.find(k=>k.id===row.indicator_id);kpiPanel.append(el('p','',`${row.indicator_id} · ${item?.name||item?.kpi||'Indicator'} · ${row.value}${row.unit?` ${row.unit}`:''} · ${monthList(row.reporting_months||[])}${reportReference(row)}${row.activity_id?` · Activity ${row.activity_id}`:''}`));}
     else kpiPanel.append(el('p','dash-muted','No reviewed KPI contribution for this partner in the selected months.'));
     box.append(kpiPanel);
+    box.append(window.AISHA_EFFORT_DASH.partnerSummary(config,model,snapshot,partner.code,Array.from({length:view.through-view.from+1},(_,i)=>month(view.from+i))));
     return reportingDetail(partner.kind==='associated_partner'?'Associated partner':'Full partner',partner.code,partner.name,reported.size,assigned.length,box);
   }
   function reportingSection() {
@@ -531,10 +532,10 @@
     if(!catalogue||!snapshot||!agreementDetail)return;
     const savedFocus = captureDashboardFocus();
     const tabs=el('nav','dash-tabs');tabs.setAttribute('aria-label','Dashboard sections');
-    for(const [key,label] of [['overview','Overview'],['gantt','Gantt'],['workpackages','Work Packages'],['reporting','Partner reporting'],['messages','Message board'],['risks','Risks'],['kpis','KPIs']]){
+    for(const [key,label] of [['overview','Overview'],['gantt','Gantt'],['workpackages','Work Packages'],['reporting','Partner reporting'],['effort','Staff effort'],['messages','Message board'],['risks','Risks'],['kpis','KPIs']]){
       const button=el('button',view.tab===key?'is-active':'',label);button.type='button';button.setAttribute('aria-current',view.tab===key?'page':'false');button.addEventListener('click',()=>switchTab(key));tabs.append(button);
     }
-    const panel=view.tab==='gantt'?ganttSection():view.tab==='workpackages'?workPackagesSection():view.tab==='reporting'?reportingSection():view.tab==='messages'?messageBoard():view.tab==='risks'?risksSection():view.tab==='kpis'?kpisSection():overview();
+    const panel=view.tab==='effort'?window.AISHA_EFFORT_DASH.render(config,model,snapshot):view.tab==='gantt'?ganttSection():view.tab==='workpackages'?workPackagesSection():view.tab==='reporting'?reportingSection():view.tab==='messages'?messageBoard():view.tab==='risks'?risksSection():view.tab==='kpis'?kpisSection():overview();
     host.replaceChildren(tabs,panel);
     restoreDashboardFocus(savedFocus);
   }
