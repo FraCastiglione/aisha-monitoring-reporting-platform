@@ -11,6 +11,14 @@
   const reportChoice = document.getElementById("report-choice");
   const summary = document.getElementById("contributor-summary");
 
+  function scrollToPageTop() {
+    const requested = window.location.hash.slice(1);
+    const pageRoute = !requested || views.has(requested);
+    if ("scrollRestoration" in window.history) window.history.scrollRestoration = pageRoute ? "manual" : "auto";
+    // View fragments identify whole pages; in-page anchors keep their normal position.
+    if (pageRoute) window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }
+
   function showView() {
     const requested = window.location.hash.slice(1);
     const active = views.has(requested) ? requested : "reporting";
@@ -21,6 +29,7 @@
       else link.removeAttribute("aria-current");
     }
     document.title = `${active === "reporting" ? "Monitoring and Reporting Platform" : active === "dashboard" ? "Project Dashboard" : "How to Report"} · AISHA`;
+    scrollToPageTop();
   }
 
   const partners = Array.isArray(config.partners)
@@ -124,6 +133,17 @@
     });
   }
 
+  for (const link of document.querySelectorAll('.site-header a[href^="#"]')) {
+    link.addEventListener("click", event => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      if (link.getAttribute("href") === window.location.hash) {
+        event.preventDefault();
+        showView();
+      }
+    });
+  }
   window.addEventListener("hashchange", showView);
+  // Initial fragment scrolling and reload restoration happen after deferred scripts.
+  window.addEventListener("pageshow", event => { if (!event.persisted) scrollToPageTop(); });
   showView();
 })();
